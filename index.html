@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AM Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@5/dark.css" rel="stylesheet">
+    <style>
+        /* CSS Sama kayak sebelumnya, tapi kita rapihin bagian Stats */
+        body { background-color: #0b0914; color: #fff; min-height: 100vh; display: flex; justify-content: center; align-items: center; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .container { width: 90%; max-width: 400px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); border-radius: 24px; padding: 30px; text-align: center; }
+        .title { font-size: 24px; font-weight: 800; margin-bottom: 20px; background: linear-gradient(90deg, #b066fe, #63e2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        /* Stats Modern */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px; }
+        .stat-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); }
+        .stat-num { font-size: 20px; font-weight: 800; display: block; color: #63e2ff; }
+        .stat-text { font-size: 11px; color: #a0a0b0; }
+        
+        /* Input & Button (Sama seperti sebelumnya) */
+        .input-group { margin-bottom: 15px; text-align: left; }
+        input { width: 100%; padding: 12px; background: #1a1a2e; border: 1px solid #333; border-radius: 10px; color: #fff; margin-top: 5px; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; color: white; font-weight: 600; cursor: pointer; margin-top: 10px; }
+        .btn-1 { background: linear-gradient(90deg, #8a2be2, #4169e1); }
+        .btn-2 { background: linear-gradient(90deg, #00d2ff, #3a7bd5); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">AM Premium Processor</h1>
+        
+        <div class="input-group">
+            <label>Tahap 1: Email Akun</label>
+            <input type="email" id="emailInput" placeholder="Masukkan email...">
+        </div>
+        <button class="btn btn-1" onclick="sendVerificationEmail()">Kirim Link Verifikasi</button>
+
+        <div class="input-group" style="margin-top: 20px;">
+            <label>Tahap 2: Magic Link</label>
+            <input type="text" id="magicLinkInput" placeholder="Tempel magic link di sini...">
+        </div>
+        <button class="btn btn-2" onclick="verifyPremium()">Verifikasi & Aktifkan</button>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-num" id="visitorCount">1,204</span>
+                <span class="stat-text">Pengunjung</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-num" id="generatedCount">842</span>
+                <span class="stat-text">Sukses Premium</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <!-- PANGGIL FILE JS LU DI SINI -->
+    <script src="script.js"></script> 
+</body>
+</html>
