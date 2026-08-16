@@ -1,47 +1,112 @@
-// Tab switcher
-function switchTab(t) {
-    document.getElementById('proc-tab').style.display = t === 'proc' ? 'block' : 'none';
-    document.getElementById('music-tab').style.display = t === 'music' ? 'block' : 'none';
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase() === (t==='proc'?'premium':t)));
+// ==========================================
+// UI LOGIC (TABS & CLOCK)
+// ==========================================
+function switchTab(tabId) {
+    document.getElementById('proc-tab').style.display = tabId === 'proc' ? 'block' : 'none';
+    document.getElementById('music-tab').style.display = tabId === 'music' ? 'block' : 'none';
+    
+    const buttons = document.querySelectorAll('.tab-btn');
+    buttons[0].classList.toggle('active', tabId === 'proc');
+    buttons[1].classList.toggle('active', tabId === 'music');
 }
 
-// Clock
-setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString(), 1000);
+setInterval(() => {
+    const now = new Date();
+    document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false }) + ' WIB';
+}, 1000);
 
-// Music Search (Deezer API)
-async function searchMusic() {
-    const q = document.getElementById('q').value;
-    const res = await fetch(`https://api.deezer.com/search?q=${encodeURIComponent(q)}`);
-    const d = await res.json();
-    document.getElementById('results').innerHTML = d.data.slice(0,5).map(s => `
-        <div class="song-card" onclick="document.getElementById('player-box').style.display='block'; document.getElementById('audio').src='${s.preview}'; document.getElementById('audio').play();">
-            <img src="${s.album.cover_small}" style="width:50px; border-radius:8px; margin-right:15px;">
-            <div>
-                <div style="font-weight:600; font-size:13px;">${s.title}</div>
-                <div style="font-size:11px; color:#666;">${s.artist.name}</div>
-            </div>
-        </div>`).join('');
+
+// ==========================================
+// BACKGROUND MUSIC LOGIC
+// ==========================================
+const bgMusic = document.getElementById('bgMusic');
+const musicBtn = document.getElementById('musicBtn');
+let isMusicInitialized = false;
+
+// Fungsi ini kepanggil otomatis pas user klik area manapun di web (Hack buat nembus aturan Autoplay Browser)
+function initAudio() {
+    if (!isMusicInitialized) {
+        bgMusic.volume = 0.5; // Set volume 50% biar gak kaget
+        bgMusic.play().then(() => {
+            isMusicInitialized = true;
+            musicBtn.classList.add('playing');
+        }).catch(err => console.log("Autoplay ditahan browser, butuh interaksi user."));
+    }
 }
 
-// API Premium & History
-async function sendEmail() {
-    await fetch(`/api/send?email=${encodeURIComponent(document.getElementById('email').value)}`);
-    Swal.fire('Sukses', 'Cek email lu!', 'success');
+// Tombol manual buat Play/Pause
+function toggleMusic(e) {
+    e.stopPropagation(); // Biar gak trigger initAudio()
+    if (bgMusic.paused) {
+        bgMusic.play();
+        musicBtn.classList.add('playing');
+        isMusicInitialized = true;
+    } else {
+        bgMusic.pause();
+        musicBtn.classList.remove('playing');
+    }
 }
 
-async function verifyAcc() {
-    await fetch(`/api/verify?email=${encodeURIComponent(document.getElementById('email').value)}&magicLink=${encodeURIComponent(document.getElementById('magicLink').value)}`);
-    Swal.fire('Berhasil!', 'Aktif!', 'success');
-    loadHistory();
-}
 
+// ==========================================
+// API & DATABASE LOGIC (VERCEL KV)
+// ==========================================
 async function loadHistory() {
     const list = document.getElementById('historyList');
     try {
-        const r = await fetch('/api/history');
-        const d = await r.json();
-        if(d.length === 0) list.innerHTML = "<div style='text-align:center; color:#333;'>Belum ada data.</div>";
-        else list.innerHTML = d.map(i => `<div class="history-item"><span>✅ ${i.email}</span><span style="color:#555">${i.time}</span></div>`).join('');
-    } catch(e) { list.innerHTML = "<div style='text-align:center; color:red;'>Database offline!</div>"; }
+        const response = await fetch('/api/history');
+        if (!response.ok) throw new Error('Network error');
+        
+        const data = await response.json();
+        
+        if(data.length === 0) {
+            list.innerHTML = `<div style="text-align:center; padding:15px; color:#555; font-size:12px;">Belum ada history aktivasi.</div>`;
+        } else {
+            list.innerHTML = data.map(item => `
+                <div class="feed-item">
+                    <div class="feed-email">
+                        <span style="color:#00d2ff;">✔</span> ${item.email}
+                    </div>
+                    <div class="feed-time">${item.time}</div>
+                </div>
+            `).join('');
+        }
+    } catch (error) {
+        list.innerHTML = `<div style="text-align:center; padding:15px; color:#ff4d4d; font-size:12px;">Database connection closed.</div>`;
+    }
 }
+
+// Panggil saat web diload
 loadHistory();
+
+async function sendEmail() {
+    const email = document.getElementById('email').value;
+    if (!email) return Swal.fire({ icon: 'warning', title: 'Akses Ditolak', text: 'Masukkan email terlebih dahulu.', background: '#141419', color: '#fff' });
+
+    Swal.fire({ title: 'Menghubungi Server...', allowOutsideClick: false, background: '#141419', color: '#fff', didOpen: () => Swal.showLoading() });
+    try {
+        await fetch(`/api/send?email=${encodeURIComponent(email)}`);
+        Swal.fire({ icon: 'success', title: 'Link Terkirim', text: 'Silakan periksa kotak masuk atau folder spam email Anda.', background: '#141419', color: '#fff' });
+    } catch(e) {
+        Swal.fire({ icon: 'error', title: 'Server Sibuk', text: 'Gagal mengirim permintaan.', background: '#141419', color: '#fff' });
+    }
+}
+
+async function verifyAcc() {
+    const email = document.getElementById('email').value;
+    const link = document.getElementById('magicLink').value;
+    
+    if (!email || !link) return Swal.fire({ icon: 'warning', title: 'Data Tidak Lengkap', text: 'Email dan Magic Link wajib diisi.', background: '#141419', color: '#fff' });
+
+    Swal.fire({ title: 'Inisialisasi Premium...', allowOutsideClick: false, background: '#141419', color: '#fff', didOpen: () => Swal.showLoading() });
+    try {
+        await fetch(`/api/verify?email=${encodeURIComponent(email)}&magicLink=${encodeURIComponent(link)}`);
+        Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Status Premium telah diaktifkan untuk akun Anda.', background: '#141419', color: '#fff' });
+        
+        document.getElementById('magicLink').value = ''; // Bersihkan input
+        loadHistory(); // Update feed live
+    } catch(e) {
+        Swal.fire({ icon: 'error', title: 'Verifikasi Gagal', text: 'Link tidak valid atau telah kadaluarsa.', background: '#141419', color: '#fff' });
+    }
+                   }
+                   
