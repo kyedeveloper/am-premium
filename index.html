@@ -30,6 +30,11 @@
             position: relative;
         }
 
+        .stats-container { display: flex; justify-content: space-around; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+.stat-box { text-align: center; }
+.stat-value { display: block; font-size: 20px; font-weight: 800; color: #63e2ff; }
+.stat-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        
         /* --- BACKGROUND ANIMASI CAHAYA --- */
         .bg-orb-1, .bg-orb-2 {
             position: absolute;
@@ -189,6 +194,18 @@
 
     <div class="container">
         <h1 class="title">AM Premium Access</h1>
+
+        <div class="stats-container">
+    <div class="stat-box">
+        <span class="stat-value" id="visitorCount">0</span>
+        <span class="stat-label">Pengunjung</span>
+    </div>
+    <div class="stat-box">
+        <span class="stat-value" id="generatedCount">0</span>
+        <span class="stat-label">Sukses Premium</span>
+    </div>
+        </div>
+        
         
         <div class="input-group">
             <label>Tahap 1: Verifikasi Akun</label>
