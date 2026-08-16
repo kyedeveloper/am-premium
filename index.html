@@ -2,77 +2,53 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AM Premium | VIP Access</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>AM Premium Elite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <style>
         :root { --accent: #9d50bb; --bg: #050505; }
-        body { background: var(--bg); color: #fff; font-family: 'Outfit', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px 0; }
-        .card { width: 90%; max-width: 400px; background: #0c0c0c; border: 1px solid #222; border-radius: 30px; padding: 40px; box-shadow: 0 0 40px rgba(157, 80, 187, 0.15); }
-        h1 { font-size: 24px; margin-bottom: 5px; color: #fff; }
-        .sub { color: #666; font-size: 13px; margin-bottom: 30px; }
-        
-        .step-label { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .help-btn { background: #222; border: none; color: #9d50bb; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.3s; }
-        .help-btn:hover { background: #333; }
-
-        input { width: 100%; padding: 15px; border-radius: 14px; border: 1px solid #222; background: #111; color: #fff; margin-bottom: 20px; outline: none; box-sizing: border-box; }
-        .btn { width: 100%; padding: 15px; border-radius: 14px; border: none; font-weight: 600; cursor: pointer; margin-bottom: 10px; transition: 0.3s; }
-        .btn-main { background: linear-gradient(135deg, #6e48aa, #9d50bb); color: white; }
-        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(157, 80, 187, 0.4); }
-        
-        .stats { display: flex; gap: 20px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #1a1a1a; }
-        .stat { flex: 1; text-align: center; }
-        .stat-n { font-weight: 800; color: #fff; display: block; }
-        .stat-l { font-size: 10px; color: #555; text-transform: uppercase; }
-
-        /* Style untuk Live Feed */
-        .history-section { margin-top: 30px; border-top: 1px solid #1a1a1a; padding-top: 20px; }
-        .feed-item { font-size: 12px; color: #aaa; margin-bottom: 8px; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; border-left: 3px solid #9d50bb; display: flex; justify-content: space-between; }
+        body { background: var(--bg); color: #fff; font-family: 'Outfit', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .card { width: 100%; max-width: 400px; background: #0c0c0c; border: 1px solid #222; border-radius: 30px; padding: 30px; box-shadow: 0 0 40px rgba(157, 80, 187, 0.1); }
+        .nav-tabs { display: flex; gap: 10px; margin-bottom: 25px; }
+        .tab-btn { flex: 1; padding: 10px; background: #1a1a1a; border: none; border-radius: 12px; color: #666; cursor: pointer; font-weight: 600; }
+        .tab-btn.active { background: var(--accent); color: white; }
+        h1 { font-size: 20px; margin-bottom: 5px; }
+        input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #222; background: #111; color: #fff; margin-bottom: 15px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 14px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; background: linear-gradient(135deg, #6e48aa, #9d50bb); color: white; margin-bottom: 10px; }
+        .stats { display: flex; justify-content: space-around; margin: 20px 0; padding-top: 20px; border-top: 1px solid #1a1a1a; }
+        .stat-n { font-weight: 800; display: block; }
+        .song-item { padding: 10px; background: #111; margin-bottom: 8px; border-radius: 8px; display: flex; justify-content: space-between; cursor: pointer; font-size: 13px; }
     </style>
 </head>
 <body>
     <div class="card">
-        <!-- Jam Digital -->
-        <div id="clock" style="color:#888; font-size: 11px; margin-bottom: 15px; text-align: center; font-weight: 600; letter-spacing: 2px;">--:--:--</div>
-
+        <div id="clock" style="text-align:center; font-size: 11px; color:#666; margin-bottom: 10px;">--:--:--</div>
         <h1>AM Premium</h1>
-        <p class="sub">Pro account processor for Alight Motion.</p>
-
-        <!-- Step 1 -->
-        <div class="step-label">
-            <span style="font-size: 12px; color:#9d50bb">Langkah 1</span>
-            <button class="help-btn" onclick="showHelp(1)">?</button>
-        </div>
-        <input type="email" id="email" placeholder="Email Akun AM">
-        <button class="btn btn-main" onclick="sendEmail()">Kirim Link Verifikasi</button>
-
-        <!-- Step 2 -->
-        <div class="step-label" style="margin-top: 10px;">
-            <span style="font-size: 12px; color:#6e48aa">Langkah 2</span>
-            <button class="help-btn" onclick="showHelp(2)">?</button>
-        </div>
-        <input type="text" id="magicLink" placeholder="Tempel Magic Link">
-        <button class="btn btn-main" onclick="verifyAcc()">Aktifkan Premium</button>
-
-        <!-- Stats -->
-        <div class="stats">
-            <div class="stat"><span class="stat-n" id="visitorCount">1,204</span><span class="stat-l">Visitor</span></div>
-            <div class="stat"><span class="stat-n" id="generatedCount">842</span><span class="stat-l">Success</span></div>
+        
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('processor')">Premium</button>
+            <button class="tab-btn" onclick="switchTab('music')">Music</button>
         </div>
 
-        <!-- Live Feed Database -->
-        <div class="history-section">
-            <div class="step-label">
-                <span style="font-size: 12px; color:#fff; font-weight: 600;">⚡ Live Success Feed</span>
+        <div id="processor-tab">
+            <input type="email" id="email" placeholder="Email Akun AM">
+            <button class="btn" onclick="sendEmail()">Kirim Verifikasi</button>
+            <input type="text" id="magicLink" placeholder="Paste Magic Link">
+            <button class="btn" onclick="verifyAcc()">Aktifkan Premium</button>
+            <div class="stats">
+                <div class="stat"><span class="stat-n" id="visitorCount">-</span><small>Visitor</small></div>
+                <div class="stat"><span class="stat-n" id="generatedCount">-</span><small>Success</small></div>
             </div>
-            <div id="historyList">
-                <div style="font-size: 12px; color: #555; text-align: center; padding: 10px;">Memuat data...</div>
-            </div>
+            <div id="historyList" style="font-size: 11px;">Loading feed...</div>
+        </div>
+
+        <div id="music-tab" style="display:none;">
+            <input type="text" id="searchQuery" placeholder="Cari lagu...">
+            <button class="btn" onclick="searchMusic()">Cari Lagu</button>
+            <div id="songResults"></div>
+            <audio id="audioPlayer" controls style="width:100%; margin-top:15px;"></audio>
         </div>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="script.js"></script>
 </body>
