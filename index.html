@@ -2,83 +2,49 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AM Premium Elite - Processor</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>AM Premium Elite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <style>
-        :root { --primary: #8a2be2; --secondary: #00d2ff; --bg: #050505; }
-        * { box-sizing: border-box; }
-        body { 
-            background: radial-gradient(circle at top right, #1a0b2e, #050505); 
-            color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; 
-            margin: 0; min-height: 100vh; display: flex; justify-content: center; align-items: center; 
-        }
-        .main-card { 
-            width: 95%; max-width: 500px; background: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 40px; padding: 40px; box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            animation: fadeIn 0.8s ease;
-        }
-        @keyframes fadeIn { from { opacity:0; transform: scale(0.9); } to { opacity:1; transform: scale(1); } }
-        
-        /* Nav Tab Mewah */
-        .tabs { display: flex; gap: 10px; margin-bottom: 30px; background: #000; padding: 5px; border-radius: 20px; }
-        .tab-btn { flex: 1; padding: 12px; border: none; border-radius: 15px; color: #777; font-weight: 600; cursor: pointer; transition: 0.4s; }
-        .tab-btn.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; }
-
-        /* Input & Button */
-        input { width: 100%; padding: 18px; border-radius: 20px; border: 1px solid #333; background: #111; color: white; margin-bottom: 15px; }
-        .btn-action { width: 100%; padding: 18px; border-radius: 20px; border: none; font-weight: 800; cursor: pointer; background: #fff; color: #000; transition: 0.3s; }
-        .btn-action:hover { background: #eee; transform: scale(1.02); }
-
-        /* Feed List */
-        .feed-container { margin-top: 30px; border-top: 1px solid #222; padding-top: 20px; }
-        .feed-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #111; font-size: 13px; }
-        
-        /* Music Player */
-        .song-card { background: #111; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        :root { --accent: #9d50bb; --bg: #050505; }
+        body { background: var(--bg); color: #fff; font-family: 'Outfit', sans-serif; display: flex; justify-content: center; padding: 20px; }
+        .card { width: 100%; max-width: 420px; background: rgba(20, 20, 25, 0.9); backdrop-filter: blur(20px); border: 1px solid #333; border-radius: 35px; padding: 30px; box-shadow: 0 10px 50px rgba(0,0,0,0.5); }
+        .tab-btn { flex: 1; padding: 12px; border-radius: 15px; border:none; background:#111; color:#777; font-weight:600; cursor:pointer; }
+        .tab-btn.active { background: linear-gradient(135deg, #6e48aa, #9d50bb); color: white; }
+        input { width: 100%; padding: 16px; border-radius: 15px; background: #000; border: 1px solid #333; color: white; margin-bottom: 12px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 16px; border-radius: 15px; border: none; background: #fff; color: #000; font-weight: 700; cursor: pointer; margin-top: 5px; }
+        .song-card { background: #111; padding: 12px; border-radius: 15px; margin-bottom: 10px; display: flex; align-items: center; border: 1px solid #222; }
+        .history-item { padding: 12px; border-bottom: 1px solid #111; font-size: 12px; display: flex; justify-content: space-between; }
     </style>
 </head>
 <body>
-    <div class="main-card">
-        <div id="clock" style="text-align:center; color:#555; margin-bottom:15px; font-size:12px;">--:--:--</div>
+    <div class="card">
+        <div id="clock" style="text-align:center; color:#555; font-size:11px; margin-bottom:20px;">--:--:--</div>
         
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('proc')">Processor</button>
+        <div style="display:flex; gap:10px; margin-bottom:25px;">
+            <button class="tab-btn active" onclick="switchTab('proc')">Premium</button>
             <button class="tab-btn" onclick="switchTab('music')">Music</button>
         </div>
 
         <div id="proc-tab">
-            <input id="email" placeholder="Email Akun Alight Motion">
-            <button class="btn-action" onclick="sendEmail()">Kirim Link Verifikasi</button>
-            <input id="magicLink" placeholder="Tempel Magic Link">
-            <button class="btn-action" onclick="verifyAcc()">Aktifkan Premium</button>
-            
-            <div class="feed-container">
-                <h4 style="margin-bottom:15px; color:#9d50bb;">Live Success Feed</h4>
-                <div id="historyList">Loading database...</div>
+            <input id="email" placeholder="Email Alight Motion">
+            <button class="btn" onclick="sendEmail()">Kirim Verifikasi</button>
+            <input id="magicLink" placeholder="Paste Magic Link">
+            <button class="btn" onclick="verifyAcc()">Aktifkan Premium</button>
+            <div id="historyList" style="margin-top:25px;">
+                <div style="text-align:center; color:#444; font-size:12px;">Memuat data...</div>
             </div>
         </div>
 
-        <!-- Ganti bagian musik-tab lu di index.html dengan ini -->
-<div id="music-tab" style="display:none;">
-    <div style="display: flex; gap: 10px;">
-        <input id="q" placeholder="Cari lagu (contoh: DJ Remix)..." style="flex:1; padding:15px; border-radius:12px; background:#111; border:1px solid #333; color:white;">
-        <button class="btn" style="width: 80px;" onclick="searchMusic()">Cari</button>
+        <div id="music-tab" style="display:none;">
+            <input id="q" placeholder="Cari lagu populer...">
+            <button class="btn" onclick="searchMusic()">Search Music</button>
+            <div id="results" style="margin-top:15px;"></div>
+            <div id="player-box" style="display:none; margin-top:20px; background:#111; padding:15px; border-radius:20px;">
+                <audio id="audio" controls style="width:100%;"></audio>
+            </div>
+        </div>
     </div>
-    
-    <div id="loadingMusic" style="display:none; text-align:center; padding:20px; color:#9d50bb;">
-        Mencari lagu terbaik buat lu... 🎧
-    </div>
-    <div id="results" style="margin-top:20px;"></div>
-    
-    <div id="player-box" style="margin-top:20px; background:#1a1a1a; padding:15px; border-radius:20px; display:none;">
-        <img id="thumb" style="width:60px; height:60px; border-radius:10px; float:left; margin-right:15px;">
-        <div id="songTitle" style="font-size:14px; font-weight:600;">Judul Lagu</div>
-        <audio id="audio" controls style="width:100%; margin-top:10px;"></audio>
-    </div>
-</div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="script.js"></script>
 </body>
