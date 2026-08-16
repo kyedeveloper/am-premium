@@ -3,35 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AM Premium</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>AM Premium | VIP Access</title>
+    
+    <!-- Font Premium -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- SweetAlert2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@5/dark.css" rel="stylesheet">
+    
     <style>
-        body { background-color: #0b0914; color: #fff; min-height: 100vh; display: flex; justify-content: center; align-items: center; font-family: 'Plus Jakarta Sans', sans-serif; }
-        .container { width: 90%; max-width: 400px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); border-radius: 24px; padding: 30px; text-align: center; }
-        .title { font-size: 24px; font-weight: 800; margin-bottom: 20px; background: linear-gradient(90deg, #b066fe, #63e2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .input-group { margin-bottom: 15px; text-align: left; }
-        input { width: 100%; padding: 12px; background: #1a1a2e; border: 1px solid #333; border-radius: 10px; color: #fff; margin-top: 5px; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; color: white; font-weight: 600; cursor: pointer; margin-top: 10px; }
-        .btn-1 { background: linear-gradient(90deg, #8a2be2, #4169e1); }
-        .btn-2 { background: linear-gradient(90deg, #00d2ff, #3a7bd5); }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body { 
+            background-color: #050508; 
+            color: #fff; 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- BACKGROUND ANIMASI CAHAYA --- */
+        .bg-orb-1, .bg-orb-2 {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: -1;
+            animation: float 8s infinite alternate ease-in-out;
+        }
+
+        .bg-orb-1 {
+            width: 350px;
+            height: 350px;
+            background: rgba(138, 43, 226, 0.35); /* Ungu */
+            top: -50px;
+            left: -100px;
+        }
+
+        .bg-orb-2 {
+            width: 400px;
+            height: 400px;
+            background: rgba(0, 210, 255, 0.25); /* Biru */
+            bottom: -100px;
+            right: -100px;
+            animation-delay: -4s;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) scale(1); }
+            100% { transform: translateY(40px) scale(1.1); }
+        }
+
+        /* --- GLASSMORPHISM CARD PREMIUM --- */
+        .container { 
+            width: 90%; 
+            max-width: 420px; 
+            background: rgba(20, 20, 25, 0.4); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 28px; 
+            padding: 40px 30px; 
+            text-align: center; 
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            
+            /* Animasi masuk pas load */
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUpFade 0.8s ease-out forwards;
+        }
+
+        @keyframes slideUpFade {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- TEXT JUDUL ANIMASI GRADIENT --- */
+        .title { 
+            font-size: 26px; 
+            font-weight: 800; 
+            margin-bottom: 25px; 
+            background: linear-gradient(270deg, #b066fe, #63e2ff, #b066fe); 
+            background-size: 200% auto;
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            animation: shine 4s linear infinite;
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        /* --- INPUT FIELDS --- */
+        .input-group { 
+            margin-bottom: 20px; 
+            text-align: left; 
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #a0a0b0;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        input { 
+            width: 100%; 
+            padding: 16px; 
+            background: rgba(0, 0, 0, 0.3); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 14px; 
+            color: #fff; 
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease; 
+        }
+
+        input::placeholder {
+            color: #555;
+        }
+
+        input:focus {
+            border-color: #b066fe;
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 20px rgba(176, 102, 254, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* --- BUTTONS --- */
+        .btn { 
+            width: 100%; 
+            padding: 15px; 
+            border: none; 
+            border-radius: 14px; 
+            color: white; 
+            font-size: 15px;
+            font-weight: 700; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            letter-spacing: 0.5px;
+        }
+
+        .btn-1 { 
+            background: linear-gradient(135deg, #8a2be2, #4169e1); 
+            box-shadow: 0 8px 20px rgba(138, 43, 226, 0.3);
+            margin-bottom: 10px;
+        }
+
+        .btn-2 { 
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5); 
+            box-shadow: 0 8px 20px rgba(0, 210, 255, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            filter: brightness(1.15);
+            box-shadow: 0 12px 25px rgba(255, 255, 255, 0.1);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        /* Garis Pembatas (Divider) */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            margin: 25px 0;
+        }
     </style>
 </head>
 <body>
+
+    <!-- Animasi Latar Belakang -->
+    <div class="bg-orb-1"></div>
+    <div class="bg-orb-2"></div>
+
     <div class="container">
-        <h1 class="title">AM Premium Processor</h1>
+        <h1 class="title">AM Premium Access</h1>
+        
         <div class="input-group">
-            <label>Email Akun</label>
-            <input type="email" id="emailInput" placeholder="Masukkan email...">
+            <label>Tahap 1: Verifikasi Akun</label>
+            <input type="email" id="emailInput" placeholder="Masukkan email terdaftar...">
         </div>
-        <button class="btn btn-1" onclick="sendVerificationEmail()">Kirim Link Verifikasi</button>
-        <div class="input-group" style="margin-top: 20px;">
-            <label>Magic Link</label>
-            <input type="text" id="magicLinkInput" placeholder="Tempel magic link di sini...">
+        <button class="btn btn-1" onclick="sendVerificationEmail()">Kirim Magic Link</button>
+
+        <div class="divider"></div>
+
+        <div class="input-group">
+            <label>Tahap 2: Aktivasi Sistem</label>
+            <input type="text" id="magicLinkInput" placeholder="Paste magic link dari email...">
         </div>
-        <button class="btn btn-2" onclick="verifyPremium()">Verifikasi & Aktifkan</button>
+        <button class="btn btn-2" onclick="verifyPremium()">Aktifkan Premium</button>
     </div>
+
+    <!-- Script SweetAlert & JS External -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
     <script src="script.js"></script>
 </body>
-</html>
+    </html>
+    
