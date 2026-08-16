@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <style>
         :root { --accent: #9d50bb; --bg: #050505; }
-        body { background: var(--bg); color: #fff; font-family: 'Outfit', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        body { background: var(--bg); color: #fff; font-family: 'Outfit', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px 0; }
         .card { width: 90%; max-width: 400px; background: #0c0c0c; border: 1px solid #222; border-radius: 30px; padding: 40px; box-shadow: 0 0 40px rgba(157, 80, 187, 0.15); }
         h1 { font-size: 24px; margin-bottom: 5px; color: #fff; }
         .sub { color: #666; font-size: 13px; margin-bottom: 30px; }
@@ -26,19 +26,17 @@
         .stat { flex: 1; text-align: center; }
         .stat-n { font-weight: 800; color: #fff; display: block; }
         .stat-l { font-size: 10px; color: #555; text-transform: uppercase; }
+
+        /* Style untuk Live Feed */
+        .history-section { margin-top: 30px; border-top: 1px solid #1a1a1a; padding-top: 20px; }
+        .feed-item { font-size: 12px; color: #aaa; margin-bottom: 8px; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; border-left: 3px solid #9d50bb; display: flex; justify-content: space-between; }
     </style>
 </head>
 <body>
     <div class="card">
-        <!-- Tambahin di dalam .card (di atas judul) -->
-<div id="clock" style="color:#666; font-size: 11px; margin-bottom: 10px;">--:--:--</div>
+        <!-- Jam Digital -->
+        <div id="clock" style="color:#888; font-size: 11px; margin-bottom: 15px; text-align: center; font-weight: 600; letter-spacing: 2px;">--:--:--</div>
 
-<!-- Tambahin di paling bawah .card (sebelum tutup div) -->
-<div class="history-section">
-    <div class="step-label" style="margin-top: 30px;"><span>Live Success Feed</span></div>
-    <div id="historyList" style="font-size: 12px; color: #444;">Loading...</div>
-</div>
-        
         <h1>AM Premium</h1>
         <p class="sub">Pro account processor for Alight Motion.</p>
 
@@ -58,9 +56,20 @@
         <input type="text" id="magicLink" placeholder="Tempel Magic Link">
         <button class="btn btn-main" onclick="verifyAcc()">Aktifkan Premium</button>
 
+        <!-- Stats -->
         <div class="stats">
             <div class="stat"><span class="stat-n" id="visitorCount">1,204</span><span class="stat-l">Visitor</span></div>
             <div class="stat"><span class="stat-n" id="generatedCount">842</span><span class="stat-l">Success</span></div>
+        </div>
+
+        <!-- Live Feed Database -->
+        <div class="history-section">
+            <div class="step-label">
+                <span style="font-size: 12px; color:#fff; font-weight: 600;">⚡ Live Success Feed</span>
+            </div>
+            <div id="historyList">
+                <div style="font-size: 12px; color: #555; text-align: center; padding: 10px;">Memuat data...</div>
+            </div>
         </div>
     </div>
 
