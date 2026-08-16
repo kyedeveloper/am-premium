@@ -1,50 +1,32 @@
-// --- HELPER BUTTON LOGIC ---
-function showHelp(step) {
-    if (step === 1) {
-        Swal.fire({
-            title: 'Cara Langkah 1',
-            text: 'Masukkan email akun Alight Motion lu yang mau dipremiumkan, terus klik "Kirim Link". Tunggu notifikasi sukses, lalu buka email lu.',
-            icon: 'info',
-            background: '#0c0c0c',
-            color: '#fff'
-        });
-    } else {
-        Swal.fire({
-            title: 'Cara Langkah 2',
-            text: 'Cek kotak masuk/spam di email tadi, salin link verifikasi yang dikirim, terus tempel (paste) di kolom ini dan klik Aktifkan!',
-            icon: 'info',
-            background: '#0c0c0c',
-            color: '#fff'
-        });
-    }
+// --- JAM DIGITAL ---
+function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').innerText = now.toLocaleTimeString();
 }
+setInterval(updateClock, 1000);
+updateClock();
 
-// --- STATS LOGIC ---
-function updateStats() {
-    const hours = Math.floor((new Date() - new Date('2026-08-16')) / 3600000);
-    document.getElementById('visitorCount').innerText = (1204 + (hours * 5)).toLocaleString();
-    document.getElementById('generatedCount').innerText = (842 + (hours * 3)).toLocaleString();
-}
-updateStats();
-
-// --- API LOGIC (Tetep sama kayak sebelumnya) ---
-async function sendEmail() {
-    const email = document.getElementById('email').value;
-    if(!email) return Swal.fire('Oops', 'Isi email dulu!', 'warning');
-    Swal.fire({ title: 'Mengirim...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+// --- AMBIL HISTORY ---
+async function loadHistory() {
     try {
-        const res = await fetch(`/api/send?email=${encodeURIComponent(email)}`);
-        Swal.fire('Sukses!', 'Cek email lu sekarang.', 'success');
-    } catch(e) { Swal.fire('Error', 'Gagal kirim.', 'error'); }
+        const res = await fetch('/api/history');
+        const data = await res.json();
+        const list = document.getElementById('historyList');
+        list.innerHTML = data.map(item => `
+            <div style="margin-bottom: 5px; border-bottom: 1px solid #111; padding-bottom: 5px;">
+                ✅ ${item.email} - <span style="color:#666">${item.time}</span>
+            </div>
+        `).join('');
+    } catch(e) {}
 }
+loadHistory();
 
+// --- MODIFIKASI FUNGSI VERIFIKASI (Tambahin loadHistory() di akhir) ---
 async function verifyAcc() {
-    const email = document.getElementById('email').value;
-    const link = document.getElementById('magicLink').value;
-    if(!link) return Swal.fire('Oops', 'Link belum ditempel!', 'warning');
-    Swal.fire({ title: 'Verifikasi...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    // ... (kode sebelumnya) ...
     try {
-        await fetch(`/api/verify?email=${encodeURIComponent(email)}&magicLink=${encodeURIComponent(link)}`);
+        await fetch(`/api/verify?email=...`);
         Swal.fire('Berhasil!', 'Akun sudah premium!', 'success');
-    } catch(e) { Swal.fire('Gagal', 'Link salah atau expired.', 'error'); }
+        loadHistory(); // Refresh feed biar user baru muncul
+    } catch(e) { /* ... */ }
 }
