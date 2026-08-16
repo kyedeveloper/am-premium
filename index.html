@@ -23,9 +23,37 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
 
-        body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; }
+        /* =========================================
+   GLOBAL VARIABLES & RESET
+   ========================================= */
+/* (Bagian :root biarin aja kayak sebelumnya) */
 
-        .ambient-bg { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; overflow: hidden; background: #000; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+body { 
+    background-color: var(--bg-color); 
+    color: var(--text-main); 
+    min-height: 100vh; 
+    display: flex; 
+    justify-content: center; 
+    align-items: flex-start; /* Diganti dari center jadi flex-start biar atasnya gak kepotong */
+    padding: 50px 15px; /* Ngasih ruang kosong di atas dan bawah biar enak di-scroll */
+    overflow-x: hidden; /* Matiin scroll nyamping */
+    overflow-y: auto; /* NYALAIN SCROLL KE BAWAH */
+    position: relative; 
+}
+
+/* =========================================
+   ANIMATED BACKGROUND (MESH GRADIENT)
+   ========================================= */
+.ambient-bg { 
+    position: fixed; /* Diganti dari absolute jadi fixed biar background cahayanya gak ikut ke-scroll */
+    top: 0; left: 0; width: 100vw; height: 100vh; 
+    z-index: -1; 
+    overflow: hidden; 
+    background: #000; 
+}
+
         .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.5; animation: float 10s infinite alternate ease-in-out; }
         .orb-1 { width: 400px; height: 400px; background: var(--secondary); top: -100px; left: -100px; }
         .orb-2 { width: 300px; height: 300px; background: #00d2ff; bottom: -50px; right: -50px; animation-delay: -3s; }
@@ -111,7 +139,7 @@
     <div class="glass-panel">
         <div class="header">
             <div class="clock" id="clock">--:--:-- WIB</div>
-            <h1 class="title">AM ELITE</h1>
+            <h1 class="title">AM PREMIUM FOR ELITE</h1>
             <p class="subtitle">Secure Processor Interface</p>
             <div class="limit-badge" id="limitBadge">MEMUAT LIMIT...</div>
         </div>
