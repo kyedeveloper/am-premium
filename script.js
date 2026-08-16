@@ -1,7 +1,7 @@
 // ==========================================
 // 1. SISTEM LIMIT & OWNER BYPASS
 // ==========================================
-const SECRET_CODE = "ELITE2026"; // <-- Ganti kode rahasia lu di sini
+const SECRET_CODE = "ELITE2026";
 const MAX_LIMIT = 5;
 let currentLimit = MAX_LIMIT;
 
@@ -9,7 +9,6 @@ function initLimit() {
     const todayStr = new Date().toDateString();
     let stored = JSON.parse(localStorage.getItem('am_elite_limit'));
     
-    // Kalau belum pernah buka atau beda hari, reset ke 5
     if (!stored || stored.date !== todayStr) {
         stored = { date: todayStr, count: MAX_LIMIT };
         localStorage.setItem('am_elite_limit', JSON.stringify(stored));
@@ -32,7 +31,7 @@ function updateLimitUI() {
 }
 
 function decreaseLimit() {
-    if (currentLimit > 100) return; // Kalau owner ga usah dikurangin
+    if (currentLimit > 100) return;
     currentLimit--;
     let stored = JSON.parse(localStorage.getItem('am_elite_limit'));
     stored.count = currentLimit;
@@ -61,9 +60,9 @@ function checkLimit() {
                 localStorage.setItem('am_elite_limit', JSON.stringify(stored));
                 currentLimit = 9999;
                 updateLimitUI();
-                Swal.fire({icon: 'success', title: 'Akses Owner Dibuka!', text: 'Sistem limit telah dinonaktifkan.', background: '#141419', color: '#fff'});
+                Swal.fire({icon: 'success', title: 'Akses Owner Dibuka!', text: 'Sistem limit dinonaktifkan.', background: '#141419', color: '#fff'});
             } else if (result.value) {
-                Swal.fire({icon: 'error', title: 'Akses Ditolak', text: 'Kode bypass salah. Sistem mendeteksi anomali.', background: '#141419', color: '#fff'});
+                Swal.fire({icon: 'error', title: 'Akses Ditolak', text: 'Kode bypass salah.', background: '#141419', color: '#fff'});
             }
         });
         return false;
@@ -72,9 +71,38 @@ function checkLimit() {
 }
 
 // ==========================================
-// 2. UI LOGIC & BACKGROUND MUSIC
+// 2. STATISTIK DINAMIS (BERTAMBAH OTOMATIS)
 // ==========================================
-initLimit(); // Panggil saat web diload
+function updateStats() {
+    // Kita anggap web lu mulai ngitung dari 16 Agustus 2026 jam 00:00 (Hari Rilis)
+    const launchDate = new Date('2026-08-16T00:00:00');
+    const now = new Date();
+    
+    // Hitung berapa jam dan menit yang udah lewat sejak tanggal rilis
+    const hoursPassed = Math.max(0, Math.floor((now - launchDate) / 3600000));
+    const minutesPassed = now.getMinutes();
+
+    // Base angka awal (Sesuai request lu: 157 & 37)
+    const baseVisitors = 157;
+    const baseSuccess = 37;
+
+    // Formula matematika (Nambah per jam, dan ada efek acak dari menit)
+    // Jadi angkanya keliatan natural dan nambah terus
+    const currentVisitors = baseVisitors + (hoursPassed * 6) + Math.floor(minutesPassed / 10);
+    const currentSuccess = baseSuccess + (hoursPassed * 2) + Math.floor(minutesPassed / 20);
+
+    // Tempel angkanya ke HTML
+    document.getElementById('visitorCount').innerText = currentVisitors.toLocaleString('id-ID');
+    document.getElementById('successCount').innerText = currentSuccess.toLocaleString('id-ID');
+}
+
+
+// ==========================================
+// 3. UI LOGIC & BACKGROUND MUSIC
+// ==========================================
+initLimit(); 
+updateStats(); // Jalankan fungsi statistik pas web dibuka
+setInterval(updateStats, 60000); // Refresh statistik tiap 1 menit secara halus
 
 function switchTab(tabId) {
     document.getElementById('proc-tab').style.display = tabId === 'proc' ? 'block' : 'none';
@@ -115,7 +143,7 @@ function toggleMusic(e) {
 }
 
 // ==========================================
-// 3. API & DATABASE LOGIC (VERCEL KV)
+// 4. API & DATABASE LOGIC (VERCEL KV)
 // ==========================================
 async function loadHistory() {
     const list = document.getElementById('historyList');
@@ -142,7 +170,7 @@ async function loadHistory() {
 loadHistory();
 
 async function sendEmail() {
-    if (!checkLimit()) return; // Cek limit dulu sebelum lanjut!
+    if (!checkLimit()) return; 
 
     const email = document.getElementById('email').value;
     if (!email) return Swal.fire({ icon: 'warning', title: 'Akses Ditolak', text: 'Masukkan email terlebih dahulu.', background: '#141419', color: '#fff' });
@@ -150,7 +178,7 @@ async function sendEmail() {
     Swal.fire({ title: 'Menghubungi Server...', allowOutsideClick: false, background: '#141419', color: '#fff', didOpen: () => Swal.showLoading() });
     try {
         await fetch(`/api/send?email=${encodeURIComponent(email)}`);
-        decreaseLimit(); // Kurangi jatah limit kalau sukses
+        decreaseLimit(); 
         Swal.fire({ icon: 'success', title: 'Link Terkirim', text: 'Silakan periksa kotak masuk atau folder spam email Anda.', background: '#141419', color: '#fff' });
     } catch(e) {
         Swal.fire({ icon: 'error', title: 'Server Sibuk', text: 'Gagal mengirim permintaan.', background: '#141419', color: '#fff' });
@@ -158,7 +186,7 @@ async function sendEmail() {
 }
 
 async function verifyAcc() {
-    if (!checkLimit()) return; // Cek limit dulu sebelum lanjut!
+    if (!checkLimit()) return; 
 
     const email = document.getElementById('email').value;
     const link = document.getElementById('magicLink').value;
@@ -168,12 +196,17 @@ async function verifyAcc() {
     Swal.fire({ title: 'Inisialisasi Premium...', allowOutsideClick: false, background: '#141419', color: '#fff', didOpen: () => Swal.showLoading() });
     try {
         await fetch(`/api/verify?email=${encodeURIComponent(email)}&magicLink=${encodeURIComponent(link)}`);
-        decreaseLimit(); // Kurangi jatah limit kalau sukses
+        decreaseLimit(); 
         Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Status Premium telah diaktifkan untuk akun Anda.', background: '#141419', color: '#fff' });
         
         document.getElementById('magicLink').value = ''; 
         loadHistory(); 
+        
+        // BONUS: Pas user berhasil, angka Sukses Premium langsung nambah +1 secara visual!
+        const successEl = document.getElementById('successCount');
+        successEl.innerText = (parseInt(successEl.innerText.replace(/\D/g, '')) + 1).toLocaleString('id-ID');
     } catch(e) {
         Swal.fire({ icon: 'error', title: 'Verifikasi Gagal', text: 'Link tidak valid atau telah kadaluarsa.', background: '#141419', color: '#fff' });
     }
-            }
+                   }
+                   
