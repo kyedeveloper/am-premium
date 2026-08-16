@@ -4,227 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AM Premium | VIP Access</title>
-    
-    <!-- Font Premium -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
-    
-    <!-- SweetAlert2 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@5/dark.css" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-
-        body { 
-            background-color: #050508; 
-            color: #fff; 
-            min-height: 100vh; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            overflow: hidden;
-            position: relative;
-        }
-
-        .stats-container { display: flex; justify-content: space-around; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
-.stat-box { text-align: center; }
-.stat-value { display: block; font-size: 20px; font-weight: 800; color: #63e2ff; }
-.stat-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        :root { --accent: #9d50bb; --bg: #050505; }
+        body { background: var(--bg); color: #fff; font-family: 'Outfit', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { width: 90%; max-width: 400px; background: #0c0c0c; border: 1px solid #222; border-radius: 30px; padding: 40px; box-shadow: 0 0 40px rgba(157, 80, 187, 0.15); }
+        h1 { font-size: 24px; margin-bottom: 5px; color: #fff; }
+        .sub { color: #666; font-size: 13px; margin-bottom: 30px; }
         
-        /* --- BACKGROUND ANIMASI CAHAYA --- */
-        .bg-orb-1, .bg-orb-2 {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(90px);
-            z-index: -1;
-            animation: float 8s infinite alternate ease-in-out;
-        }
+        .step-label { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .help-btn { background: #222; border: none; color: #9d50bb; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.3s; }
+        .help-btn:hover { background: #333; }
 
-        .bg-orb-1 {
-            width: 350px;
-            height: 350px;
-            background: rgba(138, 43, 226, 0.35); /* Ungu */
-            top: -50px;
-            left: -100px;
-        }
-
-        .bg-orb-2 {
-            width: 400px;
-            height: 400px;
-            background: rgba(0, 210, 255, 0.25); /* Biru */
-            bottom: -100px;
-            right: -100px;
-            animation-delay: -4s;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px) scale(1); }
-            100% { transform: translateY(40px) scale(1.1); }
-        }
-
-        /* --- GLASSMORPHISM CARD PREMIUM --- */
-        .container { 
-            width: 90%; 
-            max-width: 420px; 
-            background: rgba(20, 20, 25, 0.4); 
-            border: 1px solid rgba(255, 255, 255, 0.08); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 28px; 
-            padding: 40px 30px; 
-            text-align: center; 
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            
-            /* Animasi masuk pas load */
-            opacity: 0;
-            transform: translateY(30px);
-            animation: slideUpFade 0.8s ease-out forwards;
-        }
-
-        @keyframes slideUpFade {
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* --- TEXT JUDUL ANIMASI GRADIENT --- */
-        .title { 
-            font-size: 26px; 
-            font-weight: 800; 
-            margin-bottom: 25px; 
-            background: linear-gradient(270deg, #b066fe, #63e2ff, #b066fe); 
-            background-size: 200% auto;
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-            animation: shine 4s linear infinite;
-        }
-
-        @keyframes shine {
-            to { background-position: 200% center; }
-        }
-
-        /* --- INPUT FIELDS --- */
-        .input-group { 
-            margin-bottom: 20px; 
-            text-align: left; 
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 500;
-            color: #a0a0b0;
-            margin-bottom: 8px;
-            letter-spacing: 0.5px;
-        }
-
-        input { 
-            width: 100%; 
-            padding: 16px; 
-            background: rgba(0, 0, 0, 0.3); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 14px; 
-            color: #fff; 
-            font-size: 15px;
-            outline: none;
-            transition: all 0.3s ease; 
-        }
-
-        input::placeholder {
-            color: #555;
-        }
-
-        input:focus {
-            border-color: #b066fe;
-            background: rgba(0, 0, 0, 0.5);
-            box-shadow: 0 0 20px rgba(176, 102, 254, 0.2);
-            transform: translateY(-2px);
-        }
-
-        /* --- BUTTONS --- */
-        .btn { 
-            width: 100%; 
-            padding: 15px; 
-            border: none; 
-            border-radius: 14px; 
-            color: white; 
-            font-size: 15px;
-            font-weight: 700; 
-            cursor: pointer; 
-            transition: all 0.3s ease; 
-            letter-spacing: 0.5px;
-        }
-
-        .btn-1 { 
-            background: linear-gradient(135deg, #8a2be2, #4169e1); 
-            box-shadow: 0 8px 20px rgba(138, 43, 226, 0.3);
-            margin-bottom: 10px;
-        }
-
-        .btn-2 { 
-            background: linear-gradient(135deg, #00d2ff, #3a7bd5); 
-            box-shadow: 0 8px 20px rgba(0, 210, 255, 0.3);
-        }
-
-        .btn:hover {
-            transform: translateY(-3px);
-            filter: brightness(1.15);
-            box-shadow: 0 12px 25px rgba(255, 255, 255, 0.1);
-        }
-
-        .btn:active {
-            transform: translateY(1px);
-        }
-
-        /* Garis Pembatas (Divider) */
-        .divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            margin: 25px 0;
-        }
+        input { width: 100%; padding: 15px; border-radius: 14px; border: 1px solid #222; background: #111; color: #fff; margin-bottom: 20px; outline: none; box-sizing: border-box; }
+        .btn { width: 100%; padding: 15px; border-radius: 14px; border: none; font-weight: 600; cursor: pointer; margin-bottom: 10px; transition: 0.3s; }
+        .btn-main { background: linear-gradient(135deg, #6e48aa, #9d50bb); color: white; }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(157, 80, 187, 0.4); }
+        
+        .stats { display: flex; gap: 20px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #1a1a1a; }
+        .stat { flex: 1; text-align: center; }
+        .stat-n { font-weight: 800; color: #fff; display: block; }
+        .stat-l { font-size: 10px; color: #555; text-transform: uppercase; }
     </style>
 </head>
 <body>
+    <div class="card">
+        <h1>AM Premium</h1>
+        <p class="sub">Pro account processor for Alight Motion.</p>
 
-    <!-- Animasi Latar Belakang -->
-    <div class="bg-orb-1"></div>
-    <div class="bg-orb-2"></div>
-
-    <div class="container">
-        <h1 class="title">AM Premium Access</h1>
-
-        <div class="stats-container">
-    <div class="stat-box">
-        <span class="stat-value" id="visitorCount">0</span>
-        <span class="stat-label">Pengunjung</span>
-    </div>
-    <div class="stat-box">
-        <span class="stat-value" id="generatedCount">0</span>
-        <span class="stat-label">Sukses Premium</span>
-    </div>
+        <!-- Step 1 -->
+        <div class="step-label">
+            <span style="font-size: 12px; color:#9d50bb">Langkah 1</span>
+            <button class="help-btn" onclick="showHelp(1)">?</button>
         </div>
-        
-        
-        <div class="input-group">
-            <label>Tahap 1: Verifikasi Akun</label>
-            <input type="email" id="emailInput" placeholder="Masukkan email terdaftar...">
-        </div>
-        <button class="btn btn-1" onclick="sendVerificationEmail()">Kirim Magic Link</button>
+        <input type="email" id="email" placeholder="Email Akun AM">
+        <button class="btn btn-main" onclick="sendEmail()">Kirim Link Verifikasi</button>
 
-        <div class="divider"></div>
-
-        <div class="input-group">
-            <label>Tahap 2: Aktivasi Sistem</label>
-            <input type="text" id="magicLinkInput" placeholder="Paste magic link dari email...">
+        <!-- Step 2 -->
+        <div class="step-label" style="margin-top: 10px;">
+            <span style="font-size: 12px; color:#6e48aa">Langkah 2</span>
+            <button class="help-btn" onclick="showHelp(2)">?</button>
         </div>
-        <button class="btn btn-2" onclick="verifyPremium()">Aktifkan Premium</button>
+        <input type="text" id="magicLink" placeholder="Tempel Magic Link">
+        <button class="btn btn-main" onclick="verifyAcc()">Aktifkan Premium</button>
+
+        <div class="stats">
+            <div class="stat"><span class="stat-n" id="visitorCount">1,204</span><span class="stat-l">Visitor</span></div>
+            <div class="stat"><span class="stat-n" id="generatedCount">842</span><span class="stat-l">Success</span></div>
+        </div>
     </div>
 
-    <!-- Script SweetAlert & JS External -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="script.js"></script>
 </body>
-    </html>
-    
+</html>
