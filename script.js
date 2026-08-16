@@ -1,84 +1,47 @@
-// Function switch tab
+// Tab switcher
 function switchTab(t) {
     document.getElementById('proc-tab').style.display = t === 'proc' ? 'block' : 'none';
     document.getElementById('music-tab').style.display = t === 'music' ? 'block' : 'none';
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase() === (t==='proc'?'processor':t)));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase() === (t==='proc'?'premium':t)));
 }
 
 // Clock
 setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString(), 1000);
 
+// Music Search (Deezer API)
 async function searchMusic() {
     const q = document.getElementById('q').value;
-    const resDiv = document.getElementById('results');
-    const loading = document.getElementById('loadingMusic');
-    
-    if(!q) return Swal.fire('Oops', 'Mau cari lagu apa?', 'warning');
-
-    resDiv.innerHTML = '';
-    loading.style.display = 'block';
-
-    try {
-        // API BhariyaMusic
-        const res = await fetch(`https://bhariyamusic.vercel.app/search/songs?query=${encodeURIComponent(q)}`);
-        const data = await res.json();
-        
-        loading.style.display = 'none';
-        resDiv.innerHTML = data.data.results.slice(0, 5).map(s => `
-            <div class="song-card" style="background:#111; padding:15px; border-radius:15px; margin-bottom:10px; display:flex; align-items:center; cursor:pointer;" 
-                 onclick="playSong('${s.downloadUrl[4].url}', '${s.name}', '${s.image[2].url}')">
-                <img src="${s.image[0].url}" style="width:40px; height:40px; border-radius:8px; margin-right:15px;">
-                <span>${s.name}</span>
+    const res = await fetch(`https://api.deezer.com/search?q=${encodeURIComponent(q)}`);
+    const d = await res.json();
+    document.getElementById('results').innerHTML = d.data.slice(0,5).map(s => `
+        <div class="song-card" onclick="document.getElementById('player-box').style.display='block'; document.getElementById('audio').src='${s.preview}'; document.getElementById('audio').play();">
+            <img src="${s.album.cover_small}" style="width:50px; border-radius:8px; margin-right:15px;">
+            <div>
+                <div style="font-weight:600; font-size:13px;">${s.title}</div>
+                <div style="font-size:11px; color:#666;">${s.artist.name}</div>
             </div>
-        `).join('');
-    } catch(e) {
-        loading.style.display = 'none';
-        resDiv.innerHTML = "Gagal memuat lagu.";
-    }
+        </div>`).join('');
 }
 
-function playSong(url, title, img) {
-    document.getElementById('audio').src = url;
-    document.getElementById('thumb').src = img;
-    document.getElementById('songTitle').innerText = title;
-    document.getElementById('player-box').style.display = 'block';
-    document.getElementById('audio').play();
+// API Premium & History
+async function sendEmail() {
+    await fetch(`/api/send?email=${encodeURIComponent(document.getElementById('email').value)}`);
+    Swal.fire('Sukses', 'Cek email lu!', 'success');
 }
 
-// FIX FEED LOADING
+async function verifyAcc() {
+    await fetch(`/api/verify?email=${encodeURIComponent(document.getElementById('email').value)}&magicLink=${encodeURIComponent(document.getElementById('magicLink').value)}`);
+    Swal.fire('Berhasil!', 'Aktif!', 'success');
+    loadHistory();
+}
+
 async function loadHistory() {
     const list = document.getElementById('historyList');
     try {
         const r = await fetch('/api/history');
         const d = await r.json();
-        if (d.length === 0) {
-            list.innerHTML = "<div style='color:#444; font-size:12px; text-align:center;'>Belum ada aktivitas.</div>";
-        } else {
-            list.innerHTML = d.map(i => `
-                <div class="history-item"><span>✅ ${i.email}</span><span style="color:#666">${i.time}</span></div>
-            `).join('');
-        }
-    } catch(e) {
-        list.innerHTML = "Database tidak terhubung.";
-    }
+        if(d.length === 0) list.innerHTML = "<div style='text-align:center; color:#333;'>Belum ada data.</div>";
+        else list.innerHTML = d.map(i => `<div class="history-item"><span>✅ ${i.email}</span><span style="color:#555">${i.time}</span></div>`).join('');
+    } catch(e) { list.innerHTML = "<div style='text-align:center; color:red;'>Database offline!</div>"; }
 }
 loadHistory();
-
-
-// API Premium
-async function sendEmail() {
-    const email = document.getElementById('email').value;
-    if(!email) return Swal.fire('Error', 'Isi email dulu!', 'error');
-    Swal.fire({title: 'Memproses...', didOpen: () => Swal.showLoading()});
-    await fetch(`/api/send?email=${encodeURIComponent(email)}`);
-    Swal.fire('Sukses', 'Cek email lu!', 'success');
-}
-
-async function verifyAcc() {
-    const email = document.getElementById('email').value;
-    const link = document.getElementById('magicLink').value;
-    Swal.fire({title: 'Memproses...', didOpen: () => Swal.showLoading()});
-    await fetch(`/api/verify?email=${encodeURIComponent(email)}&magicLink=${encodeURIComponent(link)}`);
-    Swal.fire('Berhasil!', 'Akun sudah Premium!', 'success');
-    loadHistory();
-}
