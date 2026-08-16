@@ -61,13 +61,24 @@
             </div>
         </div>
 
-        <div id="music-tab" style="display:none;">
-            <input id="q" placeholder="Cari lagu...">
-            <button class="btn-action" onclick="searchMusic()">Search</button>
-            <div id="results" style="margin-top:20px;"></div>
-            <audio id="audio" controls style="width:100%; margin-top:15px;"></audio>
-        </div>
+        <!-- Ganti bagian musik-tab lu di index.html dengan ini -->
+<div id="music-tab" style="display:none;">
+    <div style="display: flex; gap: 10px;">
+        <input id="q" placeholder="Cari lagu (contoh: DJ Remix)..." style="flex:1; padding:15px; border-radius:12px; background:#111; border:1px solid #333; color:white;">
+        <button class="btn" style="width: 80px;" onclick="searchMusic()">Cari</button>
     </div>
+    
+    <div id="loadingMusic" style="display:none; text-align:center; padding:20px; color:#9d50bb;">
+        Mencari lagu terbaik buat lu... 🎧
+    </div>
+    <div id="results" style="margin-top:20px;"></div>
+    
+    <div id="player-box" style="margin-top:20px; background:#1a1a1a; padding:15px; border-radius:20px; display:none;">
+        <img id="thumb" style="width:60px; height:60px; border-radius:10px; float:left; margin-right:15px;">
+        <div id="songTitle" style="font-size:14px; font-weight:600;">Judul Lagu</div>
+        <audio id="audio" controls style="width:100%; margin-top:10px;"></audio>
+    </div>
+</div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="script.js"></script>
 </body>
