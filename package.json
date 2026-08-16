@@ -1,6 +1,7 @@
 {
-  "private": true,
+  "name": "am-premium",
+  "version": "1.0.0",
   "dependencies": {
-    "@vercel/edge": "^0.1.2"
+    "@vercel/kv": "^3.0.0"
   }
 }
