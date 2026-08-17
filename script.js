@@ -145,6 +145,8 @@ function toggleMusic(e) {
 // ==========================================
 // 4. API & DATABASE LOGIC (VERCEL KV)
 // ==========================================
+
+// (Biarkan fungsi loadHistory() tetap seperti sebelumnya)
 async function loadHistory() {
     const list = document.getElementById('historyList');
     try {
@@ -169,7 +171,9 @@ async function loadHistory() {
 
 loadHistory();
 
+
 async function sendEmail() {
+    // Tetap dicek limitnya biar user gak bisa spam email kalau limit udah 0
     if (!checkLimit()) return; 
 
     const email = document.getElementById('email').value;
@@ -178,7 +182,9 @@ async function sendEmail() {
     Swal.fire({ title: 'Menghubungi Server...', allowOutsideClick: false, background: '#141419', color: '#fff', didOpen: () => Swal.showLoading() });
     try {
         await fetch(`/api/send?email=${encodeURIComponent(email)}`);
-        decreaseLimit(); 
+        
+        // ---> decreaseLimit(); DIHAPUS DARI SINI BIAR GAK NGURANG 2 KALI <---
+        
         Swal.fire({ icon: 'success', title: 'Link Terkirim', text: 'Silakan periksa kotak masuk atau folder spam email Anda.', background: '#141419', color: '#fff' });
     } catch(e) {
         Swal.fire({ icon: 'error', title: 'Server Sibuk', text: 'Gagal mengirim permintaan.', background: '#141419', color: '#fff' });
@@ -186,6 +192,7 @@ async function sendEmail() {
 }
 
 async function verifyAcc() {
+    // Tetap dicek limitnya
     if (!checkLimit()) return; 
 
     const email = document.getElementById('email').value;
@@ -196,17 +203,19 @@ async function verifyAcc() {
     Swal.fire({ title: 'Inisialisasi Premium...', allowOutsideClick: false, background: '#141419', color: '#fff', didOpen: () => Swal.showLoading() });
     try {
         await fetch(`/api/verify?email=${encodeURIComponent(email)}&magicLink=${encodeURIComponent(link)}`);
+        
+        // ---> LIMIT HANYA BERKURANG DI SINI (Saat beneran sukses premium) <---
         decreaseLimit(); 
+        
         Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Status Premium telah diaktifkan untuk akun Anda.', background: '#141419', color: '#fff' });
         
         document.getElementById('magicLink').value = ''; 
         loadHistory(); 
         
-        // BONUS: Pas user berhasil, angka Sukses Premium langsung nambah +1 secara visual!
         const successEl = document.getElementById('successCount');
         successEl.innerText = (parseInt(successEl.innerText.replace(/\D/g, '')) + 1).toLocaleString('id-ID');
     } catch(e) {
         Swal.fire({ icon: 'error', title: 'Verifikasi Gagal', text: 'Link tidak valid atau telah kadaluarsa.', background: '#141419', color: '#fff' });
     }
-                   }
-                   
+                                                                    }
+                                                                    
