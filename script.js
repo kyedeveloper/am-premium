@@ -1,5 +1,60 @@
 // ==========================================
-// 1. DATA STREAM SIMULATION (SCROLLING HEX)
+// 0. VIDEO SLIDER & DYNAMIC THEME LOGIC
+// ==========================================
+let currentSlideIndex = 0;
+const wrapper = document.getElementById('slideWrapper');
+const dots = document.querySelectorAll('.dot');
+
+function updateSlidePosition() {
+    wrapper.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
+    dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentSlideIndex);
+    });
+
+    // Jika geser ke video ke-2 (index 1), aktifkan tema Pink secara smooth!
+    if (currentSlideIndex === 1) {
+        document.body.classList.add('pink-theme');
+    } else {
+        document.body.classList.remove('pink-theme');
+    }
+}
+
+function moveSlide(direction) {
+    currentSlideIndex += direction;
+    if (currentSlideIndex < 0) {
+        currentSlideIndex = 1; 
+    } else if (currentSlideIndex > 1) {
+        currentSlideIndex = 0; 
+    }
+    updateSlidePosition();
+}
+
+function currentSlide(index) {
+    currentSlideIndex = index;
+    updateSlidePosition();
+}
+
+// ==========================================
+// AUDIO MANUAL TOGGLE
+// ==========================================
+const bgMusic = document.getElementById('bgMusic');
+const audioToggleBtn = document.getElementById('audioToggleBtn');
+const audioStatusText = document.getElementById('audioStatusText');
+
+function toggleMusicManual() {
+    if (bgMusic.paused) {
+        bgMusic.play();
+        audioToggleBtn.innerText = "❚❚";
+        audioStatusText.innerText = "Status: Playing";
+    } else {
+        bgMusic.pause();
+        audioToggleBtn.innerText = "▶";
+        audioStatusText.innerText = "Status: Paused";
+    }
+}
+
+// ==========================================
+// 1. DATA STREAM SIMULATION (HEX STREAM)
 // ==========================================
 function generateHexLine() {
     const chars = '0123456789ABCDEF';
@@ -20,7 +75,6 @@ setInterval(() => {
     if(streamBox.children.length > 20) streamBox.removeChild(streamBox.lastChild);
 }, 800);
 
-
 // ==========================================
 // 2. MICRO CHARTS SIMULATION
 // ==========================================
@@ -35,26 +89,20 @@ function createChartBars(containerId, count) {
     }
 }
 
-function updateChart(containerId, isWarning = false) {
+function updateChart(containerId) {
     const container = document.getElementById(containerId);
     const bars = container.children;
-    // Shift bars left
     for(let i=0; i<bars.length-1; i++) {
         bars[i].style.height = bars[i+1].style.height;
         bars[i].className = bars[i+1].className;
     }
-    // New bar on right
     const newHeight = Math.floor(Math.random() * 80) + 20;
     bars[bars.length-1].style.height = `${newHeight}%`;
+    bars[bars.length-1].className = 'mc-bar active';
     
-    if(isWarning && newHeight > 85) bars[bars.length-1].className = 'mc-bar warn';
-    else bars[bars.length-1].className = 'mc-bar active';
-    
-    // Dim older bars
     setTimeout(() => { if(bars[bars.length-1]) bars[bars.length-1].className = 'mc-bar'; }, 500);
 }
 
-// Initialize Charts
 ['chartRequests', 'chartSuccess', 'chartCpu', 'chartThread'].forEach(id => createChartBars(id, 20));
 
 setInterval(() => {
@@ -63,7 +111,7 @@ setInterval(() => {
     
     const cpu = Math.floor(Math.random() * 60) + 15;
     document.getElementById('cpuVal').innerText = cpu;
-    updateChart('chartCpu', true);
+    updateChart('chartCpu');
     
     document.getElementById('threadVal').innerText = Math.floor(Math.random() * 10) + 12;
     updateChart('chartThread');
@@ -71,9 +119,8 @@ setInterval(() => {
     document.getElementById('latencyVal').innerText = `${Math.floor(Math.random() * 10) + 8}ms`;
 }, 1500);
 
-
 // ==========================================
-// 3. LIMIT & QUOTA SYSTEM
+// 3. LIMIT & ADMIN BYPASS SYSTEM
 // ==========================================
 const SECRET_CODE = "ELITE2026";
 const MAX_LIMIT = 5;
@@ -87,9 +134,7 @@ function initLimit() {
         localStorage.setItem('am_elite_limit', JSON.stringify(stored));
     }
     
-    // Set random session ID
     document.getElementById('sessionVal').innerText = `USR-${Math.random().toString(36).substring(2,6).toUpperCase()}`;
-    
     currentLimit = stored.count;
     updateLimitUI();
 }
@@ -160,43 +205,8 @@ function updateGlobalStats() {
     document.getElementById('successCount').innerText = currentSuccess.toLocaleString('id-ID');
 }
 
-
 // ==========================================
-// 5. AUDIO SYSTEM (MINIMAL)
-// ==========================================
-const bgMusic = document.getElementById('bgMusic');
-const musicBtn = document.getElementById('musicBtn');
-const aText = document.querySelector('.a-text');
-let isMusicInitialized = false;
-
-function initAudio() {
-    if (!isMusicInitialized) {
-        bgMusic.volume = 0.4;
-        bgMusic.play().then(() => {
-            isMusicInitialized = true;
-            musicBtn.classList.add('playing');
-            aText.innerText = "BGM: Active";
-        }).catch(() => {});
-    }
-}
-
-function toggleMusic(e) {
-    e.stopPropagation();
-    if (bgMusic.paused) {
-        bgMusic.play();
-        musicBtn.classList.add('playing');
-        aText.innerText = "BGM: Active";
-        isMusicInitialized = true;
-    } else {
-        bgMusic.pause();
-        musicBtn.classList.remove('playing');
-        aText.innerText = "BGM: Paused";
-    }
-}
-
-
-// ==========================================
-// 6. BACKEND API & AUDIT LOGS
+// 5. BACKEND API & AUDIT LOGS
 // ==========================================
 async function loadHistory() {
     const list = document.getElementById('historyList');
@@ -267,4 +277,3 @@ initLimit();
 updateGlobalStats(); 
 setInterval(updateGlobalStats, 60000); 
 loadHistory();
-    
