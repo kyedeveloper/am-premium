@@ -1,5 +1,5 @@
 // ==========================================
-// 0. VIDEO SLIDER & DYNAMIC THEME LOGIC
+// 0. VIDEO SLIDER & PINK THEME SPREAD
 // ==========================================
 let currentSlideIndex = 0;
 const wrapper = document.getElementById('slideWrapper');
@@ -11,7 +11,6 @@ function updateSlidePosition() {
         dot.classList.toggle('active', index === currentSlideIndex);
     });
 
-    // Jika geser ke video ke-2 (index 1), aktifkan tema Pink secara smooth!
     if (currentSlideIndex === 1) {
         document.body.classList.add('pink-theme');
     } else {
@@ -21,17 +20,30 @@ function updateSlidePosition() {
 
 function moveSlide(direction) {
     currentSlideIndex += direction;
-    if (currentSlideIndex < 0) {
-        currentSlideIndex = 1; 
-    } else if (currentSlideIndex > 1) {
-        currentSlideIndex = 0; 
-    }
+    if (currentSlideIndex < 0) currentSlideIndex = 1;
+    else if (currentSlideIndex > 1) currentSlideIndex = 0;
     updateSlidePosition();
 }
 
 function currentSlide(index) {
     currentSlideIndex = index;
     updateSlidePosition();
+}
+
+// ==========================================
+// QUICK ACTION TOOLS
+// ==========================================
+function runDiagnostic() {
+    Swal.fire({ title: 'Running Diagnostics...', text: 'All cluster nodes responding within normal thresholds.', icon: 'success', background: '#ffffff', color: '#0f172a' });
+}
+function clearTerminal() {
+    document.getElementById('dataStream').innerHTML = '<div class="stream-line">[SYS] Stream cleared by operator.</div>';
+}
+function toggleThemeManual() {
+    document.body.classList.toggle('pink-theme');
+}
+function showServerInfo() {
+    Swal.fire({ title: 'Cluster Details', html: 'Region: Singapore (AP-SE-1)<br>Uptime: 99.98%<br>Firewall: Cloudflare Enterprise Active', icon: 'info', background: '#ffffff', color: '#0f172a' });
 }
 
 // ==========================================
@@ -54,7 +66,7 @@ function toggleMusicManual() {
 }
 
 // ==========================================
-// 1. DATA STREAM SIMULATION (HEX STREAM)
+// 1. DATA STREAM SIMULATION
 // ==========================================
 function generateHexLine() {
     const chars = '0123456789ABCDEF';
@@ -68,11 +80,12 @@ function generateHexLine() {
 
 const streamBox = document.getElementById('dataStream');
 setInterval(() => {
+    if(!streamBox) return;
     const p = document.createElement('div');
     p.className = 'stream-line';
-    p.innerText = `[${new Date().toISOString().substring(11,23)}] DECRYPT: ${generateHexLine()}`;
+    p.innerText = `[${new Date().toISOString().substring(11,23)}] PKT: ${generateHexLine()}`;
     streamBox.prepend(p);
-    if(streamBox.children.length > 20) streamBox.removeChild(streamBox.lastChild);
+    if(streamBox.children.length > 15) streamBox.removeChild(streamBox.lastChild);
 }, 800);
 
 // ==========================================
@@ -80,6 +93,7 @@ setInterval(() => {
 // ==========================================
 function createChartBars(containerId, count) {
     const container = document.getElementById(containerId);
+    if(!container) return;
     container.innerHTML = '';
     for(let i=0; i<count; i++) {
         const bar = document.createElement('div');
@@ -91,6 +105,7 @@ function createChartBars(containerId, count) {
 
 function updateChart(containerId) {
     const container = document.getElementById(containerId);
+    if(!container) return;
     const bars = container.children;
     for(let i=0; i<bars.length-1; i++) {
         bars[i].style.height = bars[i+1].style.height;
@@ -99,24 +114,19 @@ function updateChart(containerId) {
     const newHeight = Math.floor(Math.random() * 80) + 20;
     bars[bars.length-1].style.height = `${newHeight}%`;
     bars[bars.length-1].className = 'mc-bar active';
-    
-    setTimeout(() => { if(bars[bars.length-1]) bars[bars.length-1].className = 'mc-bar'; }, 500);
+    setTimeout(() => { if(bars[bars.length-1]) bars[bars.length-1].className = 'mc-bar'; }, 400);
 }
 
-['chartRequests', 'chartSuccess', 'chartCpu', 'chartThread'].forEach(id => createChartBars(id, 20));
+['chartRequests', 'chartSuccess', 'chartCpu', 'chartThread'].forEach(id => createChartBars(id, 15));
 
 setInterval(() => {
     updateChart('chartRequests');
     updateChart('chartSuccess');
-    
-    const cpu = Math.floor(Math.random() * 60) + 15;
-    document.getElementById('cpuVal').innerText = cpu;
+    document.getElementById('cpuVal').innerText = Math.floor(Math.random() * 60) + 15;
     updateChart('chartCpu');
-    
     document.getElementById('threadVal').innerText = Math.floor(Math.random() * 10) + 12;
     updateChart('chartThread');
-    
-    document.getElementById('latencyVal').innerText = `${Math.floor(Math.random() * 10) + 8}ms`;
+    document.getElementById('latencyVal').innerText = `${Math.floor(Math.random() * 8) + 9}ms`;
 }, 1500);
 
 // ==========================================
@@ -133,7 +143,6 @@ function initLimit() {
         stored = { date: todayStr, count: MAX_LIMIT };
         localStorage.setItem('am_elite_limit', JSON.stringify(stored));
     }
-    
     document.getElementById('sessionVal').innerText = `USR-${Math.random().toString(36).substring(2,6).toUpperCase()}`;
     currentLimit = stored.count;
     updateLimitUI();
@@ -142,10 +151,10 @@ function initLimit() {
 function updateLimitUI() {
     const badge = document.getElementById('limitBadge');
     if (currentLimit > 100) {
-        badge.innerText = "UNLIMITED (ADMIN)";
+        badge.innerText = "UNLIMITED";
         badge.style.color = "var(--success)";
     } else {
-        badge.innerText = `${currentLimit} / ${MAX_LIMIT} Reqs`;
+        badge.innerText = `${currentLimit}/${MAX_LIMIT} Reqs`;
         badge.style.color = currentLimit === 0 ? "var(--danger)" : "var(--primary)";
     }
 }
@@ -162,13 +171,9 @@ function decreaseLimit() {
 function checkLimit() {
     if (currentLimit <= 0) {
         Swal.fire({
-            title: 'Quota Exceeded',
-            text: 'Your daily API request quota has been reached.',
-            icon: 'warning',
-            input: 'password',
-            inputPlaceholder: 'Enter Admin Authorization Key...',
-            showCancelButton: true, confirmButtonText: 'Authorize', cancelButtonText: 'Close',
-            confirmButtonColor: '#2563eb'
+            title: 'Quota Exceeded', text: 'Daily limit reached.', icon: 'warning',
+            input: 'password', inputPlaceholder: 'Enter Admin Key...',
+            showCancelButton: true, confirmButtonText: 'Authorize', confirmButtonColor: '#2563eb'
         }).then((result) => {
             if (result.value === SECRET_CODE) {
                 let stored = JSON.parse(localStorage.getItem('am_elite_limit'));
@@ -176,9 +181,7 @@ function checkLimit() {
                 localStorage.setItem('am_elite_limit', JSON.stringify(stored));
                 currentLimit = 9999;
                 updateLimitUI();
-                Swal.fire({icon: 'success', title: 'Authorized', text: 'Admin limits disabled.'});
-            } else if (result.value) {
-                Swal.fire({icon: 'error', title: 'Rejected', text: 'Invalid authorization key.'});
+                Swal.fire({icon: 'success', title: 'Authorized'});
             }
         });
         return false;
@@ -187,7 +190,7 @@ function checkLimit() {
 }
 
 // ==========================================
-// 4. GLOBAL ANALYTICS (GROWTH)
+// 4. GLOBAL ANALYTICS
 // ==========================================
 function updateGlobalStats() {
     const launchDate = new Date('2026-08-16T00:00:00');
@@ -195,11 +198,8 @@ function updateGlobalStats() {
     const hoursPassed = Math.max(0, Math.floor((now - launchDate) / 3600000));
     const minutesPassed = now.getMinutes();
 
-    const baseVisitors = 1163;
-    const baseSuccess = 373;
-
-    const currentVisitors = baseVisitors + (hoursPassed * 4) + Math.floor(minutesPassed / 5);
-    const currentSuccess = baseSuccess + (hoursPassed * 1) + Math.floor(minutesPassed / 15);
+    const currentVisitors = 1163 + (hoursPassed * 4) + Math.floor(minutesPassed / 5);
+    const currentSuccess = 373 + (hoursPassed * 1) + Math.floor(minutesPassed / 15);
 
     document.getElementById('visitorCount').innerText = currentVisitors.toLocaleString('id-ID');
     document.getElementById('successCount').innerText = currentSuccess.toLocaleString('id-ID');
@@ -216,59 +216,53 @@ async function loadHistory() {
         const data = await response.json();
         
         if(data.length === 0) {
-            list.innerHTML = `<div style="text-align:center; margin-top:20px; color:var(--text-muted);">No audit trails available.</div>`;
+            list.innerHTML = `<div style="text-align:center; margin-top:20px; color:var(--text-muted);">No audit trails.</div>`;
         } else {
             list.innerHTML = data.map(item => `
                 <div class="log-entry">
                     <div class="l-time">${item.time}</div>
                     <div class="l-badge b-success">SUCCESS</div>
-                    <div class="l-msg">Token injected for user: ${item.email}</div>
+                    <div class="l-msg">Token injected: ${item.email}</div>
                 </div>
             `).join('');
         }
     } catch (error) {
-        list.innerHTML = `<div style="text-align:center; margin-top:20px; color:var(--danger);">Error fetching database records.</div>`;
+        list.innerHTML = `<div style="text-align:center; margin-top:20px; color:var(--danger);">Error connecting database.</div>`;
     }
 }
 
 async function sendEmail() {
     if (!checkLimit()) return; 
-
     const email = document.getElementById('email').value;
-    if (!email) return Swal.fire({ icon: 'warning', title: 'Validation Error', text: 'Target email is required.' });
+    if (!email) return Swal.fire({ icon: 'warning', title: 'Error', text: 'Email required.' });
 
-    Swal.fire({ title: 'Establishing Connection...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    Swal.fire({ title: 'Connecting...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
     try {
         await fetch(`/api/send?email=${encodeURIComponent(email)}`);
-        Swal.fire({ icon: 'info', title: 'Request Sent', text: 'Check the target email for the authentication link.' });
+        Swal.fire({ icon: 'info', title: 'Request Sent', text: 'Check target email.' });
     } catch(e) {
-        Swal.fire({ icon: 'error', title: 'Network Error', text: 'Server is currently unreachable.' });
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Server unreachable.' });
     }
 }
 
 async function verifyAcc() {
     if (!checkLimit()) return; 
-
     const email = document.getElementById('email').value;
     const link = document.getElementById('magicLink').value;
     
-    if (!email || !link) return Swal.fire({ icon: 'warning', title: 'Missing Data', text: 'Both Email and Magic Link are required.' });
+    if (!email || !link) return Swal.fire({ icon: 'warning', title: 'Error', text: 'Both fields required.' });
 
-    Swal.fire({ title: 'Processing Transaction...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    Swal.fire({ title: 'Processing...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
     try {
         await fetch(`/api/verify?email=${encodeURIComponent(email)}&magicLink=${encodeURIComponent(link)}`);
-        
         decreaseLimit(); 
-        
-        Swal.fire({ icon: 'success', title: 'Success', text: 'Premium script successfully injected to target account.' });
-        
+        Swal.fire({ icon: 'success', title: 'Success', text: 'Premium script injected.' });
         document.getElementById('magicLink').value = ''; 
         loadHistory(); 
-        
         const successEl = document.getElementById('successCount');
         successEl.innerText = (parseInt(successEl.innerText.replace(/\D/g, '')) + 1).toLocaleString('id-ID');
     } catch(e) {
-        Swal.fire({ icon: 'error', title: 'Verification Failed', text: 'The token provided is invalid or expired.' });
+        Swal.fire({ icon: 'error', title: 'Failed', text: 'Invalid or expired token.' });
     }
 }
 
@@ -277,3 +271,4 @@ initLimit();
 updateGlobalStats(); 
 setInterval(updateGlobalStats, 60000); 
 loadHistory();
+           
