@@ -204,6 +204,15 @@ async function loadHistory() {
 }
 
 async function sendEmail() {
+    const isHuman = document.getElementById('robotCheck').checked;
+    if (!isHuman) {
+        return Swal.fire({ 
+            icon: 'warning', 
+            title: 'Verifikasi Diperlukan', 
+            text: 'Centang kotak "Saya bukan robot" terlebih dahulu!' 
+        });
+    }
+
     if (!checkLimit()) return; 
     const email = document.getElementById('email').value;
     if (!email) return Swal.fire({ icon: 'warning', title: 'Error', text: 'Email required.' });
@@ -218,6 +227,15 @@ async function sendEmail() {
 }
 
 async function verifyAcc() {
+    const isHuman = document.getElementById('robotCheck').checked;
+    if (!isHuman) {
+        return Swal.fire({ 
+            icon: 'warning', 
+            title: 'Verifikasi Diperlukan', 
+            text: 'Centang kotak "Saya bukan robot" terlebih dahulu!' 
+        });
+    }
+
     if (!checkLimit()) return; 
     const email = document.getElementById('email').value;
     const link = document.getElementById('magicLink').value;
