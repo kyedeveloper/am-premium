@@ -40,7 +40,7 @@
             transition: background-color 0.5s ease, color 0.5s ease;
         }
 
-        /* DYNAMIC DARK PINK THEME (SELAYAR GELAP ESTETIK) */
+        /* DYNAMIC DARK PINK THEME */
         body.pink-theme {
             --bg-base: #12050f;
             --bg-panel: #1b0a17;
@@ -111,9 +111,10 @@
         .p-guide { grid-column: span 5; }
         .p-audit { grid-column: span 7; height: 340px; display: flex; flex-direction: column; }
         .p-data { grid-column: span 12; height: 280px; }
+        .p-footer { grid-column: span 12; }
 
         @media (max-width: 1024px) {
-            .p-process, .p-health, .p-guide, .p-audit, .p-data { grid-column: span 12; }
+            .p-process, .p-health, .p-guide, .p-audit, .p-data, .p-footer { grid-column: span 12; }
             .header-metrics { display: none; }
         }
 
@@ -190,6 +191,21 @@
             position: relative; line-height: 1.5; border: 1px solid var(--border);
         }
         .stream-line { white-space: nowrap; opacity: 0.85; }
+
+        /* FOOTER DETAILS PANEL (DIUBAH JADI 2 KOLOM MENYAMPING) */
+        .footer-desc {
+            font-size: 12px; line-height: 1.7; color: var(--text-muted);
+            display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+        }
+        .footer-desc p strong {
+            color: var(--text-main);
+            display: block;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+        @media (max-width: 768px) {
+            .footer-desc { grid-template-columns: 1fr; }
+        }
 
         /* AUDIO DOCK */
         .audio-dock {
@@ -324,7 +340,7 @@
                 </p>
             </div>
         </div>
-        
+
     </main>
 
     <div class="audio-dock">
@@ -337,5 +353,4 @@
 
     <script src="script.js"></script>
 </body>
-                    </html>
-                
+</html>
