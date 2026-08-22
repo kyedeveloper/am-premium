@@ -50,7 +50,7 @@
             background-image: radial-gradient(#fbcfe8 1.2px, transparent 1.2px);
         }
         
-        body, .logo-box, .btn-primary, .form-control, .mc-bar, .dot, .panel, .h-card, .guide-step, .action-btn {
+        body, .logo-box, .btn-primary, .form-control, .mc-bar, .dot, .panel, .h-card, .guide-step {
             transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
         }
 
@@ -61,7 +61,6 @@
         body.pink-theme .dot.active { background: var(--primary); }
         body.pink-theme .panel:hover { border-color: #f472b6; box-shadow: 0 10px 25px -5px rgba(219, 39, 119, 0.15); }
         body.pink-theme .guide-step { border-left-color: var(--primary); background: #fff5f8; }
-        body.pink-theme .action-btn:hover { background: #fdf2f8; color: var(--primary); border-color: var(--primary); }
 
         /* HEADER */
         .header {
@@ -97,11 +96,10 @@
         .p-health { grid-column: span 5; }
         .p-guide { grid-column: span 5; }
         .p-audit { grid-column: span 7; height: 340px; display: flex; flex-direction: column; }
-        .p-data { grid-column: span 6; height: 320px; }
-        .p-actions { grid-column: span 6; height: 320px; display: flex; flex-direction: column; }
+        .p-data { grid-column: span 12; height: 280px; }
 
         @media (max-width: 1024px) {
-            .p-process, .p-health, .p-guide, .p-audit, .p-data, .p-actions { grid-column: span 12; }
+            .p-process, .p-health, .p-guide, .p-audit, .p-data { grid-column: span 12; }
             .header-metrics { display: none; }
         }
 
@@ -178,16 +176,6 @@
             position: relative; line-height: 1.5;
         }
         .stream-line { white-space: nowrap; opacity: 0.85; }
-
-        /* QUICK ACTIONS */
-        .actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex: 1; }
-        .action-btn {
-            background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 12px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
-            cursor: pointer; font-size: 11px; font-weight: 600; color: var(--text-main); transition: 0.2s;
-        }
-        .action-btn:hover { background: #f1f5f9; border-color: var(--primary); color: var(--primary); }
-        .action-icon { font-size: 18px; }
 
         /* AUDIO DOCK */
         .audio-dock {
@@ -305,17 +293,6 @@
             <div class="data-stream" id="dataStream"></div>
         </div>
 
-        <!-- PANEL 6: QUICK CONSOLE ACTIONS -->
-        <div class="panel p-actions">
-            <div class="panel-header"><span>Console Quick Actions</span><span style="font-size:9px;">Tools</span></div>
-            <div class="actions-grid">
-                <div class="action-btn" onclick="runDiagnostic()"><div class="action-icon">🔍</div><span>Run Diagnostic</span></div>
-                <div class="action-btn" onclick="clearTerminal()"><div class="action-icon">🧹</div><span>Clear Stream</span></div>
-                <div class="action-btn" onclick="toggleThemeManual()"><div class="action-icon">🎨</div><span>Toggle Theme</span></div>
-                <div class="action-btn" onclick="showServerInfo()"><div class="action-icon">ℹ️</div><span>Cluster Info</span></div>
-            </div>
-        </div>
-
     </main>
 
     <div class="audio-dock">
@@ -326,44 +303,7 @@
         </div>
     </div>
 
-    <!-- SEMUA SCRIPT DIJADIKAN SATU DI SINI AGAR WORK 100% -->
-    <script>
-        let currentSlideIndex = 0;
-        const wrapper = document.getElementById('slideWrapper');
-        const dots = document.querySelectorAll('.dot');
-
-        function updateSlidePosition() {
-            if(!wrapper) return;
-            wrapper.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
-            dots.forEach((dot, index) => {
-                dot.classList.toggle('active', index === currentSlideIndex);
-            });
-
-            if (currentSlideIndex === 1) {
-                document.body.classList.add('pink-theme');
-            } else {
-                document.body.classList.remove('pink-theme');
-            }
-        }
-
-        function moveSlide(direction) {
-            currentSlideIndex += direction;
-            if (currentSlideIndex < 0) currentSlideIndex = 1;
-            else if (currentSlideIndex > 1) currentSlideIndex = 0;
-            updateSlidePosition();
-        }
-
-        function currentSlide(index) {
-            currentSlideIndex = index;
-            updateSlidePosition();
-        }
-
-        // TOOLS INTERACTIVE FUNCTIONS
-        function runDiagnostic() {
-            const ping = document.getElementById('latencyVal').innerText;
-            const limitStatus = currentLimit > 100 ? "Unlimited (Admin)" : `${currentLimit} / ${MAX_LIMIT} tersisa`;
-            Swal.fire({
-                title: 'Network & System Diagnostic',
-                html: `<div style="text-align: left; font-size: 13px; line-height: 1.6; font-family: monospace;">
-                    <b>[OK]</b> Latency Response: <span style="color: #10b981;">${ping}</span><br>
-                    <b>[OK]</b> Local Storage Sync: <span style="color: #10b981;">Active</s
+    <script src="script.js"></script>
+</body>
+                </html>
+                
