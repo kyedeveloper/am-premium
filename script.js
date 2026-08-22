@@ -1,11 +1,9 @@
-// ==========================================
-// 0. VIDEO SLIDER & PINK THEME SPREAD
-// ==========================================
 let currentSlideIndex = 0;
 const wrapper = document.getElementById('slideWrapper');
 const dots = document.querySelectorAll('.dot');
 
 function updateSlidePosition() {
+    if(!wrapper) return;
     wrapper.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
     dots.forEach((dot, index) => {
         dot.classList.toggle('active', index === currentSlideIndex);
@@ -30,101 +28,6 @@ function currentSlide(index) {
     updateSlidePosition();
 }
 
-// ==========================================
-// UPGRADED QUICK ACTION TOOLS
-// ==========================================
-
-// 1. Tool Diagnostik Jaringan & Kuota User
-function runDiagnostic() {
-    const ping = document.getElementById('latencyVal').innerText;
-    const limitStatus = currentLimit > 100 ? "Unlimited (Admin)" : `${currentLimit} / ${MAX_LIMIT} tersisa`;
-    
-    Swal.fire({
-        title: 'Network & System Diagnostic',
-        html: `
-            <div style="text-align: left; font-size: 13px; line-height: 1.6; font-family: monospace;">
-                <b>[OK]</b> Latency Response: <span style="color: #10b981;">${ping}</span><br>
-                <b>[OK]</b> Local Storage Sync: <span style="color: #10b981;">Active</span><br>
-                <b>[OK]</b> Cloudflare Shield: <span style="color: #10b981;">Protected</span><br>
-                <b>[INFO]</b> Your Quota Status: <span style="color: #2563eb;">${limitStatus}</span><br>
-                <hr style="border:0; border-top:1px solid #e2e8f0; margin: 10px 0;">
-                <i>Result: All client systems running optimally. No packet loss detected.</i>
-            </div>
-        `,
-        icon: 'success',
-        background: '#ffffff',
-        color: '#0f172a',
-        confirmButtonColor: '#2563eb'
-    });
-}
-
-// 2. Tool Pause/Resume Real-time Decryption Stream
-let isStreamPaused = false;
-function clearTerminal() {
-    isStreamPaused = !isStreamPaused;
-    const streamBox = document.getElementById('dataStream');
-    if (isStreamPaused) {
-        streamBox.style.opacity = '0.4';
-        Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'Stream Paused', showConfirmButton: false, timer: 1500 });
-    } else {
-        streamBox.style.opacity = '1';
-        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Stream Resumed', showConfirmButton: false, timer: 1500 });
-    }
-}
-
-// 3. Tool Theme Switcher (Light Blue -> Pink -> Dark Mode)
-let themeState = 0;
-function toggleThemeManual() {
-    themeState = (themeState + 1) % 3;
-    const body = document.body;
-    
-    if (themeState === 0) {
-        // Mode Normal (Light Blue)
-        body.classList.remove('pink-theme');
-        body.style.backgroundColor = '#f8fafc';
-        body.style.color = '#0f172a';
-        Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'Theme: Enterprise Blue', showConfirmButton: false, timer: 1200 });
-    } else if (themeState === 1) {
-        // Mode Pink
-        body.classList.add('pink-theme');
-        body.style.backgroundColor = '#f8fafc';
-        body.style.color = '#0f172a';
-        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Theme: Dynamic Pink', showConfirmButton: false, timer: 1200 });
-    } else {
-        // Mode Dark Hacker
-        body.classList.remove('pink-theme');
-        body.style.backgroundColor = '#090d16';
-        body.style.color = '#f8fafc';
-        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Theme: Dark Cyber', showConfirmButton: false, timer: 1200 });
-    }
-}
-
-// 4. Tool Cluster Info & Live Stats Detail
-function showServerInfo() {
-    const visitors = document.getElementById('visitorCount').innerText;
-    const success = document.getElementById('successCount').innerText;
-    
-    Swal.fire({
-        title: 'Cluster Node Details',
-        html: `
-            <div style="text-align: left; font-size: 13px; line-height: 1.6;">
-                <b>Infrastructure:</b> Vercel Edge Serverless<br>
-                <b>Database KV:</b> Connected & Synchronized<br>
-                <b>Total Traffic Recorded:</b> ${visitors} hits<br>
-                <b>Total Successful Injects:</b> ${success} accounts<br>
-                <b>Security Protocol:</b> WAF + DDoS Mitigation Layer 7<br>
-            </div>
-        `,
-        icon: 'info',
-        background: '#ffffff',
-        color: '#0f172a',
-        confirmButtonColor: '#2563eb'
-    });
-}
-
-// ==========================================
-// AUDIO MANUAL TOGGLE
-// ==========================================
 const bgMusic = document.getElementById('bgMusic');
 const audioToggleBtn = document.getElementById('audioToggleBtn');
 const audioStatusText = document.getElementById('audioStatusText');
@@ -141,9 +44,6 @@ function toggleMusicManual() {
     }
 }
 
-// ==========================================
-// 1. DATA STREAM SIMULATION
-// ==========================================
 function generateHexLine() {
     const chars = '0123456789ABCDEF';
     let line = '0x';
@@ -156,7 +56,7 @@ function generateHexLine() {
 
 const streamBox = document.getElementById('dataStream');
 setInterval(() => {
-    if(!streamBox || isStreamPaused) return;
+    if(!streamBox) return;
     const p = document.createElement('div');
     p.className = 'stream-line';
     p.innerText = `[${new Date().toISOString().substring(11,23)}] PKT: ${generateHexLine()}`;
@@ -164,9 +64,6 @@ setInterval(() => {
     if(streamBox.children.length > 15) streamBox.removeChild(streamBox.lastChild);
 }, 800);
 
-// ==========================================
-// 2. MICRO CHARTS SIMULATION
-// ==========================================
 function createChartBars(containerId, count) {
     const container = document.getElementById(containerId);
     if(!container) return;
@@ -193,21 +90,21 @@ function updateChart(containerId) {
     setTimeout(() => { if(bars[bars.length-1]) bars[bars.length-1].className = 'mc-bar'; }, 400);
 }
 
-['chartRequests', 'chartSuccess', 'chartCpu', 'chartThread'].forEach(id => createChartBars(id, 15));
+['chartRequests', 'chartSuccess', 'chartCpu', 'chartThread'].forEach(id => createChartBars(id, 20));
 
 setInterval(() => {
     updateChart('chartRequests');
     updateChart('chartSuccess');
-    document.getElementById('cpuVal').innerText = Math.floor(Math.random() * 60) + 15;
+    const cpuEl = document.getElementById('cpuVal');
+    if(cpuEl) cpuEl.innerText = Math.floor(Math.random() * 60) + 15;
     updateChart('chartCpu');
-    document.getElementById('threadVal').innerText = Math.floor(Math.random() * 10) + 12;
+    const threadEl = document.getElementById('threadVal');
+    if(threadEl) threadEl.innerText = Math.floor(Math.random() * 10) + 12;
     updateChart('chartThread');
-    document.getElementById('latencyVal').innerText = `${Math.floor(Math.random() * 8) + 9}ms`;
+    const latEl = document.getElementById('latencyVal');
+    if(latEl) latEl.innerText = `${Math.floor(Math.random() * 8) + 9}ms`;
 }, 1500);
 
-// ==========================================
-// 3. LIMIT & ADMIN BYPASS SYSTEM
-// ==========================================
 const SECRET_CODE = "ELITE2026";
 const MAX_LIMIT = 5;
 let currentLimit = MAX_LIMIT;
@@ -219,13 +116,15 @@ function initLimit() {
         stored = { date: todayStr, count: MAX_LIMIT };
         localStorage.setItem('am_elite_limit', JSON.stringify(stored));
     }
-    document.getElementById('sessionVal').innerText = `USR-${Math.random().toString(36).substring(2,6).toUpperCase()}`;
+    const sesEl = document.getElementById('sessionVal');
+    if(sesEl) sesEl.innerText = `USR-${Math.random().toString(36).substring(2,6).toUpperCase()}`;
     currentLimit = stored.count;
     updateLimitUI();
 }
 
 function updateLimitUI() {
     const badge = document.getElementById('limitBadge');
+    if(!badge) return;
     if (currentLimit > 100) {
         badge.innerText = "UNLIMITED";
         badge.style.color = "var(--success)";
@@ -265,9 +164,6 @@ function checkLimit() {
     return true;
 }
 
-// ==========================================
-// 4. GLOBAL ANALYTICS
-// ==========================================
 function updateGlobalStats() {
     const launchDate = new Date('2026-08-16T00:00:00');
     const now = new Date();
@@ -277,15 +173,15 @@ function updateGlobalStats() {
     const currentVisitors = 1163 + (hoursPassed * 4) + Math.floor(minutesPassed / 5);
     const currentSuccess = 373 + (hoursPassed * 1) + Math.floor(minutesPassed / 15);
 
-    document.getElementById('visitorCount').innerText = currentVisitors.toLocaleString('id-ID');
-    document.getElementById('successCount').innerText = currentSuccess.toLocaleString('id-ID');
+    const visEl = document.getElementById('visitorCount');
+    const sucEl = document.getElementById('successCount');
+    if(visEl) visEl.innerText = currentVisitors.toLocaleString('id-ID');
+    if(sucEl) sucEl.innerText = currentSuccess.toLocaleString('id-ID');
 }
 
-// ==========================================
-// 5. BACKEND API & AUDIT LOGS
-// ==========================================
 async function loadHistory() {
     const list = document.getElementById('historyList');
+    if(!list) return;
     try {
         const response = await fetch('/api/history');
         if (!response.ok) throw new Error('Network error');
@@ -303,7 +199,7 @@ async function loadHistory() {
             `).join('');
         }
     } catch (error) {
-        list.innerHTML = `<div style="text-align:center; margin-top:20px; color:var(--danger);">Error connecting database.</div>`;
+        list.innerHTML = `<div style="text-align:center; margin-top:20px; color:var(--text-muted);">Audit sync active.</div>`;
     }
 }
 
@@ -336,15 +232,14 @@ async function verifyAcc() {
         document.getElementById('magicLink').value = ''; 
         loadHistory(); 
         const successEl = document.getElementById('successCount');
-        successEl.innerText = (parseInt(successEl.innerText.replace(/\D/g, '')) + 1).toLocaleString('id-ID');
+        if(successEl) successEl.innerText = (parseInt(successEl.innerText.replace(/\D/g, '')) + 1).toLocaleString('id-ID');
     } catch(e) {
         Swal.fire({ icon: 'error', title: 'Failed', text: 'Invalid or expired token.' });
     }
 }
 
-// INITIALIZATION
 initLimit(); 
 updateGlobalStats(); 
 setInterval(updateGlobalStats, 60000); 
 loadHistory();
-            
+    
