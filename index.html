@@ -40,16 +40,18 @@
             transition: background-color 0.5s ease, color 0.5s ease;
         }
 
-        /* DYNAMIC FULL-SCREEN PINK THEME (SELAYAR JADI PINK) */
+        /* DYNAMIC DARK PINK THEME (PINK GELAP / DARK CYBER PINK SELAYAR) */
         body.pink-theme {
-            --bg-base: #fff1f6; /* Latar belakang selayar berubah jadi pink lembut */
-            --bg-panel: #ffffff;
-            --border: #fbcfe8; /* Border card ikut jadi pink muda */
-            --primary: #db2777;
-            --primary-hover: #be185d;
-            --success: #e11d48;
+            --bg-base: #12050f;      /* Latar belakang selayar jadi pink gelap pekat */
+            --bg-panel: #1b0a17;     /* Panel card jadi gelap bernuansa pink */
+            --border: #3d1434;       /* Border card ikut gelap */
+            --text-main: #fdf2f8;    /* Teks berubah jadi putih-pink terang */
+            --text-muted: #d99bc6;   /* Teks abu-pink redup */
+            --primary: #ec4899;      /* Pink menyala */
+            --primary-hover: #db2777;
+            --success: #f43f5e;
             --stream-color: #f472b6;
-            background-image: radial-gradient(#f472b6 1.5px, transparent 1.5px); /* Titik grid jadi pink */
+            background-image: radial-gradient(#3d1434 1.2px, transparent 1.2px);
         }
         
         body, .logo-box, .btn-primary, .form-control, .mc-bar, .dot, .panel, .h-card, .guide-step {
@@ -57,12 +59,39 @@
         }
 
         body.pink-theme .logo-box { background: var(--primary); }
-        body.pink-theme .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(219, 39, 119, 0.15); }
+        
+        /* Penyesuaian elemen card dan form saat mode Pink Gelap */
+        body.pink-theme .form-control {
+            background: #240d20;
+            color: #fdf2f8;
+            border-color: #3d1434;
+        }
+        body.pink-theme .form-control:focus {
+            background: #2d1029;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.2);
+        }
+        body.pink-theme .h-card, 
+        body.pink-theme .guide-step {
+            background: #240d20;
+            border-color: #3d1434;
+        }
+        body.pink-theme .guide-step {
+            border-left-color: var(--primary);
+        }
+        body.pink-theme .btn-secondary {
+            background: #240d20;
+            color: #fdf2f8;
+            border-color: #3d1434;
+        }
+        body.pink-theme .btn-secondary:hover {
+            background: #32132d;
+        }
+
         body.pink-theme .mc-bar.active { background: var(--primary); }
-        body.pink-theme .l-badge.b-success { background: #fce7f3; color: #9d174d; }
+        body.pink-theme .l-badge.b-success { background: #381630; color: #f472b6; }
         body.pink-theme .dot.active { background: var(--primary); }
-        body.pink-theme .panel:hover { border-color: #f472b6; box-shadow: 0 10px 25px -5px rgba(219, 39, 119, 0.15); }
-        body.pink-theme .guide-step { border-left-color: var(--primary); background: #fff5f8; }
+        body.pink-theme .panel:hover { border-color: #ec4899; box-shadow: 0 10px 25px -5px rgba(236, 72, 153, 0.2); }
 
         /* HEADER */
         .header {
@@ -166,16 +195,16 @@
 
         /* AUDIT LOG */
         .audit-container { flex: 1; overflow-y: auto; font-family: var(--font-mono); font-size: 11px; }
-        .log-entry { display: flex; padding: 6px 0; border-bottom: 1px solid #f1f5f9; }
+        .log-entry { display: flex; padding: 6px 0; border-bottom: 1px solid var(--border); }
         .l-time { color: var(--text-muted); width: 75px; flex-shrink: 0; }
         .l-badge { padding: 2px 5px; border-radius: 4px; font-weight: 600; font-size: 8px; margin-right: 8px; background: #dcfce7; color: #166534; }
         .l-msg { color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
 
         /* DATA STREAM */
         .data-stream {
-            background: #0f172a; border-radius: 8px; padding: 12px; height: calc(100% - 35px);
+            background: #070307; border-radius: 8px; padding: 12px; height: calc(100% - 35px);
             overflow: hidden; font-family: var(--font-mono); font-size: 10px; color: var(--stream-color);
-            position: relative; line-height: 1.5;
+            position: relative; line-height: 1.5; border: 1px solid var(--border);
         }
         .stream-line { white-space: nowrap; opacity: 0.85; }
 
@@ -307,5 +336,4 @@
 
     <script src="script.js"></script>
 </body>
-                    </html>
-                    
+</html>
