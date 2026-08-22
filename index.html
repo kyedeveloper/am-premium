@@ -23,37 +23,20 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
 
-        /* =========================================
-   GLOBAL VARIABLES & RESET
-   ========================================= */
-/* (Bagian :root biarin aja kayak sebelumnya) */
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start; 
+            padding: 50px 15px; 
+            overflow-x: hidden; 
+            overflow-y: auto; 
+            position: relative; 
+        }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-
-body { 
-    background-color: var(--bg-color); 
-    color: var(--text-main); 
-    min-height: 100vh; 
-    display: flex; 
-    justify-content: center; 
-    align-items: flex-start; /* Diganti dari center jadi flex-start biar atasnya gak kepotong */
-    padding: 50px 15px; /* Ngasih ruang kosong di atas dan bawah biar enak di-scroll */
-    overflow-x: hidden; /* Matiin scroll nyamping */
-    overflow-y: auto; /* NYALAIN SCROLL KE BAWAH */
-    position: relative; 
-}
-
-/* =========================================
-   ANIMATED BACKGROUND (MESH GRADIENT)
-   ========================================= */
-.ambient-bg { 
-    position: fixed; /* Diganti dari absolute jadi fixed biar background cahayanya gak ikut ke-scroll */
-    top: 0; left: 0; width: 100vw; height: 100vh; 
-    z-index: -1; 
-    overflow: hidden; 
-    background: #000; 
-}
-
+        .ambient-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; overflow: hidden; background: #000; }
         .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.5; animation: float 10s infinite alternate ease-in-out; }
         .orb-1 { width: 400px; height: 400px; background: var(--secondary); top: -100px; left: -100px; }
         .orb-2 { width: 300px; height: 300px; background: #00d2ff; bottom: -50px; right: -50px; animation-delay: -3s; }
@@ -91,6 +74,7 @@ body {
         .btn-glow:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(157, 80, 187, 0.4); }
         .btn-glow:hover::before { left: 100%; }
 
+        /* --- FEED DATABASE --- */
         .feed-section { margin-top: 30px; }
         .feed-header { display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
         .pulse-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: pulse 1.5s infinite; }
@@ -99,17 +83,25 @@ body {
         .feed-list { max-height: 140px; overflow-y: auto; padding-right: 5px; }
         .feed-list::-webkit-scrollbar { width: 4px; }
         .feed-list::-webkit-scrollbar-thumb { background: var(--border-highlight); border-radius: 10px; }
-        
         .feed-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: rgba(0,0,0,0.3); border-radius: 12px; margin-bottom: 8px; border: 1px solid transparent; transition: 0.3s; }
         .feed-item:hover { border-color: var(--border-highlight); background: rgba(255,255,255,0.05); }
         .feed-email { font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
         .feed-time { font-size: 11px; color: #666; }
 
+        /* --- GUIDE TAB UI --- */
+        .step-card { background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; transition: all 0.3s ease; }
+        .step-card:hover { border-color: var(--primary); background: rgba(157, 80, 187, 0.08); transform: translateX(5px); }
+        .step-num { background: linear-gradient(135deg, var(--secondary), var(--primary)); width: 40px; height: 40px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 16px; color: #fff; flex-shrink: 0; box-shadow: 0 5px 15px rgba(157, 80, 187, 0.4); }
+        .step-card h4 { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; letter-spacing: 0.5px; }
+        .step-card p { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+
+        /* --- MAINTENANCE / MUSIC --- */
         .maintenance-card { text-align: center; padding: 40px 20px; background: rgba(0,0,0,0.4); border-radius: 24px; border: 1px dashed var(--border-highlight); }
         .maintenance-icon { font-size: 40px; margin-bottom: 15px; animation: float 3s infinite ease-in-out; }
         .maintenance-title { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 8px; }
         .maintenance-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
 
+        /* --- MUSIC WIDGET --- */
         .music-widget { position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid var(--border-highlight); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 100; transition: 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
         .music-widget:hover { transform: scale(1.1); background: rgba(255,255,255,0.2); }
         .music-widget.playing { border-color: var(--primary); box-shadow: 0 0 20px rgba(157, 80, 187, 0.4); }
@@ -128,6 +120,7 @@ body {
         <div class="orb orb-3"></div>
     </div>
 
+    <!-- Lagu Background -->
     <audio id="bgMusic" src="lagu.mp3" loop></audio>
 
     <div class="music-widget" id="musicBtn" onclick="toggleMusic(event)">
@@ -139,17 +132,19 @@ body {
     <div class="glass-panel">
         <div class="header">
             <div class="clock" id="clock">--:--:-- WIB</div>
-            <h1 class="title">AM PREMIUM FOR ELITE</h1>
+            <h1 class="title">AM ELITE</h1>
             <p class="subtitle">Secure Processor Interface</p>
             <div class="limit-badge" id="limitBadge">MEMUAT LIMIT...</div>
         </div>
 
+        <!-- 3 TABS -->
         <div class="nav-tabs">
             <button class="tab-btn active" onclick="switchTab('proc')">Processor</button>
-            <button class="tab-btn" onclick="switchTab('music')">Music Hub</button>
+            <button class="tab-btn" onclick="switchTab('guide')">Panduan</button>
+            <button class="tab-btn" onclick="switchTab('music')">Music</button>
         </div>
 
-        <!-- STATISTIK (Angka Tumbuh Otomatis) -->
+        <!-- STATISTIK -->
         <div class="stats-container">
             <div class="stat-box">
                 <div class="stat-number" id="visitorCount">157</div>
@@ -161,6 +156,7 @@ body {
             </div>
         </div>
 
+        <!-- TAB 1: PROCESSOR -->
         <div id="proc-tab">
             <div class="input-group">
                 <input type="email" id="email" placeholder="Email Terdaftar Alight Motion..." autocomplete="off">
@@ -186,6 +182,39 @@ body {
             </div>
         </div>
 
+        <!-- TAB 2: PANDUAN -->
+        <div id="guide-tab" style="display:none;">
+            <div class="step-card">
+                <div class="step-num">1</div>
+                <div>
+                    <h4>Masukkan Email</h4>
+                    <p>Ketik email akun Alight Motion lu di tab Processor, lalu klik tombol <b>Request Access Link</b>.</p>
+                </div>
+            </div>
+            <div class="step-card">
+                <div class="step-num">2</div>
+                <div>
+                    <h4>Cek Kotak Masuk</h4>
+                    <p>Buka aplikasi Email lu, cari pesan masuk dari Alight Motion (cek folder Spam jika tidak ada). <b>Salin / Copy</b> Magic Link yang dikirim.</p>
+                </div>
+            </div>
+            <div class="step-card">
+                <div class="step-num">3</div>
+                <div>
+                    <h4>Inisialisasi Sistem</h4>
+                    <p>Kembali ke web ini, <b>Paste / Tempel</b> Magic Link tadi ke kolom kedua, lalu klik <b>Initialize Premium</b>.</p>
+                </div>
+            </div>
+            <div class="step-card">
+                <div class="step-num">🎉</div>
+                <div>
+                    <h4>Enjoy Premium!</h4>
+                    <p>Selesai! Akun lu otomatis masuk ke Live Database Feed dan status premium telah aktif.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: MUSIC (MAINTENANCE) -->
         <div id="music-tab" style="display:none;">
             <div class="maintenance-card">
                 <div class="maintenance-icon">🎧✨</div>
