@@ -40,14 +40,14 @@
             transition: background-color 0.5s ease, color 0.5s ease;
         }
 
-        /* DYNAMIC DARK PINK THEME (PINK GELAP / DARK CYBER PINK SELAYAR) */
+        /* DYNAMIC DARK PINK THEME (SELAYAR GELAP ESTETIK) */
         body.pink-theme {
-            --bg-base: #12050f;      /* Latar belakang selayar jadi pink gelap pekat */
-            --bg-panel: #1b0a17;     /* Panel card jadi gelap bernuansa pink */
-            --border: #3d1434;       /* Border card ikut gelap */
-            --text-main: #fdf2f8;    /* Teks berubah jadi putih-pink terang */
-            --text-muted: #d99bc6;   /* Teks abu-pink redup */
-            --primary: #ec4899;      /* Pink menyala */
+            --bg-base: #12050f;
+            --bg-panel: #1b0a17;
+            --border: #3d1434;
+            --text-main: #fdf2f8;
+            --text-muted: #d99bc6;
+            --primary: #ec4899;
             --primary-hover: #db2777;
             --success: #f43f5e;
             --stream-color: #f472b6;
@@ -59,35 +59,18 @@
         }
 
         body.pink-theme .logo-box { background: var(--primary); }
-        
-        /* Penyesuaian elemen card dan form saat mode Pink Gelap */
         body.pink-theme .form-control {
-            background: #240d20;
-            color: #fdf2f8;
-            border-color: #3d1434;
+            background: #240d20; color: #fdf2f8; border-color: #3d1434;
         }
         body.pink-theme .form-control:focus {
-            background: #2d1029;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.2);
+            background: #2d1029; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.2);
         }
-        body.pink-theme .h-card, 
-        body.pink-theme .guide-step {
-            background: #240d20;
-            border-color: #3d1434;
+        body.pink-theme .h-card, body.pink-theme .guide-step {
+            background: #240d20; border-color: #3d1434;
         }
-        body.pink-theme .guide-step {
-            border-left-color: var(--primary);
-        }
-        body.pink-theme .btn-secondary {
-            background: #240d20;
-            color: #fdf2f8;
-            border-color: #3d1434;
-        }
-        body.pink-theme .btn-secondary:hover {
-            background: #32132d;
-        }
-
+        body.pink-theme .guide-step { border-left-color: var(--primary); }
+        body.pink-theme .btn-secondary { background: #240d20; color: #fdf2f8; border-color: #3d1434; }
+        body.pink-theme .btn-secondary:hover { background: #32132d; }
         body.pink-theme .mc-bar.active { background: var(--primary); }
         body.pink-theme .l-badge.b-success { background: #381630; color: #f472b6; }
         body.pink-theme .dot.active { background: var(--primary); }
@@ -245,7 +228,6 @@
 
     <main class="dashboard">
         
-        <!-- PANEL 1: PROCESSOR + VIDEO SLIDER -->
         <div class="panel p-process">
             <div class="panel-header">
                 <span>Identity Processor & Authentication</span>
@@ -269,6 +251,12 @@
                 <label class="form-label">Target Alight Motion Email</label>
                 <input type="email" id="email" class="form-control" placeholder="user@example.com" autocomplete="off">
             </div>
+
+            <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin: 10px 0; font-size: 12px;">
+                <input type="checkbox" id="robotCheck" style="width: 16px; height: 16px; cursor: pointer;">
+                <label for="robotCheck" style="cursor: pointer; user-select: none;">Saya bukan robot (Verifikasi Manual)</label>
+            </div>
+
             <button class="btn-primary btn-secondary" onclick="sendEmail()">Request Access Link</button>
 
             <div style="height: 1px; background: var(--border); margin: 16px 0;"></div>
@@ -280,7 +268,6 @@
             <button class="btn-primary" onclick="verifyAcc()">Initialize Premium Access</button>
         </div>
 
-        <!-- PANEL 2: INFRASTRUCTURE TELEMETRY -->
         <div class="panel p-health">
             <div class="panel-header"><span>Infrastructure Telemetry</span><span style="color:var(--success); font-size:9px;">Live</span></div>
             <div class="health-grid">
@@ -291,7 +278,6 @@
             </div>
         </div>
 
-        <!-- PANEL 3: PANDUAN / SYSTEM GUIDE -->
         <div class="panel p-guide">
             <div class="panel-header"><span>Operational Guide</span><span style="font-size:9px;">Documentation</span></div>
             <div class="guide-container">
@@ -310,7 +296,6 @@
             </div>
         </div>
 
-        <!-- PANEL 4: SECURITY AUDIT TRAIL -->
         <div class="panel p-audit">
             <div class="panel-header"><span>Security Audit Trail</span><span style="font-family:var(--font-mono); font-size:9px; color:var(--primary);">Connected</span></div>
             <div class="audit-container" id="historyList">
@@ -318,7 +303,6 @@
             </div>
         </div>
 
-        <!-- PANEL 5: REAL-TIME STREAM -->
         <div class="panel p-data">
             <div class="panel-header"><span>Real-time Decryption Stream</span><span class="status-dot" style="background:var(--primary);"></span></div>
             <div class="data-stream" id="dataStream"></div>
@@ -336,4 +320,5 @@
 
     <script src="script.js"></script>
 </body>
-</html>
+                    </html>
+                
