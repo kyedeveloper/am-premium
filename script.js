@@ -31,19 +31,95 @@ function currentSlide(index) {
 }
 
 // ==========================================
-// QUICK ACTION TOOLS
+// UPGRADED QUICK ACTION TOOLS
 // ==========================================
+
+// 1. Tool Diagnostik Jaringan & Kuota User
 function runDiagnostic() {
-    Swal.fire({ title: 'Running Diagnostics...', text: 'All cluster nodes responding within normal thresholds.', icon: 'success', background: '#ffffff', color: '#0f172a' });
+    const ping = document.getElementById('latencyVal').innerText;
+    const limitStatus = currentLimit > 100 ? "Unlimited (Admin)" : `${currentLimit} / ${MAX_LIMIT} tersisa`;
+    
+    Swal.fire({
+        title: 'Network & System Diagnostic',
+        html: `
+            <div style="text-align: left; font-size: 13px; line-height: 1.6; font-family: monospace;">
+                <b>[OK]</b> Latency Response: <span style="color: #10b981;">${ping}</span><br>
+                <b>[OK]</b> Local Storage Sync: <span style="color: #10b981;">Active</span><br>
+                <b>[OK]</b> Cloudflare Shield: <span style="color: #10b981;">Protected</span><br>
+                <b>[INFO]</b> Your Quota Status: <span style="color: #2563eb;">${limitStatus}</span><br>
+                <hr style="border:0; border-top:1px solid #e2e8f0; margin: 10px 0;">
+                <i>Result: All client systems running optimally. No packet loss detected.</i>
+            </div>
+        `,
+        icon: 'success',
+        background: '#ffffff',
+        color: '#0f172a',
+        confirmButtonColor: '#2563eb'
+    });
 }
+
+// 2. Tool Pause/Resume Real-time Decryption Stream
+let isStreamPaused = false;
 function clearTerminal() {
-    document.getElementById('dataStream').innerHTML = '<div class="stream-line">[SYS] Stream cleared by operator.</div>';
+    isStreamPaused = !isStreamPaused;
+    const streamBox = document.getElementById('dataStream');
+    if (isStreamPaused) {
+        streamBox.style.opacity = '0.4';
+        Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'Stream Paused', showConfirmButton: false, timer: 1500 });
+    } else {
+        streamBox.style.opacity = '1';
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Stream Resumed', showConfirmButton: false, timer: 1500 });
+    }
 }
+
+// 3. Tool Theme Switcher (Light Blue -> Pink -> Dark Mode)
+let themeState = 0;
 function toggleThemeManual() {
-    document.body.classList.toggle('pink-theme');
+    themeState = (themeState + 1) % 3;
+    const body = document.body;
+    
+    if (themeState === 0) {
+        // Mode Normal (Light Blue)
+        body.classList.remove('pink-theme');
+        body.style.backgroundColor = '#f8fafc';
+        body.style.color = '#0f172a';
+        Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'Theme: Enterprise Blue', showConfirmButton: false, timer: 1200 });
+    } else if (themeState === 1) {
+        // Mode Pink
+        body.classList.add('pink-theme');
+        body.style.backgroundColor = '#f8fafc';
+        body.style.color = '#0f172a';
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Theme: Dynamic Pink', showConfirmButton: false, timer: 1200 });
+    } else {
+        // Mode Dark Hacker
+        body.classList.remove('pink-theme');
+        body.style.backgroundColor = '#090d16';
+        body.style.color = '#f8fafc';
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Theme: Dark Cyber', showConfirmButton: false, timer: 1200 });
+    }
 }
+
+// 4. Tool Cluster Info & Live Stats Detail
 function showServerInfo() {
-    Swal.fire({ title: 'Cluster Details', html: 'Region: Singapore (AP-SE-1)<br>Uptime: 99.98%<br>Firewall: Cloudflare Enterprise Active', icon: 'info', background: '#ffffff', color: '#0f172a' });
+    const visitors = document.getElementById('visitorCount').innerText;
+    const success = document.getElementById('successCount').innerText;
+    
+    Swal.fire({
+        title: 'Cluster Node Details',
+        html: `
+            <div style="text-align: left; font-size: 13px; line-height: 1.6;">
+                <b>Infrastructure:</b> Vercel Edge Serverless<br>
+                <b>Database KV:</b> Connected & Synchronized<br>
+                <b>Total Traffic Recorded:</b> ${visitors} hits<br>
+                <b>Total Successful Injects:</b> ${success} accounts<br>
+                <b>Security Protocol:</b> WAF + DDoS Mitigation Layer 7<br>
+            </div>
+        `,
+        icon: 'info',
+        background: '#ffffff',
+        color: '#0f172a',
+        confirmButtonColor: '#2563eb'
+    });
 }
 
 // ==========================================
@@ -80,7 +156,7 @@ function generateHexLine() {
 
 const streamBox = document.getElementById('dataStream');
 setInterval(() => {
-    if(!streamBox) return;
+    if(!streamBox || isStreamPaused) return;
     const p = document.createElement('div');
     p.className = 'stream-line';
     p.innerText = `[${new Date().toISOString().substring(11,23)}] PKT: ${generateHexLine()}`;
@@ -271,4 +347,4 @@ initLimit();
 updateGlobalStats(); 
 setInterval(updateGlobalStats, 60000); 
 loadHistory();
-           
+            
