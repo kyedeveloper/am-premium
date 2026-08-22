@@ -74,24 +74,18 @@ function checkLimit() {
 // 2. STATISTIK DINAMIS (BERTAMBAH OTOMATIS)
 // ==========================================
 function updateStats() {
-    // Kita anggap web lu mulai ngitung dari 16 Agustus 2026 jam 00:00 (Hari Rilis)
     const launchDate = new Date('2026-08-16T00:00:00');
     const now = new Date();
     
-    // Hitung berapa jam dan menit yang udah lewat sejak tanggal rilis
     const hoursPassed = Math.max(0, Math.floor((now - launchDate) / 3600000));
     const minutesPassed = now.getMinutes();
 
-    // Base angka awal (Sesuai request lu: 157 & 37)
     const baseVisitors = 157;
     const baseSuccess = 37;
 
-    // Formula matematika (Nambah per jam, dan ada efek acak dari menit)
-    // Jadi angkanya keliatan natural dan nambah terus
     const currentVisitors = baseVisitors + (hoursPassed * 6) + Math.floor(minutesPassed / 10);
     const currentSuccess = baseSuccess + (hoursPassed * 2) + Math.floor(minutesPassed / 20);
 
-    // Tempel angkanya ke HTML
     document.getElementById('visitorCount').innerText = currentVisitors.toLocaleString('id-ID');
     document.getElementById('successCount').innerText = currentSuccess.toLocaleString('id-ID');
 }
@@ -101,15 +95,20 @@ function updateStats() {
 // 3. UI LOGIC & BACKGROUND MUSIC
 // ==========================================
 initLimit(); 
-updateStats(); // Jalankan fungsi statistik pas web dibuka
-setInterval(updateStats, 60000); // Refresh statistik tiap 1 menit secara halus
+updateStats(); 
+setInterval(updateStats, 60000); 
 
 function switchTab(tabId) {
-    document.getElementById('proc-tab').style.display = tabId === 'proc' ? 'block' : 'none';
-    document.getElementById('music-tab').style.display = tabId === 'music' ? 'block' : 'none';
+    document.getElementById('proc-tab').style.display = 'none';
+    document.getElementById('guide-tab').style.display = 'none';
+    document.getElementById('music-tab').style.display = 'none';
+    
+    document.getElementById(tabId + '-tab').style.display = 'block';
+    
     const buttons = document.querySelectorAll('.tab-btn');
     buttons[0].classList.toggle('active', tabId === 'proc');
-    buttons[1].classList.toggle('active', tabId === 'music');
+    buttons[1].classList.toggle('active', tabId === 'guide');
+    buttons[2].classList.toggle('active', tabId === 'music');
 }
 
 setInterval(() => {
@@ -145,8 +144,6 @@ function toggleMusic(e) {
 // ==========================================
 // 4. API & DATABASE LOGIC (VERCEL KV)
 // ==========================================
-
-// (Biarkan fungsi loadHistory() tetap seperti sebelumnya)
 async function loadHistory() {
     const list = document.getElementById('historyList');
     try {
@@ -171,9 +168,7 @@ async function loadHistory() {
 
 loadHistory();
 
-
 async function sendEmail() {
-    // Tetap dicek limitnya biar user gak bisa spam email kalau limit udah 0
     if (!checkLimit()) return; 
 
     const email = document.getElementById('email').value;
@@ -183,7 +178,7 @@ async function sendEmail() {
     try {
         await fetch(`/api/send?email=${encodeURIComponent(email)}`);
         
-        // ---> decreaseLimit(); DIHAPUS DARI SINI BIAR GAK NGURANG 2 KALI <---
+        // LIMIT TIDAK BERKURANG DI SINI
         
         Swal.fire({ icon: 'success', title: 'Link Terkirim', text: 'Silakan periksa kotak masuk atau folder spam email Anda.', background: '#141419', color: '#fff' });
     } catch(e) {
@@ -192,7 +187,6 @@ async function sendEmail() {
 }
 
 async function verifyAcc() {
-    // Tetap dicek limitnya
     if (!checkLimit()) return; 
 
     const email = document.getElementById('email').value;
@@ -204,7 +198,7 @@ async function verifyAcc() {
     try {
         await fetch(`/api/verify?email=${encodeURIComponent(email)}&magicLink=${encodeURIComponent(link)}`);
         
-        // ---> LIMIT HANYA BERKURANG DI SINI (Saat beneran sukses premium) <---
+        // LIMIT HANYA BERKURANG SAAT PROSES INI BERHASIL
         decreaseLimit(); 
         
         Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Status Premium telah diaktifkan untuk akun Anda.', background: '#141419', color: '#fff' });
@@ -217,5 +211,4 @@ async function verifyAcc() {
     } catch(e) {
         Swal.fire({ icon: 'error', title: 'Verifikasi Gagal', text: 'Link tidak valid atau telah kadaluarsa.', background: '#141419', color: '#fff' });
     }
-                                                                    }
-                                                                    
+            }
