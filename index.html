@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Reseller ( VIP Premium VIP Unlimited ) - ZalzxDeveloper</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome 6 Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts (Poppins) -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #0a0803;
+            --card-bg: rgba(22, 18, 10, 0.92);
+            --border-gold: rgba(234, 179, 8, 0.4);
+            --primary-gold: #facc15;
+            --light-gold: #fef08a;
+            --accent-gold: #eab308;
+            --dark-gold: #854d0e;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 10% 10%, rgba(202, 138, 4, 0.18) 0px, transparent 50%),
+                radial-gradient(at 90% 90%, rgba(250, 204, 21, 0.12) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(161, 98, 7, 0.1) 0px, transparent 60%);
+            color: #fefce8;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.7), 0 0 15px rgba(234, 179, 8, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .gradient-gold-text {
+            background: linear-gradient(135deg, #fff7ed 0%, #facc15 50%, #ca8a04 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+            padding: 20px;
+            background: rgba(28, 23, 13, 0.9);
+            border: 1px solid rgba(234, 179, 8, 0.3);
+        }
+
+        .stat-icon {
+            position: absolute;
+            right: 15px;
+            bottom: 10px;
+            font-size: 3.5rem;
+            opacity: 0.18;
+            color: var(--primary-gold);
+        }
+
+        .btn-gradient-gold {
+            background: linear-gradient(135deg, #fef08a 0%, #eab308 50%, #ca8a04 100%);
+            border: none;
+            color: #1c1917;
+            font-weight: 700;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 4px 20px rgba(234, 179, 8, 0.35);
+            transition: all 0.3s ease;
+        }
+
+        .btn-gradient-gold:hover {
+            background: linear-gradient(135deg, #ffffff 0%, #facc15 50%, #a16207 100%);
+            color: #000000;
+            box-shadow: 0 6px 25px rgba(250, 204, 21, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .form-control-custom {
+            background: rgba(15, 12, 6, 0.95) !important;
+            border: 1px solid rgba(234, 179, 8, 0.35) !important;
+            color: #fefce8 !important;
+            border-radius: 12px;
+            padding: 12px 16px;
+        }
+
+        .form-control-custom::placeholder {
+            color: #a1a1aa !important;
+            opacity: 0.8;
+        }
+
+        .form-control-custom:focus {
+            border-color: var(--primary-glow) !important;
+            border-color: #facc15 !important;
+            box-shadow: 0 0 15px rgba(250, 204, 21, 0.35) !important;
+        }
+
+        .step-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(234, 179, 8, 0.2);
+            border: 1px solid var(--primary-gold);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 10px;
+            color: var(--primary-gold);
+        }
+
+        .step-active .step-badge {
+            background: var(--primary-gold);
+            color: #1c1917;
+        }
+
+        .modal-content-glass {
+            background: rgba(18, 14, 8, 0.98);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--primary-gold);
+            border-radius: 24px;
+            color: #fefce8;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(234, 179, 8, 0.2);
+        }
+
+        .modal-icon-header {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(250, 204, 21, 0.2), rgba(161, 98, 7, 0.3));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px auto;
+            border: 1px solid var(--primary-gold);
+        }
+
+        .console-log {
+            background: #050402;
+            border: 1px solid rgba(234, 179, 8, 0.4);
+            border-left: 4px solid var(--primary-gold);
+            border-radius: 12px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .gold-badge {
+            background: linear-gradient(135deg, #facc15, #ca8a04);
+            color: #000000;
+            font-weight: 800;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+        }
+
+        .buyer-card {
+            background: rgba(250, 204, 21, 0.08);
+            border: 1px dashed rgba(250, 204, 21, 0.4);
+            border-radius: 12px;
+            padding: 12px 16px;
+        }
+
+        .text-readable-muted {
+            color: #d4d4d8 !important;
+        }
+
+        .gold-glow-border {
+            box-shadow: 0 0 10px rgba(250, 204, 21, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container py-5" style="max-width: 850px;">
+        
+        <!-- Header Panel -->
+        <div class="text-center mb-5">
+            <div class="d-flex justify-content-center align-items-center gap-2 mb-2">
+                <span class="badge gold-badge px-3 py-2 rounded-pill shadow-sm">
+                    <i class="fa-solid fa-crown me-1"></i> VIP UNLIMITED PANEL
+                </span>
+                <span class="badge bg-warning-subtle text-warning border border-warning px-3 py-2 rounded-pill fw-bold">
+                    <i class="fa-solid fa-shield-halved me-1"></i> PREMIUM EDITION ©ZALZXDEV
+                </span>
+            </div>
+            <h1 class="fw-bold gradient-gold-text display-6">Panel Reseller Alight Motion VIP</h1>
+            <p class="text-readable-muted">Akses Aktivasi Premium Tanpa Limit & Tanpa Koin (Sepuasnya)</p>
+        </div>
+
+        <!-- Dashboard Status VIP -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="stat-card glass-card">
+                    <span class="text-readable-muted small d-block mb-1">Status Lisensi Reseller</span>
+                    <div class="d-flex align-items-baseline">
+                        <h3 class="fw-bold text-warning mb-0 me-2">UNLIMITED VIP</h3>
+                        <small class="badge gold-badge">LIFETIME</small>
+                    </div>
+                    <i class="fa-solid fa-gem stat-icon"></i>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="stat-card glass-card">
+                    <span class="text-readable-muted small d-block mb-1">Limit Proses Akun</span>
+                    <div class="d-flex align-items-baseline">
+                        <h3 class="fw-bold text-success mb-0 me-2">∞ Tanpa Batas</h3>
+                        <small class="text-readable-muted">Proses Sepuasnya</small>
+                    </div>
+                    <i class="fa-solid fa-infinity stat-icon text-success"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Form Panel -->
+        <div class="glass-card p-4 p-md-5 mb-4 gold-glow-border">
+            
+            <!-- Custom Order ID Settings (Fitur Tambahan) -->
+            <div class="mb-4 pb-3 border-bottom border-warning border-opacity-25">
+                <label for="orderIdInput" class="form-label text-warning small fw-bold">
+                    <i class="fa-solid fa-receipt me-1"></i> Format Custom Order ID (Fitur VIP)
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text bg-dark border-warning border-opacity-50 text-warning"><i class="fa-solid fa-tag"></i></span>
+                    <input type="text" class="form-control form-control-custom fw-semibold" id="orderIdInput" value="ZalzxDev-VIP-0000-">
+                </div>
+                <div class="form-text text-readable-muted small mt-1">
+                    Atur prefix Order ID yang dikirim ke sistem Alight Motion sesuai nama tokomu.
+                </div>
+            </div>
+
+            <!-- Step 1: Kirim Magic Link ke Buyer -->
+            <div id="step1">
+                <div class="d-flex align-items-center mb-4 step-active">
+                    <span class="step-badge">1</span>
+                    <h5 class="mb-0 fw-bold text-white">Kirim Link Verifikasi ke Email Buyer</h5>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="emailInput" class="form-label text-readable-muted small fw-medium">Email Akun Alight Motion Target (Buyer)</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-warning border-opacity-50 text-warning"><i class="fa-solid fa-envelope"></i></span>
+                        <input type="email" class="form-control form-control-custom" id="emailInput" placeholder="emailbuyer@gmail.com">
+                    </div>
+                    <div class="form-text text-readable-muted small mt-2">
+                        <i class="fa-solid fa-circle-info text-warning me-1"></i> Pastikan buyer telah mendaftarkan email ini di aplikasi Alight Motion.
+                    </div>
+                </div>
+                
+                <button class="btn btn-gradient-gold w-100 py-3" onclick="sendMagicLink()">
+                    <i class="fa-solid fa-paper-plane me-2"></i> Kirim Magic Link ke Buyer
+                </button>
+            </div>
+
+            <!-- Step 2: Auto Premium & Verifikasi (Hidden Default) -->
+            <div id="step2" style="display: none;">
+                <div class="d-flex align-items-center mb-3 step-active">
+                    <span class="step-badge">2</span>
+                    <h5 class="mb-0 fw-bold text-white">Verifikasi & Eksekusi Premium Buyer</h5>
+                </div>
+
+                <!-- Preview Info Buyer -->
+                <div class="buyer-card mb-4 d-flex align-items-center justify-content-between">
+                    <div>
+                        <small class="text-readable-muted d-block">Target Akun Buyer:</small>
+                        <span id="targetBuyerDisplay" class="fw-bold text-warning fs-6">AkunAm@gmail.com</span>
+                    </div>
+                    <span class="badge gold-badge px-3 py-2">UNLIMITED PROCESS</span>
+                </div>
+                
+                <div class="alert alert-dark border-warning bg-warning bg-opacity-10 text-warning rounded-3 small mb-4">
+                    <i class="fa-solid fa-circle-exclamation me-2 fs-6"></i>
+                    <strong>Instruksi Reseller:</strong> Minta buyer Anda mengecek kotak masuk emailnya, lalu minta buyer meng-copy link dari tombol verifikasi Alight Motion dan kirimkan kepada Anda.
+                </div>
+
+                <div class="mb-4">
+                    <label for="linkInput" class="form-label text-readable-muted small fw-medium">Paste Magic Link / Verification URL dari Buyer</label>
+                    <textarea class="form-control form-control-custom" id="linkInput" rows="3" placeholder="https://alightcreative.com/login?..."></textarea>
+                </div>
+
+                <button class="btn btn-gradient-gold w-100 mb-3 py-3" onclick="processPremium()">
+                    <i class="fa-solid fa-wand-magic-sparkles me-2"></i> Proses Aktifkan Premium VIP Instan
+                </button>
+                
+                <button class="btn btn-link text-readable-muted text-decoration-none w-100 text-center small" onclick="resetForm()">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Batal / Ganti Email Buyer
+                </button>
+            </div>
+
+            <!-- Output Status / Console -->
+            <div id="statusLog" class="console-log p-3 mt-4 d-none">
+                <div class="d-flex align-items-center mb-1">
+                    <span class="spinner-grow spinner-grow-sm text-warning me-2" id="logSpinner"></span>
+                    <small class="text-warning fw-bold">LOG SISTEM VERIFIKASI ZALZXDEVELOPER VIP</small>
+                </div>
+                <small id="logText" class="d-block text-white"></small>
+            </div>
+
+        </div>
+
+        <!-- Footer Watermark -->
+        <div class="text-center text-readable-muted small">
+            <p class="mb-0">Panel Reseller AM Premium VIP v2.0 &copy; 2026 <strong class="text-warning">ZalzxDeveloper</strong>. Unlimited Edition.</p>
+        </div>
+
+    </div>
+
+    <!-- Modal Pop-Up Welcome Info VIP -->
+    <div class="modal fade" id="infoModal" tabindex="-1" data-bs-backdrop="static" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-content-glass p-3">
+                <div class="modal-body text-center pt-4">
+                    <div class="modal-icon-header">
+                        <i class="fa-solid fa-crown text-warning fs-2"></i>
+                    </div>
+                    <div class="mb-2">
+                        <span class="badge gold-badge px-3 py-1 rounded-pill">VIP PREMIUM EDITION</span>
+                    </div>
+                    <h4 class="fw-bold mb-2 gradient-gold-text">Panel VIP ZalzxDeveloper</h4>
+                    <p class="text-readable-muted small mb-4">
+                        Selamat datang! Anda sedang menggunakan versi Premium VIP tanpa batasan limit dan tanpa sistem koin.
+                    </p>
+                    
+                    <div class="text-start bg-dark bg-opacity-75 p-3 rounded-3 border border-warning border-opacity-50 mb-4 small">
+                        <div class="d-flex mb-2">
+                            <i class="fa-solid fa-infinity text-warning me-2 mt-1 fs-6"></i>
+                            <span class="text-white"><strong>Unlimited Access:</strong> Memproses akun buyer sepuasnya tanpa takut kehabisan limit/saldo.</span>
+                        </div>
+                        <div class="d-flex mb-2">
+                            <i class="fa-solid fa-pen-to-square text-warning me-2 mt-1 fs-6"></i>
+                            <span class="text-white"><strong>Custom Order ID:</strong> Bebas mengubah prefix ID Transaksi lisensi pesanan.</span>
+                        </div>
+                        <div class="d-flex">
+                            <i class="fa-solid fa-bolt text-success me-2 mt-1 fs-6"></i>
+                            <span class="text-white"><strong>Sistem Otomatis:</strong> Eksekusi lisensi premium 1 Tahun secara instan.</span>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-gradient-gold w-100 py-3" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-circle-check me-2"></i> Akses Panel VIP Sekarang
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const CONFIG = {
+            API_KEY: "AIzaSyDtG1AU22ErnQD60AzBAcaknySiz9_CEq0",
+            PRODUCT_ID: "am.full.sub.annual.19q4",
+            TOKEN: "mmgaobamlahbbeccfplmbkbb.AO-J1OzqG0or_GJJIx-ms8GrTm-jaglCRfhQSRPUZKpl2YspYS-oN7_94uv8RC5vQbvd_Ios2pPDStZ2n7F0hLE3FiOU7HS3R6Fquulv5xLXFECSv4ctElw",
+            SKU_TYPE: "subs",
+            FIREBASE_INSTANCE_ID_TOKEN: "cSDnCyp3T-uwp07z3tL86T:APA91bFkmvvsHw5nnqa1SBFci-99DRsKClLiETdRrVcJjS5yBx1v_FbCb1d8WhBuea_zmwnYBktyTIzcRhN4b6uNOUur9wPc0gKXmJDoZic0LhNq5V2s0xI",
+            HEADERS: {
+                "Content-Type": "application/json",
+                "X-Android-Package": "com.alightcreative.motion",
+                "X-Android-Cert": "ECA6BF91B8715A6F810ED0BBFC65B6CD578F52A8"
+            }
+        };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const infoModal = new bootstrap.Modal(document.getElementById('infoModal'));
+            infoModal.show();
+        });
+
+        function showLog(text, isError = false) {
+            const logBox = document.getElementById('statusLog');
+            const logText = document.getElementById('logText');
+            const spinner = document.getElementById('logSpinner');
+            
+            logBox.classList.remove('d-none');
+            logText.innerText = text;
+
+            if (isError) {
+                spinner.classList.add('d-none');
+                logText.className = "d-block text-danger font-monospace";
+            } else {
+                spinner.classList.remove('d-none');
+                logText.className = "d-block text-warning font-monospace";
+            }
+        }
+
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function extractOobCode(fullUrl) {
+            if (!fullUrl) return null;
+            try {
+                let cleanUrl = fullUrl.replace(/&amp;/g, '&');
+                try { cleanUrl = decodeURIComponent(cleanUrl); } catch(e) {}
+                
+                try {
+                    const urlObj = new URL(cleanUrl);
+                    let oobCode = urlObj.searchParams.get('oobCode');
+                    if (!oobCode) {
+                        const nestedLink = urlObj.searchParams.get('link') || urlObj.searchParams.get('q') || urlObj.searchParams.get('url');
+                        if (nestedLink) {
+                            const innerUrlObj = new URL(nestedLink);
+                            oobCode = innerUrlObj.searchParams.get('oobCode');
+                        }
+                    }
+                    if (oobCode) return oobCode.replace(/[^a-zA-Z0-9_-]/g, '');
+                } catch (e) {}
+
+                const match = cleanUrl.match(/[?&]oobCode=([a-zA-Z0-9_-]+)/i) || cleanUrl.match(/oobCode=([a-zA-Z0-9_-]+)/i);
+                if (match && match[1]) return match[1];
+                return null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        async function sendMagicLink() {
+            const email = document.getElementById('emailInput').value;
+            if (!email || !email.includes('@')) {
+                alert('Format email buyer tidak valid!');
+                return;
+            }
+
+            showLog("Connecting to Alight Motion Server & Sending Magic Link to Buyer...");
+
+            try {
+                await fetch(`https://www.googleapis.com/identitytoolkit/v3/relyingparty/createAuthUri?key=${CONFIG.API_KEY}`, {
+                    method: 'POST',
+                    headers: CONFIG.HEADERS,
+                    body: JSON.stringify({ identifier: email, continueUri: "http://localhost" })
+                });
+
+                const res = await fetch(`https://www.googleapis.com/identitytoolkit/v3/relyingparty/getOobConfirmationCode?key=${CONFIG.API_KEY}`, {
+                    method: 'POST',
+                    headers: CONFIG.HEADERS,
+                    body: JSON.stringify({
+                        requestType: 6,
+                        email: email,
+                        androidInstallApp: true,
+                        canHandleCodeInApp: true,
+                        continueUrl: "https://alightcreative.com?ui_sid=0366624874&ui_sd=0",
+                        iosBundleId: "com.alightcreative.motion",
+                        androidPackageName: "com.alightcreative.motion",
+                        androidMinimumVersion: "585",
+                        clientType: "CLIENT_TYPE_ANDROID"
+                    })
+                });
+
+                if (res.ok) {
+                    showLog("Magic Link successfully sent! Ask buyer to copy button link from email and paste in Step 2.");
+                    document.getElementById('targetBuyerDisplay').innerText = email;
+                    document.getElementById('step1').style.display = 'none';
+                    document.getElementById('step2').style.display = 'block';
+                } else {
+                    const err = await res.json();
+                    showLog("Failed to send verification email: " + JSON.stringify(err), true);
+                }
+            } catch (err) {
+                showLog("Connection error: " + err.message, true);
+            }
+        }
+
+        async function processPremium() {
+            const email = document.getElementById('emailInput').value;
+            const rawLink = document.getElementById('linkInput').value;
+            const customPrefix = document.getElementById('orderIdInput').value || "ZalzxDev-VIP-0000-";
+
+            if (!rawLink) {
+                alert('Silakan tempel (paste) URL verifikasi yang Anda dapatkan dari buyer!');
+                return;
+            }
+
+            const oobCode = extractOobCode(rawLink);
+            if (!oobCode) {
+                alert('URL Verifikasi tidak valid atau parameter oobCode hilang/kedaluwarsa!');
+                return;
+            }
+
+            showLog("Validating OobCode & Authenticating Buyer Account...");
+
+            try {
+                const signinRes = await fetch(`https://www.googleapis.com/identitytoolkit/v3/relyingparty/emailLinkSignin?key=${CONFIG.API_KEY}`, {
+                    method: 'POST',
+                    headers: CONFIG.HEADERS,
+                    body: JSON.stringify({
+                        email: email,
+                        oobCode: oobCode,
+                        clientType: "CLIENT_TYPE_ANDROID"
+                    })
+                });
+
+                const signinData = await signinRes.json();
+                if (!signinRes.ok) throw new Error(JSON.stringify(signinData));
+
+                const idToken = signinData.idToken;
+
+                showLog("Authentication Success! Injecting Premium Alight Motion License...");
+
+                const codeOrder = getRandomInt(10000, 99999).toString();
+                const finalOrderId = customPrefix + codeOrder;
+
+                const premiumRes = await fetch('https://us-central1-alight-creative.cloudfunctions.net/verifyPurchase', {
+                    method: 'POST',
+                    headers: {
+                        "authorization": "Bearer " + idToken,
+                        "firebase-instance-id-token": CONFIG.FIREBASE_INSTANCE_ID_TOKEN,
+                        "content-type": "application/json; charset=utf-8"
+                    },
+                    body: JSON.stringify({
+                        data: {
+                            productId: CONFIG.PRODUCT_ID,
+                            token: CONFIG.TOKEN,
+                            skuType: CONFIG.SKU_TYPE,
+                            orderId: finalOrderId
+                        }
+                    })
+                });
+
+                const premiumData = await premiumRes.json();
+
+                document.getElementById('logSpinner').classList.add('d-none');
+                showLog("SUCCESS VIP! Buyer Account (" + email + ") is now PREMIUM!\nOrder ID: " + finalOrderId + "\nPowered by ZalzxDeveloper VIP");
+                alert("Aktivasi Sukses! Akun buyer berhasil diubah menjadi Premium VIP.");
+
+            } catch (err) {
+                showLog("Activation Failed: " + err.message, true);
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('step1').style.display = 'block';
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('linkInput').value = '';
+            document.getElementById('statusLog').classList.add('d-none');
+        }
+    </script>
+</body>
+</html>
