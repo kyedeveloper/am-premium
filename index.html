@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Panel VIP - JuikoDeveloper</title>
+    <title>Advanced Panel VIP - Zukai Developer</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- FontAwesome 6 Icons -->
@@ -74,6 +74,29 @@
             justify-content: flex-end;
             padding: 1.5rem;
             z-index: 2;
+        }
+        
+        /* Top Navigation/Menu Button */
+        .system-info-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 10;
+            background: rgba(13, 13, 20, 0.7);
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--secondary-accent);
+            color: var(--secondary-accent);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        
+        .system-info-btn:hover {
+            background: var(--secondary-accent);
+            color: #000;
+            box-shadow: 0 0 15px var(--glow-cyan);
         }
 
         /* Main Panel */
@@ -205,8 +228,8 @@
         .log-prefix { color: #f72585; font-weight: bold; }
         .log-time { color: var(--text-dim); }
 
-        /* Custom Success Modal */
-        .success-overlay {
+        /* Modals Overlay (Shared) */
+        .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85);
@@ -220,25 +243,25 @@
             transition: all 0.4s ease;
         }
 
-        .success-overlay.active {
+        .modal-overlay.active {
             opacity: 1;
             visibility: visible;
         }
 
-        .success-modal {
+        /* Success & Info Modal Containers */
+        .custom-modal {
             background: #0d0d14;
             border: 1px solid var(--secondary-accent);
             border-radius: 16px;
             padding: 2.5rem;
             max-width: 450px;
             width: 90%;
-            text-align: center;
             box-shadow: 0 0 40px var(--glow-cyan);
             transform: scale(0.8);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-
-        .success-overlay.active .success-modal {
+        
+        .modal-overlay.active .custom-modal {
             transform: scale(1);
         }
 
@@ -248,6 +271,14 @@
             margin-bottom: 1rem;
             text-shadow: 0 0 20px var(--glow-cyan);
             animation: pulseSuccess 2s infinite;
+        }
+
+        /* About / Info Modal specific tweaks */
+        .info-modal {
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 40px var(--glow-purple);
+            max-width: 500px;
+            padding: 2rem;
         }
 
         /* Animations */
@@ -280,6 +311,11 @@
         
         <!-- Video Banner -->
         <div class="video-banner-wrapper">
+            <!-- Tombol Menu SYSTEM INFO -->
+            <button class="system-info-btn" onclick="showAboutModal()">
+                <i class="fa-solid fa-server me-1"></i> SYSTEM INFO
+            </button>
+
             <!-- Pastikan video1.mp4 dan video2.mp4 ada di direktori yang sama -->
             <video id="bannerVideo" class="video-banner" autoplay muted playsinline>
                 <source src="video1.mp4" type="video/mp4">
@@ -288,7 +324,7 @@
                 <span class="badge bg-dark border border-secondary text-info mb-2" style="width: fit-content; font-family: 'JetBrains Mono';">
                     <i class="fa-solid fa-satellite-dish blink-dot me-2"></i> SYSTEM ACTIVE
                 </span>
-                <h3 class="fw-bold text-white mb-0" style="text-shadow: 0 2px 10px rgba(0,0,0,0.8);">JUIKO VIP TERMINAL</h3>
+                <h3 class="fw-bold text-white mb-0" style="text-shadow: 0 2px 10px rgba(0,0,0,0.8);">ZUKAI VIP TERMINAL</h3>
             </div>
         </div>
 
@@ -306,7 +342,7 @@
                 <label for="orderIdInput" class="tech-label mb-2">
                     <i class="fa-solid fa-microchip me-1 text-info"></i> Injector Payload Prefix
                 </label>
-                <input type="text" class="form-control input-tech" id="orderIdInput" value="JuikoDev-VIP-0000-">
+                <input type="text" class="form-control input-tech" id="orderIdInput" value="ZukaiDev-VIP-0000-">
             </div>
 
             <!-- Step 1: Input Email -->
@@ -371,12 +407,19 @@
                 <div id="logText" class="text-secondary" style="word-break: break-all;"></div>
             </div>
 
+            <!-- Footer Text -->
+            <div class="text-center mt-4 pt-3 border-top border-secondary border-opacity-25 anim-stagger-3">
+                <p style="color: #4b5563; font-size: 0.8rem; font-family: 'JetBrains Mono';">
+                    System Core v3.0 &copy; 2026 <span class="text-purple fw-bold">Zukai Developer</span>
+                </p>
+            </div>
+
         </div>
     </div>
 
-    <!-- Success Modal Popup -->
-    <div class="success-overlay" id="successModal">
-        <div class="success-modal">
+    <!-- 1. Success Modal Popup -->
+    <div class="modal-overlay" id="successModal">
+        <div class="custom-modal text-center">
             <i class="fa-solid fa-circle-check success-icon"></i>
             <h3 class="text-white fw-bold mb-1">INJECTION SUCCESS</h3>
             <p class="text-info mb-4" style="font-family: 'JetBrains Mono'; font-size: 0.85rem;">Account is now Premium VIP</p>
@@ -394,6 +437,43 @@
 
             <button class="btn w-100 fw-bold" style="background: var(--secondary-accent); color: #000;" onclick="closeSuccessModal()">
                 <i class="fa-solid fa-power-off me-2"></i> ACKNOWLEDGE & CLOSE
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. System Info / About Modal -->
+    <div class="modal-overlay" id="aboutModal">
+        <div class="custom-modal info-modal">
+            <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary border-opacity-25 pb-3">
+                <h4 class="text-white fw-bold mb-0">
+                    <i class="fa-solid fa-microchip text-purple me-2"></i> SYSTEM INFO
+                </h4>
+                <button class="btn btn-sm btn-outline-secondary border-0" onclick="closeAboutModal()">
+                    <i class="fa-solid fa-xmark fs-4"></i>
+                </button>
+            </div>
+            
+            <!-- About Website -->
+            <div class="bg-black p-3 rounded-3 border border-secondary border-opacity-25 mb-3 text-start">
+                <h6 class="text-info fw-bold mb-2" style="font-family: 'JetBrains Mono'; font-size: 0.85rem;">> ABOUT_TERMINAL</h6>
+                <p class="text-dim mb-0" style="font-size: 0.85rem; line-height: 1.6;">
+                    <strong>Zukai VIP Terminal</strong> adalah antarmuka panel *reseller* tingkat lanjut (Advanced Edition) yang dirancang untuk mem-bypass dan menginjeksi lisensi Premium Alight Motion secara instan menggunakan integrasi sistem *OOB Code Protocol*. Dilengkapi dengan simulasi UI bergaya *Cyber-Security* untuk pengalaman pengguna yang maksimal.
+                </p>
+            </div>
+
+            <!-- About Developer -->
+            <div class="bg-black p-3 rounded-3 border border-secondary border-opacity-25 mb-4 text-start">
+                <h6 class="text-purple fw-bold mb-2" style="font-family: 'JetBrains Mono'; font-size: 0.85rem;">> DEVELOPER_DATA</h6>
+                <ul class="list-unstyled text-dim mb-0" style="font-size: 0.85rem;">
+                    <li class="mb-2"><strong class="text-white">Alias:</strong> Zukai Developer</li>
+                    <li class="mb-2"><strong class="text-white">Role:</strong> Lead Architecture & UI Engineer</li>
+                    <li class="mb-2"><strong class="text-white">System Version:</strong> v3.0 (Cyber Edition)</li>
+                    <li><strong class="text-white">Build Date:</strong> Oktober 2026</li>
+                </ul>
+            </div>
+
+            <button class="btn btn-tech w-100 fw-bold" onclick="closeAboutModal()">
+                <i class="fa-solid fa-check me-2"></i> CLOSE SYSTEM INFO
             </button>
         </div>
     </div>
@@ -442,12 +522,10 @@
             
             // Append log (not replace) to make it look like a real terminal
             logText.innerHTML += `<div class="mb-1"><span class="log-time">[${getTimestamp()}]</span> <span class="log-prefix ${colorClass}">${prefix}</span> <span class="text-light">${text}</span></div>`;
-            
-            // Auto scroll to bottom
             logText.scrollTop = logText.scrollHeight;
         }
 
-        // --- 4. SUCCESS MODAL CONTROL ---
+        // --- 4. MODALS CONTROL (SUCCESS & ABOUT) ---
         function showSuccessModal(email, orderId) {
             document.getElementById('successEmail').innerText = email;
             document.getElementById('successOrderId').innerText = orderId;
@@ -457,6 +535,14 @@
         function closeSuccessModal() {
             document.getElementById('successModal').classList.remove('active');
             resetForm();
+        }
+
+        function showAboutModal() {
+            document.getElementById('aboutModal').classList.add('active');
+        }
+
+        function closeAboutModal() {
+            document.getElementById('aboutModal').classList.remove('active');
         }
 
         // --- 5. LOGIKA EKSTRAKSI OOB CODE ---
@@ -550,7 +636,7 @@
         async function processPremium() {
             const email = document.getElementById('emailInput').value;
             const rawLink = document.getElementById('linkInput').value;
-            const customPrefix = document.getElementById('orderIdInput').value || "JUIKOxDev-VIP-0000-";
+            const customPrefix = document.getElementById('orderIdInput').value || "ZUKAIxDev-VIP-0000-";
 
             if (!rawLink) {
                 alert('Silakan tempel (paste) Magic Link URL!');
