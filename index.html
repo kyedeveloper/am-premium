@@ -3,338 +3,416 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Reseller VIP - JuikoDeveloper</title>
+    <title>Advanced Panel VIP - JuikoDeveloper</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- FontAwesome 6 Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- Google Fonts (Outfit for Modern/Futuristic feel) -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts (Outfit & JetBrains Mono for code) -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-dark: #0d0d12;
-            --card-bg: #16161e;
-            --primary-purple: #8b5cf6;
-            --purple-glow: rgba(139, 92, 246, 0.4);
-            --text-gray: #9ca3af;
-            --text-light: #f3f4f6;
-            --border-color: #272732;
+            --bg-base: #050507;
+            --panel-bg: #0d0d14;
+            --primary-accent: #9d4edd;
+            --secondary-accent: #00f5d4;
+            --glow-purple: rgba(157, 78, 221, 0.5);
+            --glow-cyan: rgba(0, 245, 212, 0.4);
+            --text-main: #e2e8f0;
+            --text-dim: #94a3b8;
+            --border-tech: #1e1e2d;
         }
 
         body {
-            background-color: var(--bg-dark);
+            background-color: var(--bg-base);
             background-image: 
-                radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.08), transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(124, 58, 237, 0.05), transparent 25%);
-            color: var(--text-light);
+                linear-gradient(rgba(157, 78, 221, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(157, 78, 221, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: var(--text-main);
             font-family: 'Outfit', sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
             padding: 2rem 0;
+            overflow-x: hidden;
         }
 
-        .container {
-            max-width: 750px;
+        .container-tech {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
         }
 
-        /* Futuristic Card */
-        .cyber-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
+        /* Video Banner Setup */
+        .video-banner-wrapper {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            border-radius: 16px 16px 0 0;
+            overflow: hidden;
+            border: 1px solid var(--border-tech);
+            border-bottom: 2px solid var(--primary-accent);
+            box-shadow: 0 0 25px rgba(157, 78, 221, 0.2);
+            animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .video-banner {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.6) contrast(1.2);
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to top, var(--panel-bg) 0%, rgba(13, 13, 20, 0.2) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1.5rem;
+            z-index: 2;
+        }
+
+        /* Main Panel */
+        .tech-panel {
+            background: rgba(13, 13, 20, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-tech);
+            border-top: none;
+            border-radius: 0 0 16px 16px;
             padding: 2rem;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            animation: fadeUp 0.6s ease-out forwards;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.8);
+            position: relative;
+            animation: fadeIn 1s ease-out forwards;
         }
 
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
+        /* Micro UI / Tech Decor */
+        .micro-status-bar {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--secondary-accent);
+            border-bottom: 1px dashed var(--border-tech);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .blink-dot {
+            height: 8px; width: 8px;
+            background-color: var(--secondary-accent);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 10px var(--secondary-accent);
+            animation: blink 1.5s infinite;
+        }
+
+        /* Forms & Inputs */
+        .tech-label {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .input-tech {
+            background: #08080c !important;
+            border: 1px solid var(--border-tech) !important;
+            color: var(--text-main) !important;
+            border-radius: 8px;
+            padding: 14px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-tech:focus {
+            border-color: var(--primary-accent) !important;
+            box-shadow: inset 0 0 10px rgba(157, 78, 221, 0.1), 0 0 15px var(--glow-purple) !important;
+            outline: none;
+        }
+
+        .input-group-text.tech-icon {
+            background: #08080c;
+            border: 1px solid var(--border-tech);
+            color: var(--primary-accent);
+            border-right: none;
+        }
+        .input-tech.with-icon { border-left: none !important; }
+
+        /* Tech Button */
+        .btn-tech {
+            background: linear-gradient(45deg, #7b2cbf, #9d4edd);
+            color: white;
+            border: 1px solid #c77dff;
+            border-radius: 8px;
+            padding: 14px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(157, 78, 221, 0.4);
+            z-index: 1;
+        }
+
+        .btn-tech::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.5s;
+            z-index: -1;
+        }
+
+        .btn-tech:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px var(--glow-purple);
+            color: white;
+        }
+        .btn-tech:hover::before { left: 100%; }
+
+        /* Step Indicators */
+        .step-wrapper {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding: 10px;
+            background: rgba(157, 78, 221, 0.05);
+            border-left: 3px solid var(--primary-accent);
+            border-radius: 4px;
+        }
+
+        /* Logs Console */
+        .terminal-box {
+            background: #000;
+            border: 1px solid var(--border-tech);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            margin-top: 1.5rem;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 1);
+        }
+
+        .log-prefix { color: #f72585; font-weight: bold; }
+        .log-time { color: var(--text-dim); }
+
+        /* Custom Success Modal */
+        .success-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .success-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .success-modal {
+            background: #0d0d14;
+            border: 1px solid var(--secondary-accent);
+            border-radius: 16px;
+            padding: 2.5rem;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 0 40px var(--glow-cyan);
+            transform: scale(0.8);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .success-overlay.active .success-modal {
+            transform: scale(1);
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            color: var(--secondary-accent);
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px var(--glow-cyan);
+            animation: pulseSuccess 2s infinite;
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-30px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        .anim-fade-in {
-            animation: fadeIn 0.4s ease-out forwards;
-        }
-
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
-
-        /* Text & Badges */
-        .text-purple { color: var(--primary-purple) !important; }
-        .bg-purple { background-color: var(--primary-purple) !important; }
-        
-        .badge-cyber {
-            background: rgba(139, 92, 246, 0.1);
-            color: var(--primary-purple);
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            padding: 0.5rem 1rem;
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
         }
-
-        /* Form Controls */
-        .form-label {
-            color: var(--text-gray);
-            font-size: 0.9rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-
-        .form-control-cyber {
-            background: #09090d !important;
-            border: 1px solid var(--border-color) !important;
-            color: var(--text-light) !important;
-            border-radius: 12px;
-            padding: 14px 16px;
-            transition: all 0.3s ease;
-        }
-
-        .form-control-cyber::placeholder {
-            color: #4b5563 !important;
-        }
-
-        .form-control-cyber:focus {
-            border-color: var(--primary-purple) !important;
-            box-shadow: 0 0 15px var(--purple-glow) !important;
-            outline: none;
-        }
-
-        .input-group-text.cyber-icon {
-            background: #09090d;
-            border: 1px solid var(--border-color);
-            border-right: none;
-            color: var(--text-gray);
-            border-radius: 12px 0 0 12px;
+        @keyframes pulseSuccess {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); text-shadow: 0 0 30px var(--glow-cyan); }
+            100% { transform: scale(1); }
         }
         
-        .form-control-cyber.with-icon {
-            border-left: none !important;
-        }
-
-        /* Buttons */
-        .btn-cyber {
-            background: linear-gradient(135deg, #7c3aed, #6d28d9);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 14px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 15px var(--purple-glow);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-cyber:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px var(--purple-glow);
-            color: white;
-        }
-
-        .btn-cyber:active {
-            transform: translateY(1px);
-        }
-
-        .btn-outline-cyber {
-            background: transparent;
-            color: var(--text-gray);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 12px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .btn-outline-cyber:hover {
-            color: white;
-            border-color: var(--primary-purple);
-            background: rgba(139, 92, 246, 0.05);
-        }
-
-        /* Stepper UI */
-        .step-container {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .step-number {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: rgba(139, 92, 246, 0.15);
-            color: var(--primary-purple);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-right: 12px;
-            border: 1px solid rgba(139, 92, 246, 0.3);
-        }
-
-        /* Buyer Info Card */
-        .buyer-info-box {
-            background: #09090d;
-            border: 1px dashed var(--primary-purple);
-            border-radius: 12px;
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Console Log */
-        .terminal-log {
-            background: #050508;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1rem;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.85rem;
-            margin-top: 1.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .terminal-log::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: var(--primary-purple);
-        }
-
-        .alert-cyber {
-            background: rgba(139, 92, 246, 0.05);
-            border: 1px solid rgba(139, 92, 246, 0.2);
-            color: #d1d5db;
-            border-radius: 12px;
-            font-size: 0.85rem;
-        }
-
-        hr {
-            border-color: var(--border-color);
-            opacity: 1;
-            margin: 2rem 0;
-        }
+        .anim-stagger-1 { animation: fadeIn 0.5s ease-out 0.2s both; }
+        .anim-stagger-2 { animation: fadeIn 0.5s ease-out 0.4s both; }
+        .anim-stagger-3 { animation: fadeIn 0.5s ease-out 0.6s both; }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div class="container container-tech p-3 p-md-0">
         
-        <!-- Header -->
-        <div class="text-center mb-5 anim-fade-in">
-            <span class="badge badge-cyber rounded-pill mb-3">
-                <i class="fa-solid fa-bolt me-1"></i> VIP PREMIUM EDITION
-            </span>
-            <h2 class="fw-bold text-white mb-2">Panel Reseller Alight Motion</h2>
-            <p class="text-gray" style="color: var(--text-gray);">Akses Aktivasi Premium Instan Tanpa Batas</p>
+        <!-- Video Banner -->
+        <div class="video-banner-wrapper">
+            <!-- Pastikan video1.mp4 dan video2.mp4 ada di direktori yang sama -->
+            <video id="bannerVideo" class="video-banner" autoplay muted playsinline>
+                <source src="video1.mp4" type="video/mp4">
+            </video>
+            <div class="video-overlay">
+                <span class="badge bg-dark border border-secondary text-info mb-2" style="width: fit-content; font-family: 'JetBrains Mono';">
+                    <i class="fa-solid fa-satellite-dish blink-dot me-2"></i> SYSTEM ACTIVE
+                </span>
+                <h3 class="fw-bold text-white mb-0" style="text-shadow: 0 2px 10px rgba(0,0,0,0.8);">JUIKO VIP TERMINAL</h3>
+            </div>
         </div>
 
-        <div class="cyber-card">
+        <!-- Main Panel Form -->
+        <div class="tech-panel">
             
-            <!-- Custom Order ID Settings -->
-            <div class="mb-4">
-                <label for="orderIdInput" class="form-label">
-                    <i class="fa-solid fa-hashtag me-1 text-purple"></i> Custom Order ID Prefix
-                </label>
-                <input type="text" class="form-control form-control-cyber" id="orderIdInput" value="JuikoDev-VIP-0000-">
-                <div class="form-text" style="color: #6b7280; font-size: 0.8rem; margin-top: 6px;">
-                    Format ID lisensi yang akan masuk ke sistem aplikasi.
-                </div>
+            <div class="micro-status-bar">
+                <span>NODE: ASIA-SE-01</span>
+                <span>SEC: AES-256</span>
+                <span>PING: 14ms</span>
             </div>
 
-            <hr>
+            <!-- Custom Order ID Settings -->
+            <div class="mb-4 pb-4 border-bottom border-secondary border-opacity-25 anim-stagger-1">
+                <label for="orderIdInput" class="tech-label mb-2">
+                    <i class="fa-solid fa-microchip me-1 text-info"></i> Injector Payload Prefix
+                </label>
+                <input type="text" class="form-control input-tech" id="orderIdInput" value="JuikoDev-VIP-0000-">
+            </div>
 
             <!-- Step 1: Input Email -->
-            <div id="step1" class="anim-fade-in">
-                <div class="step-container">
-                    <div class="step-number">1</div>
-                    <h5 class="mb-0 text-white fw-semibold">Kirim Magic Link</h5>
+            <div id="step1" class="anim-stagger-2">
+                <div class="step-wrapper">
+                    <span class="badge bg-purple me-2 fs-6">STEP 01</span>
+                    <h6 class="mb-0 text-white fw-bold">INITIATE MAGIC LINK</h6>
                 </div>
                 
                 <div class="mb-4">
-                    <label for="emailInput" class="form-label">Email Akun Target (Buyer)</label>
+                    <label for="emailInput" class="tech-label mb-2">Target Account Email</label>
                     <div class="input-group">
-                        <span class="input-group-text cyber-icon"><i class="fa-regular fa-envelope"></i></span>
-                        <input type="email" class="form-control form-control-cyber with-icon" id="emailInput" placeholder="emailbuyer@gmail.com">
+                        <span class="input-group-text tech-icon"><i class="fa-solid fa-envelope"></i></span>
+                        <input type="email" class="form-control input-tech with-icon" id="emailInput" placeholder="buyer@email.com">
                     </div>
                 </div>
                 
-                <button class="btn btn-cyber w-100" onclick="sendMagicLink()">
-                    <i class="fa-solid fa-paper-plane me-2"></i> Kirim Link Verifikasi
+                <button class="btn btn-tech w-100" onclick="sendMagicLink()">
+                    <i class="fa-solid fa-paper-plane me-2"></i> Transmit Verification Link
                 </button>
             </div>
 
             <!-- Step 2: Input Verification Link (Hidden by Default) -->
-            <div id="step2" style="display: none;" class="anim-fade-in">
-                <div class="step-container">
-                    <div class="step-number">2</div>
-                    <h5 class="mb-0 text-white fw-semibold">Eksekusi Premium</h5>
+            <div id="step2" style="display: none;">
+                <div class="step-wrapper">
+                    <span class="badge bg-info text-dark me-2 fs-6 fw-bold">STEP 02</span>
+                    <h6 class="mb-0 text-white fw-bold">EXECUTE PREMIUM INJECTION</h6>
                 </div>
 
-                <div class="buyer-info-box mb-4">
+                <div class="d-flex justify-content-between align-items-center bg-dark p-3 rounded-3 border border-secondary border-opacity-50 mb-4">
                     <div>
-                        <span class="d-block" style="font-size: 0.8rem; color: var(--text-gray);">Target Email:</span>
-                        <span id="targetBuyerDisplay" class="fw-semibold text-white">buyer@gmail.com</span>
+                        <small class="text-dim d-block" style="font-family: 'JetBrains Mono';">TARGET ID:</small>
+                        <span id="targetBuyerDisplay" class="fw-bold text-info">buyer@email.com</span>
                     </div>
-                    <i class="fa-solid fa-circle-check text-purple fs-4"></i>
-                </div>
-                
-                <div class="alert alert-cyber p-3 mb-4">
-                    <i class="fa-solid fa-circle-info text-purple me-2"></i>
-                    Minta buyer untuk menyalin (copy) link dari tombol "Sign in to Alight Motion" di kotak masuk email mereka, lalu tempel di bawah ini.
+                    <i class="fa-solid fa-fingerprint text-secondary fs-3 opacity-50"></i>
                 </div>
 
                 <div class="mb-4">
-                    <label for="linkInput" class="form-label">Verification URL / Magic Link</label>
-                    <textarea class="form-control form-control-cyber" id="linkInput" rows="3" placeholder="https://alightcreative.com/login?..."></textarea>
+                    <label for="linkInput" class="tech-label mb-2">Pasted Magic Link (OOB Code)</label>
+                    <textarea class="form-control input-tech" id="linkInput" rows="3" placeholder="https://alightcreative.com/login?..."></textarea>
+                    <div class="form-text text-warning mt-2" style="font-size: 0.75rem;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Paste link dari tombol email buyer kesini.
+                    </div>
                 </div>
 
-                <div class="d-flex flex-column gap-2">
-                    <button class="btn btn-cyber w-100" onclick="processPremium()">
-                        <i class="fa-solid fa-wand-magic-sparkles me-2"></i> Aktifkan Premium Sekarang
+                <div class="d-flex flex-column gap-3">
+                    <button class="btn btn-tech w-100" style="background: linear-gradient(45deg, #00b4d8, #0077b6); border-color: #90e0ef;" onclick="processPremium()">
+                        <i class="fa-solid fa-bolt-lightning me-2"></i> Force Inject Premium
                     </button>
-                    <button class="btn btn-outline-cyber w-100 mt-2" onclick="resetForm()">
-                        <i class="fa-solid fa-arrow-left me-2"></i> Kembali / Ganti Email
+                    <button class="btn btn-outline-secondary w-100 border-0" onclick="resetForm()">
+                        <i class="fa-solid fa-rotate-left me-2"></i> Abort / Restart Process
                     </button>
                 </div>
             </div>
 
-            <!-- Output Status / Console -->
-            <div id="statusLog" class="terminal-log d-none anim-fade-in">
-                <div class="d-flex align-items-center mb-2">
-                    <div class="spinner-grow spinner-grow-sm text-purple me-2" id="logSpinner" role="status"></div>
-                    <span class="text-purple fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">SYSTEM LOG</span>
+            <!-- Logs / Terminal -->
+            <div id="statusLog" class="terminal-box d-none anim-stagger-3">
+                <div class="d-flex align-items-center border-bottom border-secondary border-opacity-25 pb-2 mb-2">
+                    <span class="blink-dot me-2 bg-warning"></span>
+                    <span class="text-warning fw-bold">TERMINAL OUTPUT</span>
                 </div>
-                <div id="logText" style="color: #d1d5db; word-break: break-all;"></div>
+                <div id="logText" class="text-secondary" style="word-break: break-all;"></div>
             </div>
 
         </div>
-
-        <!-- Footer -->
-        <div class="text-center mt-4">
-            <p style="color: #4b5563; font-size: 0.85rem;">
-                Panel Reseller AM Premium v2.0 &copy; 2026 <span class="text-purple fw-medium">JuikoDeveloper</span>.
-            </p>
-        </div>
-
     </div>
 
-    <!-- Bootstrap 5 JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Success Modal Popup -->
+    <div class="success-overlay" id="successModal">
+        <div class="success-modal">
+            <i class="fa-solid fa-circle-check success-icon"></i>
+            <h3 class="text-white fw-bold mb-1">INJECTION SUCCESS</h3>
+            <p class="text-info mb-4" style="font-family: 'JetBrains Mono'; font-size: 0.85rem;">Account is now Premium VIP</p>
+            
+            <div class="bg-black p-3 rounded-3 border border-secondary border-opacity-25 mb-4 text-start">
+                <div class="mb-2">
+                    <small class="text-dim d-block">TARGET EMAIL:</small>
+                    <span class="text-white fw-bold" id="successEmail"></span>
+                </div>
+                <div>
+                    <small class="text-dim d-block">ORDER ID:</small>
+                    <span class="text-info fw-bold" style="font-family: 'JetBrains Mono';" id="successOrderId"></span>
+                </div>
+            </div>
 
+            <button class="btn w-100 fw-bold" style="background: var(--secondary-accent); color: #000;" onclick="closeSuccessModal()">
+                <i class="fa-solid fa-power-off me-2"></i> ACKNOWLEDGE & CLOSE
+            </button>
+        </div>
+    </div>
+
+    <!-- Script Utama -->
     <script>
-        // CORE CONFIGURATION (TIDAK DIUBAH)
+        // --- 1. LOGIKA VIDEO ROTATION ---
+        const videos = ['video1.mp4', 'video2.mp4'];
+        let currentVideoIdx = 0;
+        const bannerVideo = document.getElementById('bannerVideo');
+
+        bannerVideo.addEventListener('ended', () => {
+            currentVideoIdx = (currentVideoIdx + 1) % videos.length;
+            bannerVideo.src = videos[currentVideoIdx];
+            bannerVideo.play();
+        });
+
+
+        // --- 2. KONFIGURASI API (TIDAK DIUBAH) ---
         const CONFIG = {
             API_KEY: "AIzaSyDtG1AU22ErnQD60AzBAcaknySiz9_CEq0",
             PRODUCT_ID: "am.full.sub.annual.19q4",
@@ -348,25 +426,40 @@
             }
         };
 
-        // Modal Welcome dihapus sesuai request
+        // --- 3. LOGIKA UI & TERMINAL ---
+        function getTimestamp() {
+            const now = new Date();
+            return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+        }
 
         function showLog(text, isError = false) {
             const logBox = document.getElementById('statusLog');
             const logText = document.getElementById('logText');
-            const spinner = document.getElementById('logSpinner');
-            
             logBox.classList.remove('d-none');
-            logText.innerText = text;
-
-            if (isError) {
-                spinner.classList.add('d-none');
-                logText.style.color = "#ef4444"; // Red for error
-            } else {
-                spinner.classList.remove('d-none');
-                logText.style.color = "#d1d5db"; // Normal text
-            }
+            
+            const colorClass = isError ? "text-danger" : "text-info";
+            const prefix = isError ? "[ERROR]" : "[SYSTEM]";
+            
+            // Append log (not replace) to make it look like a real terminal
+            logText.innerHTML += `<div class="mb-1"><span class="log-time">[${getTimestamp()}]</span> <span class="log-prefix ${colorClass}">${prefix}</span> <span class="text-light">${text}</span></div>`;
+            
+            // Auto scroll to bottom
+            logText.scrollTop = logText.scrollHeight;
         }
 
+        // --- 4. SUCCESS MODAL CONTROL ---
+        function showSuccessModal(email, orderId) {
+            document.getElementById('successEmail').innerText = email;
+            document.getElementById('successOrderId').innerText = orderId;
+            document.getElementById('successModal').classList.add('active');
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.remove('active');
+            resetForm();
+        }
+
+        // --- 5. LOGIKA EKSTRAKSI OOB CODE ---
         function getRandomInt(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
@@ -398,21 +491,26 @@
             }
         }
 
+        // --- 6. PROSES API ---
         async function sendMagicLink() {
             const email = document.getElementById('emailInput').value;
             if (!email || !email.includes('@')) {
-                alert('Format email buyer tidak valid!');
+                alert('Format email target tidak valid!');
                 return;
             }
 
-            showLog("Connecting to Alight Motion Server & Sending Magic Link to Buyer...");
+            document.getElementById('logText').innerHTML = ''; // Clear old logs
+            showLog(`Initiating connection for target: ${email}...`);
 
             try {
+                // Proses API asli milikmu
                 await fetch(`https://www.googleapis.com/identitytoolkit/v3/relyingparty/createAuthUri?key=${CONFIG.API_KEY}`, {
                     method: 'POST',
                     headers: CONFIG.HEADERS,
                     body: JSON.stringify({ identifier: email, continueUri: "http://localhost" })
                 });
+
+                showLog("Generating OOB payload request...");
 
                 const res = await fetch(`https://www.googleapis.com/identitytoolkit/v3/relyingparty/getOobConfirmationCode?key=${CONFIG.API_KEY}`, {
                     method: 'POST',
@@ -431,18 +529,21 @@
                 });
 
                 if (res.ok) {
-                    showLog("Magic Link successfully sent! Ask buyer to copy button link from email and paste in Step 2.");
+                    showLog("Magic Link successfully transmitted. Awaiting user input...");
                     document.getElementById('targetBuyerDisplay').innerText = email;
                     
-                    // Transisi UI
+                    // Transisi Animasi UI
                     document.getElementById('step1').style.display = 'none';
-                    document.getElementById('step2').style.display = 'block';
+                    const step2 = document.getElementById('step2');
+                    step2.style.display = 'block';
+                    step2.classList.add('anim-stagger-1');
+                    
                 } else {
                     const err = await res.json();
-                    showLog("Failed to send verification email: " + JSON.stringify(err), true);
+                    showLog("Transmission Failed: " + JSON.stringify(err), true);
                 }
             } catch (err) {
-                showLog("Connection error: " + err.message, true);
+                showLog("Network Error: " + err.message, true);
             }
         }
 
@@ -452,17 +553,17 @@
             const customPrefix = document.getElementById('orderIdInput').value || "JUIKOxDev-VIP-0000-";
 
             if (!rawLink) {
-                alert('Silakan tempel (paste) URL verifikasi yang Anda dapatkan dari buyer!');
+                alert('Silakan tempel (paste) Magic Link URL!');
                 return;
             }
 
             const oobCode = extractOobCode(rawLink);
             if (!oobCode) {
-                alert('URL Verifikasi tidak valid atau parameter oobCode hilang/kedaluwarsa!');
+                showLog('Invalid URL structure or missing OOB parameter!', true);
                 return;
             }
 
-            showLog("Validating OobCode & Authenticating Buyer Account...");
+            showLog("Validating payload & authenticating identity...");
 
             try {
                 const signinRes = await fetch(`https://www.googleapis.com/identitytoolkit/v3/relyingparty/emailLinkSignin?key=${CONFIG.API_KEY}`, {
@@ -479,8 +580,7 @@
                 if (!signinRes.ok) throw new Error(JSON.stringify(signinData));
 
                 const idToken = signinData.idToken;
-
-                showLog("Authentication Success! Injecting Premium Alight Motion License...");
+                showLog("Auth bypass successful. Forcing premium injection...");
 
                 const codeOrder = getRandomInt(10000, 99999).toString();
                 const finalOrderId = customPrefix + codeOrder;
@@ -503,26 +603,25 @@
                 });
 
                 const premiumData = await premiumRes.json();
-
-                document.getElementById('logSpinner').classList.add('d-none');
-                showLog("SUCCESS VIP! Buyer Account (" + email + ") is now PREMIUM!\nOrder ID: " + finalOrderId + "\nPowered by JuikoWeb VIP");
                 
-                // Menambahkan warna hijau sukses di log
-                document.getElementById('logText').style.color = "#10b981"; 
+                showLog(`INJECTION COMPLETE. Order ID: ${finalOrderId}`);
                 
-                alert("Aktivasi Sukses! Akun buyer berhasil diubah menjadi Premium VIP.");
+                // MENGGANTI ALERT DENGAN CUSTOM SUCCESS MODAL
+                setTimeout(() => {
+                    showSuccessModal(email, finalOrderId);
+                }, 500); // delay dikit biar animasi terasa
 
             } catch (err) {
-                showLog("Activation Failed: " + err.message, true);
+                showLog("Injection sequence failed: " + err.message, true);
             }
         }
 
         function resetForm() {
-            // Animasi transisi reset
             document.getElementById('step1').style.display = 'block';
             document.getElementById('step2').style.display = 'none';
             document.getElementById('linkInput').value = '';
             document.getElementById('statusLog').classList.add('d-none');
+            document.getElementById('logText').innerHTML = '';
         }
     </script>
 </body>
