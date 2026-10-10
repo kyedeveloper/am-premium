@@ -149,7 +149,7 @@
                 </div>
             </div>
 
-            <!-- TOMBOL API -->
+            <!-- TOMBOL API & DOCS -->
             <div class="mt-4 pt-3 border-top border-secondary border-opacity-25 anim-stagger-3">
                 <button class="btn btn-api w-100 py-3" onclick="toggleApiDocs()">
                     <i class="fa-solid fa-code me-2"></i> API BUAT BOT ALIGHT MOTIONMU
@@ -161,24 +161,52 @@
                         <button class="btn btn-sm btn-outline-info api-tab" onclick="switchLang('python')" id="tab-python">Python</button>
                         <button class="btn btn-sm btn-outline-info api-tab" onclick="switchLang('php')" id="tab-php">PHP</button>
                     </div>
-                    <div class="text-dim mb-3" style="font-size: 0.75rem;"><i class="fa-solid fa-circle-info text-info"></i> Endpoint Vercel Zukai Backend</div>
+                    <div class="text-dim mb-3" style="font-size: 0.75rem;"><i class="fa-solid fa-circle-info text-info"></i> Endpoint Vercel Zukai Backend Protocol</div>
 
+                    <!-- Kode Node.js -->
                     <pre id="code-nodejs" class="m-0 text-white" style="font-size: 0.75rem; white-space: pre-wrap;"><span class="syntax-keyword">const</span> axios = <span class="syntax-function">require</span>(<span class="syntax-string">'axios'</span>);
+
+<span class="syntax-comment">// 1. Endpoint Kirim Magic Link</span>
+axios.<span class="syntax-function">post</span>(<span class="syntax-string">'https://www.juikoprem.my.id/api/magic-link'</span>, {
+    email: <span class="syntax-string">"buyer@email.com"</span>
+}).<span class="syntax-function">then</span>(res => <span class="syntax-function">console</span>.<span class="syntax-function">log</span>(<span class="syntax-string">"Magic Link:"</span>, res.data));
+
+<span class="syntax-comment">// 2. Endpoint Inject Premium (Setelah buyer dapet link)</span>
 axios.<span class="syntax-function">post</span>(<span class="syntax-string">'https://www.juikoprem.my.id/api/inject'</span>, {
     email: <span class="syntax-string">"buyer@email.com"</span>, oobCode: <span class="syntax-string">"MAGIC_LINK_NYA"</span>, orderId: <span class="syntax-string">"ZukaiDev-VIP-0001"</span>
-}).<span class="syntax-function">then</span>(res => <span class="syntax-function">console</span>.<span class="syntax-function">log</span>(res.data));</pre>
+}).<span class="syntax-function">then</span>(res => <span class="syntax-function">console</span>.<span class="syntax-function">log</span>(<span class="syntax-string">"Inject:"</span>, res.data));</pre>
 
+                    <!-- Kode Python -->
                     <pre id="code-python" class="m-0 text-white" style="font-size: 0.75rem; white-space: pre-wrap; display: none;"><span class="syntax-keyword">import</span> requests
-requests.<span class="syntax-function">post</span>(<span class="syntax-string">"https://www.juikoprem.my.id/api/inject"</span>, json={
-    <span class="syntax-string">"email"</span>: <span class="syntax-string">"buyer@email.com"</span>, <span class="syntax-string">"oobCode"</span>: <span class="syntax-string">"MAGIC_LINK_NYA"</span>, <span class="syntax-string">"orderId"</span>: <span class="syntax-string">"ZukaiDev-VIP-0001"</span>
-}).<span class="syntax-function">json</span>()</pre>
 
+<span class="syntax-comment"># 1. Endpoint Kirim Magic Link</span>
+req1 = requests.<span class="syntax-function">post</span>(<span class="syntax-string">"https://www.juikoprem.my.id/api/magic-link"</span>, json={
+    <span class="syntax-string">"email"</span>: <span class="syntax-string">"buyer@email.com"</span>
+})
+<span class="syntax-function">print</span>(<span class="syntax-string">"Magic Link:"</span>, req1.<span class="syntax-function">json</span>())
+
+<span class="syntax-comment"># 2. Endpoint Inject Premium (Setelah buyer dapet link)</span>
+req2 = requests.<span class="syntax-function">post</span>(<span class="syntax-string">"https://www.juikoprem.my.id/api/inject"</span>, json={
+    <span class="syntax-string">"email"</span>: <span class="syntax-string">"buyer@email.com"</span>, <span class="syntax-string">"oobCode"</span>: <span class="syntax-string">"MAGIC_LINK_NYA"</span>, <span class="syntax-string">"orderId"</span>: <span class="syntax-string">"ZukaiDev-VIP-0001"</span>
+})
+<span class="syntax-function">print</span>(<span class="syntax-string">"Inject:"</span>, req2.<span class="syntax-function">json</span>())</pre>
+
+                    <!-- Kode PHP -->
                     <pre id="code-php" class="m-0 text-white" style="font-size: 0.75rem; white-space: pre-wrap; display: none;"><span class="syntax-keyword">&lt;?php</span>
-$ch = <span class="syntax-function">curl_init</span>(<span class="syntax-string">'https://www.juikoprem.my.id/api/inject'</span>);
-<span class="syntax-function">curl_setopt</span>($ch, CURLOPT_POSTFIELDS, <span class="syntax-function">json_encode</span>([<span class="syntax-string">'email'</span>=><span class="syntax-string">'buyer@email.com'</span>, <span class="syntax-string">'oobCode'</span>=><span class="syntax-string">'LINK'</span>, <span class="syntax-string">'orderId'</span>=><span class="syntax-string">'ID'</span>]));
-<span class="syntax-function">curl_setopt</span>($ch, CURLOPT_HTTPHEADER, [<span class="syntax-string">'Content-Type:application/json'</span>]);
-<span class="syntax-function">curl_setopt</span>($ch, CURLOPT_RETURNTRANSFER, <span class="syntax-keyword">true</span>);
-<span class="syntax-keyword">echo</span> <span class="syntax-function">curl_exec</span>($ch); <span class="syntax-keyword">?></span></pre>
+<span class="syntax-comment">// 1. Endpoint Kirim Magic Link</span>
+$ch1 = <span class="syntax-function">curl_init</span>(<span class="syntax-string">'https://www.juikoprem.my.id/api/magic-link'</span>);
+<span class="syntax-function">curl_setopt</span>($ch1, CURLOPT_POSTFIELDS, <span class="syntax-function">json_encode</span>([<span class="syntax-string">'email'</span>=><span class="syntax-string">'buyer@email.com'</span>]));
+<span class="syntax-function">curl_setopt</span>($ch1, CURLOPT_HTTPHEADER, [<span class="syntax-string">'Content-Type:application/json'</span>]);
+<span class="syntax-function">curl_setopt</span>($ch1, CURLOPT_RETURNTRANSFER, <span class="syntax-keyword">true</span>);
+<span class="syntax-keyword">echo</span> <span class="syntax-string">"Magic Link: "</span> . <span class="syntax-function">curl_exec</span>($ch1) . <span class="syntax-string">"\n"</span>;
+
+<span class="syntax-comment">// 2. Endpoint Inject Premium</span>
+$ch2 = <span class="syntax-function">curl_init</span>(<span class="syntax-string">'https://www.juikoprem.my.id/api/inject'</span>);
+<span class="syntax-function">curl_setopt</span>($ch2, CURLOPT_POSTFIELDS, <span class="syntax-function">json_encode</span>([<span class="syntax-string">'email'</span>=><span class="syntax-string">'buyer@email.com'</span>, <span class="syntax-string">'oobCode'</span>=><span class="syntax-string">'LINK'</span>, <span class="syntax-string">'orderId'</span>=><span class="syntax-string">'ID'</span>]));
+<span class="syntax-function">curl_setopt</span>($ch2, CURLOPT_HTTPHEADER, [<span class="syntax-string">'Content-Type:application/json'</span>]);
+<span class="syntax-function">curl_setopt</span>($ch2, CURLOPT_RETURNTRANSFER, <span class="syntax-keyword">true</span>);
+<span class="syntax-keyword">echo</span> <span class="syntax-string">"Inject: "</span> . <span class="syntax-function">curl_exec</span>($ch2);
+<span class="syntax-keyword">?></span></pre>
                 </div>
             </div>
 
