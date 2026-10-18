@@ -1,2 +1,2 @@
 # am-premium
-Makes you generate alight premium for free v2
+Makes you generate alight premium for free and useable
