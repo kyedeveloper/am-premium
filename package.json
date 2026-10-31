@@ -1,6 +1,6 @@
 {
   "name": "am-premium",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "type": "module",
   "dependencies": {
     "@upstash/redis": "^1.34.3",
