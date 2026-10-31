@@ -1,5 +1,6 @@
 // api/admin/grant.js
-import { db, K } from '../../lib/db.js';
+import { db } from '../../lib/db.js';
+// sesuaikan nama variabel dengan export di lib/db.js;
 import { authUser } from '../../lib/auth.js';
 import { isOwner, grantPremium } from '../../lib/premium.js';
 
