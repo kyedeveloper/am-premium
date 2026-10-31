@@ -395,16 +395,44 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
   *{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}
   .reveal{opacity:1;transform:none}
 }
+
+/* ===== ACCOUNT / PREMIUM ===== */
+.acc-btn{display:flex;align-items:center;gap:.45rem;font-family:var(--mono);font-size:.63rem;letter-spacing:.06em;padding:.45rem .7rem;border-radius:99px;border:1px solid var(--line);background:rgba(10,10,16,.7);color:var(--dim);cursor:pointer;transition:.25s;text-transform:uppercase;white-space:nowrap}
+.acc-btn:hover{color:var(--a2);border-color:var(--a2)}
+.acc-btn.premium{color:#04120d;background:linear-gradient(120deg,var(--a2),#8dffc0);border-color:var(--a2);font-weight:700;box-shadow:0 0 18px var(--g2)}
+.quota-line{display:flex;align-items:center;gap:.6rem;padding:.6rem .9rem;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.02);margin-bottom:1.1rem;font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;color:var(--dim);text-transform:uppercase;flex-wrap:wrap}
+.quota-line b{color:var(--a2)}
+.quota-line.full b{color:var(--bad)}
+.quota-line .meter{flex:1;min-width:70px;height:5px;border-radius:99px;background:#141420;overflow:hidden}
+.quota-line .meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--a1),var(--a2));transition:width .5s}
+.quota-line.full .meter i{background:linear-gradient(90deg,#ff4d6d,#ff8fa3)}
+.quota-line button{margin-left:auto;background:none;border:none;color:var(--a2);cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase}
+.auth-tabs{display:flex;gap:.3rem;padding:.25rem;border:1px solid var(--line);border-radius:9px;background:#06060a;margin-bottom:1rem}
+.auth-tabs button{flex:1;font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:.45rem;border-radius:7px;border:none;background:none;color:var(--dimmer);cursor:pointer}
+.auth-tabs button.on{background:rgba(0,245,212,.13);color:var(--a2)}
+.price-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.price{border:1px solid var(--line);border-radius:var(--r);padding:1.2rem;background:var(--panel);position:relative;overflow:hidden}
+.price.hot{border-color:rgba(0,245,212,.45);box-shadow:0 0 40px -18px var(--g2)}
+.price .tagp{position:absolute;top:.8rem;right:.8rem;font-family:var(--mono);font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;background:var(--a2);color:#04120d;border-radius:99px;padding:.16rem .45rem;font-weight:700}
+.price h3{font-size:.9rem;color:#fff;margin-bottom:.2rem}
+.price .num{font-family:var(--mono);font-size:1.35rem;color:var(--a2);margin:.5rem 0 .7rem}
+.price .num small{font-size:.6rem;color:var(--dimmer)}
+.price ul{list-style:none;font-size:.76rem;color:var(--dim);display:flex;flex-direction:column;gap:.35rem;margin-bottom:1rem}
+.price ul i{color:var(--ok);margin-right:.35rem}
+.price ul .no i{color:var(--dimmer)}
+#qrisImg{width:100%;max-width:240px;display:block;margin:0 auto .7rem;border-radius:12px;background:#fff;padding:.4rem}
+.pay-timer{font-family:var(--mono);font-size:.68rem;color:var(--warn);text-align:center;letter-spacing:.1em;margin-bottom:.8rem}
+@media(max-width:600px){.price-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
 <div id="boot" aria-hidden="true">
   <div class="boot-inner">
-    <div class="ln">&gt; zukai_kernel <b>v4.1.0</b> booting...</div>
+    <div class="ln">&gt; zukai_kernel <b>v5.0.0</b> booting...</div>
     <div class="ln">&gt; mount /api/magic-link <b>OK</b></div>
     <div class="ln">&gt; mount /api/inject <b>OK</b></div>
-    <div class="ln">&gt; queue module <b>OK</b></div>
+    <div class="ln">&gt; auth + quota module <b>OK</b></div>
     <div class="ln">&gt; node asia-se-01 <b>14ms</b></div>
     <div class="ln">&gt; <b>READY</b></div>
     <div class="bar"><i></i></div>
@@ -428,6 +456,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
       <nav class="pill-nav" id="pillNav" aria-label="Navigasi bagian">
         <span class="pill-ind" id="pillInd"></span>
         <a href="#fitur" data-sec="fitur"><i class="fa-solid fa-layer-group"></i> Fitur</a>
+        <a href="#harga" data-sec="harga"><i class="fa-solid fa-tags"></i> Harga</a>
         <a href="#terminal" data-sec="terminal"><i class="fa-solid fa-terminal"></i> Terminal</a>
         <a href="#api" data-sec="api"><i class="fa-solid fa-code"></i> API</a>
         <a href="#faq" data-sec="faq"><i class="fa-solid fa-circle-question"></i> FAQ</a>
@@ -444,17 +473,20 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
         <button class="icon-btn" id="soundBtn" aria-pressed="false" title="Suara notifikasi" aria-label="Suara notifikasi"><i class="fa-solid fa-volume-xmark"></i></button>
         <button class="kbd-hint" onclick="openPalette()" title="Command palette"><i class="fa-solid fa-magnifying-glass"></i> <kbd>Ctrl</kbd><kbd>K</kbd></button>
         <button class="icon-btn" onclick="openSheet('historySheet')" title="Riwayat aktivasi" aria-label="Riwayat"><i class="fa-solid fa-clock-rotate-left"></i></button>
+        <button class="acc-btn" id="accBtn" onclick="accClick()"><i class="fa-solid fa-user"></i> <span id="accLabel">Masuk</span></button>
         <button class="btn btn-primary" style="padding:.5rem .85rem;font-size:.68rem" onclick="scrollToTerminal()"><i class="fa-solid fa-terminal"></i> Mulai</button>
         <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><i class="fa-solid fa-bars"></i></button>
       </div>
     </div>
     <div class="mobile-menu" id="mobileMenu">
       <a href="#fitur"><i class="fa-solid fa-layer-group"></i> Fitur</a>
+      <a href="#harga"><i class="fa-solid fa-tags"></i> Harga</a>
       <a href="#terminal"><i class="fa-solid fa-terminal"></i> Terminal</a>
       <a href="#api"><i class="fa-solid fa-code"></i> API</a>
       <a href="#faq"><i class="fa-solid fa-circle-question"></i> FAQ</a>
       <a href="#tentang"><i class="fa-solid fa-circle-info"></i> Tentang</a>
       <a href="#" onclick="openSheet('historySheet');return false"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat</a>
+      <a href="#" onclick="accClick();return false"><i class="fa-solid fa-user"></i> Akun</a>
       <a href="#" onclick="openSheet('guideSheet');return false"><i class="fa-solid fa-book"></i> Panduan</a>
     </div>
   </div>
@@ -489,8 +521,8 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
         <div class="stat-row">
           <div class="stat"><b data-count="80" data-suffix=".000+ user">0</b><small>Berhasil Inject</small></div>
           <div class="stat"><b data-count="256">0</b><small>Bit AES</small></div>
-          <div class="stat"><b data-count="100" data-suffix=".000+ user">0</b><small>Pengguna</small></small></div>
-          <div class="stat"><b data-count="0" data-suffix=" Rupiah">0</b><small>Biaya</small></div>
+          <div class="stat"><b data-count="100" data-suffix=".000+ user">0</b><small>Pengguna</small></div>
+          <div class="stat"><b data-count="20" data-suffix="x / hari">0</b><small>Limit Free</small></div>
         </div>
       </div>
     </div>
@@ -534,14 +566,47 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
       </div>
       <div class="card reveal">
         <span class="badge-new">Baru</span>
-        <div class="ic"><i class="fa-solid fa-clock-rotate-left"></i></div>
-        <h3>Riwayat Lokal</h3>
-        <p>Semua aktivasi tercatat di perangkatmu, bisa diekspor CSV. Tidak dikirim ke mana pun.</p>
+        <div class="ic"><i class="fa-solid fa-gauge-high"></i></div>
+        <h3>Kuota &amp; Akun</h3>
+        <p>20 inject per hari buat akun free, tanpa batas buat premium. Dihitung di server, bukan di browser.</p>
       </div>
       <div class="card reveal">
         <div class="ic"><i class="fa-solid fa-shield-halved"></i></div>
         <h3>Token di Server</h3>
         <p><code>API_KEY</code>, <code>ALIGHT_TOKEN</code>, dan <code>FIREBASE_TOKEN</code> hidup sebagai env Vercel, bukan di HTML.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="harga">
+    <div class="sec-head reveal">
+      <span class="kicker">Harga</span>
+      <h2>Gratis buat coba, murah buat harian.</h2>
+      <p>Akun free dapat 20 inject per hari, reset tiap 00:00 WIB. Premium tanpa batas, aktif 30 hari.</p>
+    </div>
+    <div class="price-grid">
+      <div class="price">
+        <h3>Free</h3>
+        <div class="num">Rp0 <small>/ selamanya</small></div>
+        <ul>
+          <li><i class="fa-solid fa-check"></i>20 inject / hari</li>
+          <li><i class="fa-solid fa-check"></i>Validator OOB realtime</li>
+          <li><i class="fa-solid fa-check"></i>Antrian bulk</li>
+          <li class="no"><i class="fa-solid fa-xmark"></i>Tanpa API key</li>
+        </ul>
+        <button class="btn btn-plain btn-block" onclick="openSheet('authSheet')">Buat akun</button>
+      </div>
+      <div class="price hot">
+        <span class="tagp">Unlimited</span>
+        <h3>Premium</h3>
+        <div class="num">Rp3.500 <small>/ 30 hari</small></div>
+        <ul>
+          <li><i class="fa-solid fa-check"></i>Inject tanpa batas</li>
+          <li><i class="fa-solid fa-check"></i>API key buat bot</li>
+          <li><i class="fa-solid fa-check"></i>Prioritas antrian</li>
+          <li><i class="fa-solid fa-check"></i>Bayar QRIS otomatis</li>
+        </ul>
+        <button class="btn btn-primary btn-block" onclick="openSheet('upgradeSheet')">Upgrade</button>
       </div>
     </div>
   </section>
@@ -569,6 +634,12 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
           <button class="tool-btn" onclick="openSheet('historySheet')"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat <span class="cnt" id="hCount">0</span></button>
           <button class="tool-btn" onclick="openQr()"><i class="fa-solid fa-qrcode"></i> QR</button>
           <button class="tool-btn" onclick="openPalette()"><i class="fa-solid fa-bolt"></i> Aksi Cepat</button>
+        </div>
+
+        <div class="quota-line" id="quotaLine">
+          <span><i class="fa-solid fa-gauge-high"></i> Kuota hari ini <b id="quotaTxt">—</b></span>
+          <span class="meter"><i id="quotaMeter"></i></span>
+          <button onclick="openSheet('upgradeSheet')">Upgrade</button>
         </div>
 
         <div class="stats-mini">
@@ -651,22 +722,23 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
   email: <span class="s">"buyer@email.com"</span>
 });
 
-<span class="c">// 2. Inject setelah buyer dapat link</span>
+<span class="c">// 2. Inject — butuh akun, kirim API key</span>
 <span class="k">await</span> axios.<span class="f">post</span>(<span class="s">'https://am-premium.vercel.app/api/inject'</span>, {
   email: <span class="s">"buyer@email.com"</span>,
   oobCode: <span class="s">"OOB_CODE_NYA"</span>,
   orderId: <span class="s">"ZukaiDev-VIP-00001"</span>
-});</pre>
+}, { headers: { <span class="s">'x-api-key'</span>: <span class="s">'am_xxxxxxxx'</span> } });</pre>
             <pre class="code" data-lang="python" style="display:none"><span class="c"># 1. Kirim magic link</span>
 <span class="k">import</span> requests
 requests.<span class="f">post</span>(<span class="s">"https://am-premium.vercel.app/api/magic-link"</span>,
   json={<span class="s">"email"</span>: <span class="s">"buyer@email.com"</span>})
 
-<span class="c"># 2. Inject setelah buyer dapat link</span>
+<span class="c"># 2. Inject — butuh akun, kirim API key</span>
 requests.<span class="f">post</span>(<span class="s">"https://am-premium.vercel.app/api/inject"</span>,
   json={<span class="s">"email"</span>: <span class="s">"buyer@email.com"</span>,
         <span class="s">"oobCode"</span>: <span class="s">"OOB_CODE_NYA"</span>,
-        <span class="s">"orderId"</span>: <span class="s">"ZukaiDev-VIP-00001"</span>})</pre>
+        <span class="s">"orderId"</span>: <span class="s">"ZukaiDev-VIP-00001"</span>},
+  headers={<span class="s">"x-api-key"</span>: <span class="s">"am_xxxxxxxx"</span>})</pre>
             <pre class="code" data-lang="php" style="display:none"><span class="k">&lt;?php</span>
 <span class="c">// 1. Kirim magic link</span>
 $c1 = <span class="f">curl_init</span>(<span class="s">'https://am-premium.vercel.app/api/magic-link'</span>);
@@ -675,14 +747,14 @@ $c1 = <span class="f">curl_init</span>(<span class="s">'https://am-premium.verce
 <span class="f">curl_setopt</span>($c1, CURLOPT_RETURNTRANSFER, <span class="k">true</span>);
 <span class="k">echo</span> <span class="f">curl_exec</span>($c1);
 
-<span class="c">// 2. Inject</span>
+<span class="c">// 2. Inject — butuh akun, kirim API key</span>
 $c2 = <span class="f">curl_init</span>(<span class="s">'https://am-premium.vercel.app/api/inject'</span>);
 <span class="f">curl_setopt</span>($c2, CURLOPT_POSTFIELDS, <span class="f">json_encode</span>([
   <span class="s">'email'</span>=><span class="s">'buyer@email.com'</span>, <span class="s">'oobCode'</span>=><span class="s">'OOB'</span>, <span class="s">'orderId'</span>=><span class="s">'ID'</span>]));
-<span class="f">curl_setopt</span>($c2, CURLOPT_HTTPHEADER, [<span class="s">'Content-Type:application/json'</span>]);
+<span class="f">curl_setopt</span>($c2, CURLOPT_HTTPHEADER, [<span class="s">'Content-Type:application/json'</span>, <span class="s">'x-api-key: am_xxxxxxxx'</span>]);
 <span class="f">curl_setopt</span>($c2, CURLOPT_RETURNTRANSFER, <span class="k">true</span>);
 <span class="k">echo</span> <span class="f">curl_exec</span>($c2);</pre>
-            <div class="code-note"><i class="fa-solid fa-circle-info" style="color:var(--a2)"></i> Ganti domain kalau deploy di alamat lain. Endpoint <code>/api/inject</code> sudah mengizinkan CORS.</div>
+            <div class="code-note"><i class="fa-solid fa-circle-info" style="color:var(--a2)"></i> Endpoint <code>/api/inject</code> sekarang butuh akun. Ambil API key di panel akun.</div>
           </div>
         </div>
 
@@ -711,6 +783,14 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://am-premium.verce
         <div class="faq-a"><p>Metodenya meniru alur verifikasi pembelian dari aplikasi resmi, jadi akun akan terbaca premium di Alight Motion. Risikonya cuma satu: kalau server Google atau Alight mengubah skema, endpoint bisa berhenti sampai diperbaiki.</p></div>
       </div>
       <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Kenapa ada limit 20x sehari?<i class="fa-solid fa-plus"></i></button>
+        <div class="faq-a"><p>Biar server nggak kebanjiran dan biaya token tetap wajar. Akun free dapat 20 inject per hari, reset jam 00:00 WIB. Kalau butuh lebih, premium Rp3.500 sebulan tanpa batas.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Premium aktif otomatis setelah bayar?<i class="fa-solid fa-plus"></i></button>
+        <div class="faq-a"><p>Ya, begitu QRIS discan dan dibayar, status akun berubah otomatis dalam beberapa detik. Halaman pembayaran ngecek status sendiri, jadi nggak perlu kirim bukti transfer.</p></div>
+      </div>
+      <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">Email magic link nggak masuk, kenapa?<i class="fa-solid fa-plus"></i></button>
         <div class="faq-a"><p>Cek folder spam/promosi dulu, tunggu 1–2 menit, lalu kirim ulang. Pastikan email diketik lengkap tanpa spasi. Beberapa domain email kantor memblokir pengirim pihak ketiga.</p></div>
       </div>
@@ -720,7 +800,7 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://am-premium.verce
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">Data email saya disimpan?<i class="fa-solid fa-plus"></i></button>
-        <div class="faq-a"><p>Untuk request, tidak ada database di repo ini. Untuk riwayat, catatan disimpan di <strong>localStorage browser kamu sendiri</strong> dan bisa dihapus kapan saja lewat panel riwayat.</p></div>
+        <div class="faq-a"><p>Email akun kamu disimpan di database untuk keperluan login dan hitung kuota. Riwayat aktivasi tetap di <strong>localStorage browser kamu sendiri</strong> dan bisa dihapus kapan saja lewat panel riwayat.</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">Bisa dipakai buat jualan?<i class="fa-solid fa-plus"></i></button>
@@ -752,7 +832,7 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://am-premium.verce
         <div class="kv"><span>Runtime</span><b>Vercel Functions</b></div>
         <div class="kv"><span>Stack</span><b>HTML + JS</b></div>
         <div class="kv"><span>Auth</span><b>OOB / Email Link</b></div>
-        <div class="kv"><span>Versi</span><b>v4.1.0</b></div>
+        <div class="kv"><span>Versi</span><b>v5.0.0</b></div>
         <div class="kv"><span>Lisensi</span><b>Open Source</b></div>
         <div style="margin-top:.9rem;display:flex;flex-direction:column;gap:.45rem">
           <a class="btn btn-primary btn-block" href="https://github.com/kyedeveloper/am-premium" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Repo GitHub</a>
@@ -765,9 +845,10 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://am-premium.verce
 
   <footer>
     <div class="foot">
-      <p>SYSTEM CORE v4.1.0 &copy; 2026 ZUKAI DEVELOPER</p>
+      <p>SYSTEM CORE v5.0.0 &copy; 2026 ZUKAI DEVELOPER</p>
       <div class="foot-links">
         <a href="#top">Atas</a>
+        <a href="#harga">Harga</a>
         <a href="#faq">FAQ</a>
         <button onclick="openSheet('historySheet')">Riwayat</button>
         <button onclick="openSheet('aboutSheet')">System Info</button>
@@ -796,11 +877,11 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://am-premium.verce
       <button class="x" onclick="closeSheet('welcomeSheet')" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="sheet-body">
-      <p>Ini panel aktivasi, bukan toko. Yang kamu butuhkan cuma <strong>email akun target</strong> dan akses ke inbox-nya.</p>
+      <p>Ini panel aktivasi, bukan toko. Yang kamu butuhkan cuma <strong>akun</strong>, <strong>email akun target</strong>, dan akses ke inbox-nya.</p>
       <div class="kv-box">
         <div class="kv"><span>Langkah</span><b>2 (link → inject)</b></div>
         <div class="kv"><span>Durasi</span><b>± 1 menit</b></div>
-        <div class="kv"><span>Token</span><b>Di server</b></div>
+        <div class="kv"><span>Limit free</span><b>20 / hari</b></div>
       </div>
       <p style="margin:0">Sebelum mulai, pastikan kamu tahu akun mana yang mau diaktifkan. Progres tidak bisa dibatalkan setelah inject.</p>
     </div>
@@ -821,10 +902,10 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://am-premium.verce
       <div class="kv-box">
         <div class="kv"><span>Nama</span><b>AM Premium Terminal</b></div>
         <div class="kv"><span>Developer</span><b>Zukai Dev</b></div>
-        <div class="kv"><span>Arsitektur</span><b>Serverless v4.1</b></div>
+        <div class="kv"><span>Arsitektur</span><b>Serverless v5.0</b></div>
         <div class="kv"><span>Node</span><b>ASIA-SE-01</b></div>
         <div class="kv"><span>Enkripsi</span><b>AES-256</b></div>
-        <div class="kv"><span>Build</span><b>2026.10.29</b></div>
+        <div class="kv"><span>Build</span><b>2026.10.31</b></div>
       </div>
       <p style="margin:0">Terminal berjalan penuh di atas fungsi serverless. Frontend hanya mengirim JSON; kredensial Google dan Alight dibaca dari environment variable di sisi server.</p>
     </div>
@@ -839,8 +920,8 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://am-premium.verce
       <button class="x" onclick="closeSheet('guideSheet')" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="sheet-body">
-      <div class="gstep"><span class="num">1</span><div><h4>Siapkan email</h4><p>Pakai email akun yang mau diaktifkan. Buka inbox-nya di perangkat lain.</p></div></div>
-      <div class="gstep"><span class="num">2</span><div><h4>Kirim magic link</h4><p>Isi email di terminal, tekan Transmit. Tunggu 1–2 menit, cek spam kalau perlu.</p></div></div>
+      <div class="gstep"><span class="num">1</span><div><h4>Bikin akun</h4><p>Daftar pakai email. Akun free dapat 20 inject per hari.</p></div></div>
+      <div class="gstep"><span class="num">2</span><div><h4>Kirim magic link</h4><p>Isi email akun yang mau diaktifkan, tekan Transmit. Tunggu 1–2 menit, cek spam kalau perlu.</p></div></div>
       <div class="gstep"><span class="num">3</span><div><h4>Salin link dari email</h4><p>Buka email masuk, salin seluruh URL login-nya — jangan dipotong.</p></div></div>
       <div class="gstep"><span class="num">4</span><div><h4>Tempel &amp; inject</h4><p>Tempel di kolom kedua. Validator akan menandai kalau link valid, lalu tekan Force Inject.</p></div></div>
       <div class="gstep"><span class="num">5</span><div><h4>Simpan struk</h4><p>Kalau sukses, unduh struk. Riwayat juga tersimpan di panel Riwayat.</p></div></div>
@@ -932,6 +1013,84 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://am-premium.verce
     <div class="sheet-foot">
       <button class="btn btn-plain" onclick="clearHistory()"><i class="fa-solid fa-trash"></i> Hapus semua</button>
       <button class="btn btn-primary" onclick="exportHistory()"><i class="fa-solid fa-file-csv"></i> Ekspor CSV</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="authSheet" role="dialog" aria-modal="true">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h3><i class="fa-solid fa-user-shield"></i> Akun</h3>
+      <button class="x" onclick="closeSheet('authSheet')" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
+      <div class="auth-tabs">
+        <button class="on" id="tabLogin" onclick="authTab('login')">Masuk</button>
+        <button id="tabReg" onclick="authTab('reg')">Daftar</button>
+      </div>
+      <div class="field">
+        <label class="label" for="authEmail">Email</label>
+        <input class="inp" type="email" id="authEmail" placeholder="kamu@email.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label class="label" for="authPass">Password <span class="hint">min 6 karakter</span></label>
+        <input class="inp" type="password" id="authPass" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <div class="err-msg" id="authErr"></div>
+      <p style="font-size:.72rem;margin:0">Akun dipakai buat nyimpen kuota &amp; status premium. Email nggak dipakai buat apa pun selain login.</p>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-primary btn-block" id="authSubmit" onclick="authSubmit()"><i class="fa-solid fa-right-to-bracket"></i> <span>Masuk</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="accountSheet" role="dialog" aria-modal="true">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h3><i class="fa-solid fa-id-card"></i> Akun gue</h3>
+      <button class="x" onclick="closeSheet('accountSheet')" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
+      <div class="kv-box">
+        <div class="kv"><span>Email</span><b id="acEmail">—</b></div>
+        <div class="kv"><span>Paket</span><b id="acPlan">—</b></div>
+        <div class="kv"><span>Kuota</span><b id="acQuota">—</b></div>
+      </div>
+      <label class="label" for="acApiKey">API key <span class="hint">kirim via header x-api-key</span></label>
+      <div class="input-wrap" style="margin-bottom:.6rem">
+        <input class="inp" id="acApiKey" readonly style="font-size:.68rem">
+        <button class="post" type="button" onclick="copyText($('#acApiKey').value)"><i class="fa-regular fa-copy"></i></button>
+      </div>
+      <button class="btn btn-plain btn-block" style="margin-bottom:.5rem" onclick="rotateKey()"><i class="fa-solid fa-rotate"></i> Ganti API key</button>
+      <div id="acOrders" style="margin-top:.8rem"></div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-plain" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i> Keluar</button>
+      <button class="btn btn-primary" onclick="openSheet('upgradeSheet')"><i class="fa-solid fa-crown"></i> Upgrade</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="upgradeSheet" role="dialog" aria-modal="true">
+  <div class="sheet accent">
+    <div class="sheet-head">
+      <h3><i class="fa-solid fa-crown"></i> Upgrade Premium</h3>
+      <button class="x" onclick="closeSheet('upgradeSheet')" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
+      <div class="kv-box">
+        <div class="kv"><span>Harga</span><b>Rp3.500 / 30 hari</b></div>
+        <div class="kv"><span>Metode</span><b>QRIS</b></div>
+        <div class="kv"><span>Limit</span><b>Tanpa batas</b></div>
+      </div>
+      <div id="payArea">
+        <p style="font-size:.76rem">Tekan tombol di bawah buat bikin invoice. Bayar pakai e-wallet / m-banking apa pun yang support QRIS.</p>
+      </div>
+      <p style="font-size:.64rem;color:var(--dimmer);text-align:center;margin:0">Kode referral: <b style="color:var(--a2)">REYY30C1A3</b></p>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-primary btn-block" id="payBtn" onclick="startPayment()"><i class="fa-solid fa-qrcode"></i> <span>Buat Invoice QRIS</span></button>
     </div>
   </div>
 </div>
@@ -1054,7 +1213,7 @@ pillLinks.forEach(l=>{
   l.addEventListener('focus', ()=>movePill(l));
 });
 pillNav.addEventListener('mouseleave', ()=>movePill(pillNav.querySelector('a.active')));
-const secs = ['fitur','terminal','api','faq','tentang'].map(id=>document.getElementById(id)).filter(Boolean);
+const secs = ['fitur','harga','terminal','api','faq','tentang'].map(id=>document.getElementById(id)).filter(Boolean);
 const spy = new IntersectionObserver(es=>{
   es.forEach(e=>{
     if(!e.isIntersecting) return;
@@ -1074,6 +1233,8 @@ function scrollToTerminal(){
 const ACTIONS = [
   {t:'Buka terminal', s:'navigasi', i:'fa-terminal', f:()=>{closePalette();scrollToTerminal();}},
   {t:'Panduan langkah', s:'bantuan', i:'fa-book', f:()=>{closePalette();openSheet('guideSheet');}},
+  {t:'Akun gue', s:'akun', i:'fa-user', f:()=>{closePalette();accClick();}},
+  {t:'Upgrade premium', s:'akun', i:'fa-crown', f:()=>{closePalette();openSheet('upgradeSheet');}},
   {t:'Antrian massal', s:'fitur', i:'fa-layer-group', f:()=>{closePalette();openSheet('queueSheet');}},
   {t:'Riwayat aktivasi', s:'fitur', i:'fa-clock-rotate-left', f:()=>{closePalette();openSheet('historySheet');}},
   {t:'Bagikan via QR', s:'fitur', i:'fa-qrcode', f:()=>{closePalette();openQr();}},
@@ -1214,7 +1375,7 @@ if(matchMedia('(pointer:fine)').matches && !reduce){
 
 /* ---------- typed ---------- */
 (function(){
-  const words = ['> magic link dispatch_', '> oob code validator_', '> bulk queue mode_', '> serverless. no token leak._'];
+  const words = ['> magic link dispatch_', '> oob code validator_', '> quota guard 20/day_', '> serverless. no token leak._'];
   const el = $('#typed'); let wi = 0, ci = 0, del = false;
   if(reduce){ el.textContent = words[0]; return; }
   (function tick(){
@@ -1596,6 +1757,15 @@ async function sendMagicLink(){
 }
 
 function requestInject(){
+  if(!ME){
+    openSheet('authSheet');
+    return toast('Login dulu buat inject.', 'er');
+  }
+  if(!ME.premium && QUOTA && QUOTA.remaining <= 0){
+    openSheet('upgradeSheet');
+    return toast('Kuota harian habis. Upgrade buat unlimited.', 'er');
+  }
+
   const email = $('#emailInput').value.trim();
   const raw = $('#linkInput').value.trim();
   const prefix = $('#orderIdInput').value.trim() || 'ZukaiDev-VIP-0000-';
@@ -1645,12 +1815,15 @@ async function doInject(){
       showLog('INJECTION COMPLETE. Response ID: ' + finalId, 'ok');
       if(idMode === 'seq') nextSeq(true);
       pushHist({ email, orderId: finalId, status:'ok', ts:Date.now() });
+      loadMe();
       setTimeout(()=>showSuccess(email, finalId), 420);
     } else {
       showLog('API error: ' + (data.message || 'HTTP ' + res.status), 'er');
       pushHist({ email, orderId, status:'er', ts:Date.now() });
       beep('er');
       toast('Inject gagal. Cek detail di terminal.', 'er');
+      if(res.status === 401){ openSheet('authSheet'); }
+      if(res.status === 429){ await loadMe(); openSheet('upgradeSheet'); }
     }
   }catch(err){
     showLog('Injection failed: ' + err.message, 'er');
@@ -1687,7 +1860,7 @@ Produk   : am.full.sub.annual.19q4
 Status   : SUCCESS
 --------------------------------
 Simpan file ini sebagai bukti transaksi.
-zukai developer — system core v4.1.0`;
+zukai developer — system core v5.0.0`;
   saveFile(`receipt-${lastReceipt.orderId}.txt`, txt);
   toast('Struk diunduh.', 'ok');
 }
@@ -1719,7 +1892,168 @@ function burst(){
   })();
 }
 
+/* ================= AKUN & KUOTA ================= */
+let ME = null, QUOTA = null, pollTimer = null, payOrder = null;
+
+function paintAccount() {
+  const btn = $('#accBtn'), line = $('#quotaLine');
+  if (!ME) {
+    $('#accLabel').textContent = 'Masuk';
+    btn.classList.remove('premium');
+    $('#quotaTxt').textContent = 'login dulu';
+    $('#quotaMeter').style.width = '0%';
+    line.classList.remove('full');
+    return;
+  }
+  $('#accLabel').textContent = ME.premium ? 'Premium' : ME.email.split('@')[0].slice(0, 12);
+  btn.classList.toggle('premium', !!ME.premium);
+
+  if (ME.premium || !QUOTA) {
+    $('#quotaTxt').textContent = 'unlimited';
+    $('#quotaMeter').style.width = '100%';
+    line.classList.remove('full');
+    return;
+  }
+  $('#quotaTxt').textContent = `${QUOTA.used}/${QUOTA.limit}`;
+  $('#quotaMeter').style.width = (QUOTA.used / QUOTA.limit * 100) + '%';
+  line.classList.toggle('full', QUOTA.remaining <= 0);
+}
+
+async function loadMe() {
+  try {
+    const r = await fetch('/api/auth/me', { cache: 'no-store' });
+    const d = await r.json();
+    ME = d.user || null;
+    QUOTA = d.quota || null;
+  } catch { ME = null; QUOTA = null; }
+  paintAccount();
+  return ME;
+}
+
+function accClick() { ME ? openAccount() : openSheet('authSheet'); }
+
+async function openAccount() {
+  openSheet('accountSheet');
+  $('#acEmail').textContent = ME.email;
+  $('#acPlan').textContent = ME.premium ? 'Premium' : 'Free';
+  $('#acQuota').textContent = ME.premium ? 'unlimited' : `${QUOTA?.used ?? 0}/${QUOTA?.limit ?? 20}`;
+  $('#acApiKey').value = ME.apiKey || '';
+  $('#acOrders').innerHTML = '<div class="q-empty">memuat...</div>';
+  try {
+    const r = await fetch('/api/payment/history');
+    const d = await r.json();
+    $('#acOrders').innerHTML = (d.orders && d.orders.length)
+      ? d.orders.map(o => `<div class="kv"><span>${new Date(o.createdAt).toLocaleDateString('id-ID')}</span><b style="color:${o.status === 'paid' ? 'var(--ok)' : 'var(--warn)'}">Rp${o.total} · ${o.status}</b></div>`).join('')
+      : '<div class="q-empty">Belum ada transaksi.</div>';
+  } catch { $('#acOrders').innerHTML = ''; }
+}
+
+function authTab(mode) {
+  $('#authSheet').dataset.mode = mode;
+  $('#tabLogin').classList.toggle('on', mode === 'login');
+  $('#tabReg').classList.toggle('on', mode === 'reg');
+  $('#authSubmit').querySelector('span').textContent = mode === 'login' ? 'Masuk' : 'Daftar';
+}
+
+async function authSubmit() {
+  const mode = $('#authSheet').dataset.mode || 'login';
+  const email = $('#authEmail').value.trim();
+  const password = $('#authPass').value;
+  const err = $('#authErr'), btn = $('#authSubmit');
+  err.classList.remove('show');
+
+  if (!email || password.length < 6) {
+    err.textContent = 'Email valid + password minimal 6 karakter.';
+    err.classList.add('show');
+    return;
+  }
+  busy(btn, true, 'Memproses...');
+  try {
+    const r = await fetch('/api/auth/' + (mode === 'login' ? 'login' : 'register'), {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    const d = await r.json();
+    if (r.ok && d.status === 'success') {
+      ME = d.user; QUOTA = d.quota;
+      paintAccount(); closeSheet('authSheet');
+      $('#authPass').value = '';
+      toast(mode === 'login' ? 'Masuk. Selamat datang.' : 'Akun dibuat.', 'ok');
+    } else {
+      err.textContent = d.message || 'Gagal.';
+      err.classList.add('show');
+    }
+  } catch {
+    err.textContent = 'Jaringan bermasalah.';
+    err.classList.add('show');
+  } finally { busy(btn, false); }
+}
+
+async function doLogout() {
+  await fetch('/api/auth/logout', { method: 'POST' });
+  ME = null; QUOTA = null; paintAccount();
+  closeSheet('accountSheet');
+  toast('Udah keluar.', 'sy');
+}
+
+async function rotateKey() {
+  const r = await fetch('/api/auth/key', { method: 'POST' });
+  const d = await r.json();
+  if (d.apiKey) { ME.apiKey = d.apiKey; $('#acApiKey').value = d.apiKey; toast('API key diganti.', 'ok'); }
+}
+
+/* ================= PEMBAYARAN ================= */
+async function startPayment() {
+  if (!ME) { closeSheet('upgradeSheet'); return openSheet('authSheet'); }
+  const btn = $('#payBtn');
+  busy(btn, true, 'Membuat invoice...');
+  try {
+    const r = await fetch('/api/payment/create', { method: 'POST' });
+    const d = await r.json();
+    if (!r.ok || d.status !== 'success') {
+      toast(d.message || 'Gagal membuat invoice.', 'er');
+      return;
+    }
+    payOrder = d;
+    $('#payArea').innerHTML = `
+      <img id="qrisImg" src="${d.qrisImage}" alt="QRIS">
+      <div class="pay-timer" id="payTimer">—</div>
+      <a class="btn btn-plain btn-block" style="margin-bottom:.5rem" href="${d.paymentLink}" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> Buka halaman bayar</a>
+      <p style="font-size:.7rem;color:var(--dimmer);text-align:center;margin:0">Total Rp${d.total} (termasuk fee). Status dicek otomatis.</p>`;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Menunggu pembayaran...</span>';
+    btn.disabled = true;
+    startPolling(d);
+  } catch {
+    toast('Gagal membuat invoice.', 'er');
+  } finally {
+    if (!payOrder) busy(btn, false);
+  }
+}
+
+function startPolling(d) {
+  clearInterval(pollTimer);
+  const exp = Date.parse(d.expiredAt) || Date.now() + 900000;
+  pollTimer = setInterval(async () => {
+    const left = exp - Date.now();
+    const t = $('#payTimer');
+    if (t) t.textContent = left > 0 ? 'expired dalam ' + Math.floor(left / 60000) + ':' + String(Math.floor(left / 1000) % 60).padStart(2, '0') : 'invoice expired';
+    try {
+      const r = await fetch('/api/payment/status?id=' + encodeURIComponent(d.invoiceId), { cache: 'no-store' });
+      const s = await r.json();
+      if (s.paid) {
+        clearInterval(pollTimer);
+        await loadMe();
+        closeSheet('upgradeSheet');
+        toast('Pembayaran masuk. Premium aktif!', 'ok');
+        beep('ok'); burst();
+        payOrder = null;
+      }
+    } catch {}
+  }, 4000);
+}
+
 /* ---------- init ---------- */
+loadMe();
 paintStats(); paintHistory(); paintQueue();
 if(!localStorage.getItem('zukai-seen')){
   setTimeout(()=>{ openSheet('welcomeSheet'); localStorage.setItem('zukai-seen','1'); }, 2900);
@@ -1727,7 +2061,8 @@ if(!localStorage.getItem('zukai-seen')){
 $('#emailInput').addEventListener('keydown', e=>{ if(e.key === 'Enter') sendMagicLink(); });
 $('#linkInput').addEventListener('keydown', e=>{ if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); requestInject(); } });
 $('#orderIdInput').addEventListener('keydown', e=>{ if(e.key === 'Enter') $('#emailInput').focus(); });
+$('#authPass').addEventListener('keydown', e=>{ if(e.key === 'Enter') authSubmit(); });
 setStep(1);
 </script>
 </body>
-    </html>
+  </html>
