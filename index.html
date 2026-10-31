@@ -545,7 +545,8 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
     <div class="hero-card">
       <div class="media">
         <video id="bannerVideo" autoplay muted playsinline loop preload="metadata">
-          <source src="video1.mp4" type="video/mp4">
+          <!-- Absolute path untuk kebal custom domain -->
+          <source src="/video1.mp4" type="video/mp4">
         </video>
         <div class="scan"></div><div class="sweep"></div>
         <div class="media-top">
@@ -638,12 +639,13 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
         <!-- Player Box -->
         <div style="background:#040406;border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden;">
           <video id="tutorialVideo" controls autoplay muted playsinline loop preload="metadata" style="width:100%;height:auto;display:block;aspect-ratio:16/9;background:#000;">
-  <source src="tutorial.mp4?v=2" type="video/mp4">
-  Browser Anda tidak mendukung pemutar video HTML5.
-</video>
+            <!-- Absolute path & parameter anti-cache agar work di custom domain -->
+            <source src="/tutorial.mp4?v=2" type="video/mp4">
+            Browser Anda tidak mendukung pemutar video HTML5.
+          </video>
           <div style="padding:.7rem .9rem;background:rgba(8,8,12,0.9);display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line);font-family:var(--mono);font-size:.68rem;color:var(--dim);">
             <span><i class="fa-solid fa-film" style="color:var(--a2)"></i> tutorial.mp4</span>
-            <a href="tutorial.mp4" download class="tool-btn" style="padding:.25rem .5rem;font-size:.6rem;"><i class="fa-solid fa-download"></i> Download Video</a>
+            <a href="/tutorial.mp4" download class="tool-btn" style="padding:.25rem .5rem;font-size:.6rem;"><i class="fa-solid fa-download"></i> Download Video</a>
           </div>
         </div>
 
@@ -1232,12 +1234,30 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
         <div class="kv"><span>Paket</span><b id="acPlan">—</b></div>
         <div class="kv"><span>Kuota</span><b id="acQuota">—</b></div>
       </div>
-      <label class="label" for="acApiKey">API key <span class="hint">kirim via header x-api-key</span></label>
-      <div class="input-wrap" style="margin-bottom:.6rem">
-        <input class="inp" id="acApiKey" readonly style="font-size:.68rem">
-        <button class="post" type="button" onclick="copyText(document.getElementById('acApiKey').value)"><i class="fa-regular fa-copy"></i></button>
+      
+      <!-- BAGIAN API KEY -->
+      <div id="apiKeySection">
+        <label class="label">API key <span class="hint">kirim via header x-api-key</span></label>
+        
+        <!-- AREA TERKUNCI (Tampil jika Free & < 25 Inject) -->
+        <div id="apiLockArea" style="display:none; padding: .8rem; background: rgba(255,255,255,.02); border: 1px dashed var(--line); border-radius: var(--r-sm); text-align: center; margin-bottom: .8rem;">
+          <i class="fa-solid fa-lock" style="color: var(--dimmer); font-size: 1.2rem; margin-bottom: .5rem;"></i>
+          <p style="font-size: .72rem; color: var(--dim); margin-bottom: .3rem;">Fitur khusus Premium / Owner.</p>
+          <p style="font-size: .65rem; color: var(--dimmer); margin: 0;">Pengguna Free bisa membuka fitur ini otomatis setelah mencapai <b style="color:var(--a2)">25x sukses inject</b>.</p>
+          <div style="margin-top: .6rem; font-family: var(--mono); font-size: .65rem; color: var(--ok); background: rgba(61,220,151,.1); padding: .2rem; border-radius: 4px; border: 1px solid rgba(61,220,151,.2);">Progres Saat Ini: <span id="apiProgressText">0/25</span></div>
+        </div>
+
+        <!-- AREA TERBUKA (Tampil jika Premium/Owner atau Free >= 25 Inject) -->
+        <div id="apiInputArea" style="display:none;">
+          <div class="input-wrap" style="margin-bottom:.6rem">
+            <input class="inp" id="acApiKey" readonly style="font-size:.68rem" placeholder="Tekan tombol buat API Key...">
+            <button class="post" type="button" onclick="copyText(document.getElementById('acApiKey').value)"><i class="fa-regular fa-copy"></i></button>
+          </div>
+          <button class="btn btn-plain btn-block" style="margin-bottom:.5rem" onclick="rotateKey(event)"><i class="fa-solid fa-rotate"></i> Buat / Ganti API key</button>
+        </div>
       </div>
-      <button class="btn btn-plain btn-block" style="margin-bottom:.5rem" onclick="rotateKey()"><i class="fa-solid fa-rotate"></i> Ganti API key</button>
+      <!-- END BAGIAN API KEY -->
+
       <div id="acAdmin" style="display:none;margin:.9rem 0">
         <div class="kv-box">
           <div class="kv"><span>Total user</span><b id="adUsers">—</b></div>
@@ -1595,7 +1615,7 @@ if(matchMedia('(pointer:fine)').matches && !reduce){
 /* ---------- banner video ---------- */
 (function(){
   const v = $('#bannerVideo');
-  const list = ['video1.mp4','video2.mp4']; let i = 0;
+  const list = ['/video1.mp4','/video2.mp4']; let i = 0;
   v.addEventListener('ended', ()=>{
     i = (i+1) % list.length;
     v.src = list[i];
@@ -2148,11 +2168,26 @@ async function openAccount() {
   $('#acEmail').textContent = ME.email;
   $('#acPlan').textContent = ME.owner ? 'Owner' : ME.premium ? 'Premium' : 'Free';
   $('#acQuota').textContent = (ME.premium || ME.owner) ? 'unlimited' : `${QUOTA?.used ?? 0}/${QUOTA?.limit ?? 20}`;
-  $('#acApiKey').value = ME.apiKey || '';
+  
+  // LOGIKA UNLOCK API KEY UNTUK 25x INJECT
+  const okCount = readHist().filter(x => x.status === 'ok').length;
+  const apiUnlocked = ME.premium || ME.owner || okCount >= 25;
+  
+  if (apiUnlocked) {
+    $('#apiLockArea').style.display = 'none';
+    $('#apiInputArea').style.display = 'block';
+    $('#acApiKey').value = ME.apiKey || '';
+  } else {
+    $('#apiLockArea').style.display = 'block';
+    $('#apiInputArea').style.display = 'none';
+    $('#apiProgressText').textContent = `${okCount}/25`;
+  }
+
   $('#acOrders').innerHTML = '<div class="q-empty">memuat...</div>';
   const adm = $('#acAdmin');
   adm.style.display = ME.owner ? 'block' : 'none';
   if (ME.owner) adminLoad();
+  
   try {
     const r = await fetch('/api/payment/history');
     const d = await r.json();
@@ -2316,10 +2351,31 @@ async function doLogout() {
   toast('Udah keluar.', 'sy');
 }
 
-async function rotateKey() {
-  const r = await fetch('/api/auth/key', { method: 'POST' });
-  const d = await r.json();
-  if (d.apiKey) { ME.apiKey = d.apiKey; $('#acApiKey').value = d.apiKey; toast('API key diganti.', 'ok'); }
+async function rotateKey(e) {
+  // Pastikan kembali progresnya sebelum request ke server (Cegah user free asal klik)
+  const okCount = readHist().filter(x => x.status === 'ok').length;
+  if (!ME.premium && !ME.owner && okCount < 25) {
+    return toast('Capai 25x sukses inject dulu buat unlock API Key.', 'er');
+  }
+
+  const btn = e ? e.currentTarget : $('#apiInputArea button');
+  busy(btn, true, 'Membuat...');
+  
+  try {
+    const r = await fetch('/api/auth/key', { method: 'POST' });
+    const d = await r.json();
+    if (d.apiKey) { 
+      ME.apiKey = d.apiKey; 
+      $('#acApiKey').value = d.apiKey; 
+      toast('API key berhasil dibuat/diganti.', 'ok'); 
+    } else {
+      toast(d.message || 'Gagal membuat API key.', 'er');
+    }
+  } catch(err) {
+    toast('Gagal terhubung ke server.', 'er');
+  } finally {
+    busy(btn, false);
+  }
 }
 
 /* ================= PEMBAYARAN ================= */
