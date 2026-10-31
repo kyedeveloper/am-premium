@@ -752,37 +752,37 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
             </div>
             <pre class="code" data-lang="nodejs"><span class="c">// 1. Kirim magic link</span>
 <span class="k">const</span> axios = <span class="f">require</span>(<span class="s">'axios'</span>);
-<span class="k">await</span> axios.<span class="f">post</span>(<span class="s">'https://am-premium.vercel.app/api/magic-link'</span>, {
+<span class="k">await</span> axios.<span class="f">post</span>(<span class="s">'https://www.juikoprem.my.id/api/magic-link'</span>, {
   email: <span class="s">"buyer@email.com"</span>
 });
 
 <span class="c">// 2. Inject — butuh akun, kirim API key</span>
-<span class="k">await</span> axios.<span class="f">post</span>(<span class="s">'https://am-premium.vercel.app/api/inject'</span>, {
+<span class="k">await</span> axios.<span class="f">post</span>(<span class="s">'https://www.juikoprem.my.id/api/inject'</span>, {
   email: <span class="s">"buyer@email.com"</span>,
   oobCode: <span class="s">"OOB_CODE_NYA"</span>,
   orderId: <span class="s">"ZukaiDev-VIP-00001"</span>
 }, { headers: { <span class="s">'x-api-key'</span>: <span class="s">'am_xxxxxxxx'</span> } });</pre>
             <pre class="code" data-lang="python" style="display:none"><span class="c"># 1. Kirim magic link</span>
 <span class="k">import</span> requests
-requests.<span class="f">post</span>(<span class="s">"https://am-premium.vercel.app/api/magic-link"</span>,
+requests.<span class="f">post</span>(<span class="s">"https://www.juikoprem.my.id/api/magic-link"</span>,
   json={<span class="s">"email"</span>: <span class="s">"buyer@email.com"</span>})
 
 <span class="c"># 2. Inject — butuh akun, kirim API key</span>
-requests.<span class="f">post</span>(<span class="s">"https://am-premium.vercel.app/api/inject"</span>,
+requests.<span class="f">post</span>(<span class="s">"https://www.juikoprem.my.id/api/inject"</span>,
   json={<span class="s">"email"</span>: <span class="s">"buyer@email.com"</span>,
         <span class="s">"oobCode"</span>: <span class="s">"OOB_CODE_NYA"</span>,
         <span class="s">"orderId"</span>: <span class="s">"ZukaiDev-VIP-00001"</span>},
   headers={<span class="s">"x-api-key"</span>: <span class="s">"am_xxxxxxxx"</span>})</pre>
             <pre class="code" data-lang="php" style="display:none"><span class="k">&lt;?php</span>
 <span class="c">// 1. Kirim magic link</span>
-$c1 = <span class="f">curl_init</span>(<span class="s">'https://am-premium.vercel.app/api/magic-link'</span>);
+$c1 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my.id/api/magic-link'</span>);
 <span class="f">curl_setopt</span>($c1, CURLOPT_POSTFIELDS, <span class="f">json_encode</span>([<span class="s">'email'</span>=><span class="s">'buyer@email.com'</span>]));
 <span class="f">curl_setopt</span>($c1, CURLOPT_HTTPHEADER, [<span class="s">'Content-Type:application/json'</span>]);
 <span class="f">curl_setopt</span>($c1, CURLOPT_RETURNTRANSFER, <span class="k">true</span>);
 <span class="k">echo</span> <span class="f">curl_exec</span>($c1);
 
 <span class="c">// 2. Inject — butuh akun, kirim API key</span>
-$c2 = <span class="f">curl_init</span>(<span class="s">'https://am-premium.vercel.app/api/inject'</span>);
+$c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my.id/api/inject'</span>);
 <span class="f">curl_setopt</span>($c2, CURLOPT_POSTFIELDS, <span class="f">json_encode</span>([
   <span class="s">'email'</span>=><span class="s">'buyer@email.com'</span>, <span class="s">'oobCode'</span>=><span class="s">'OOB'</span>, <span class="s">'orderId'</span>=><span class="s">'ID'</span>]));
 <span class="f">curl_setopt</span>($c2, CURLOPT_HTTPHEADER, [<span class="s">'Content-Type:application/json'</span>, <span class="s">'x-api-key: am_xxxxxxxx'</span>]);
