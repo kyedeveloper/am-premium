@@ -6,7 +6,6 @@ const BASE = 'https://pixpayz.com';
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(200).end();
 
-  // selalu balas 2xx cepet, biar nggak di-retry
   try {
     const body = req.body || {};
     const d = body.data || {};
@@ -27,7 +26,6 @@ export default async function handler(req, res) {
     if (!order) return res.status(200).json({ ok: true, matched: false });
     if (order.status === 'paid') return res.status(200).json({ ok: true, already: true });
 
-    // JANGAN percaya body doang — verifikasi ulang ke Pixpayz
     const r = await fetch(
       `${BASE}/api/checkinvoice?apikey=${encodeURIComponent(process.env.PIXPAYZ_API_KEY)}&id=${encodeURIComponent(order.invoiceId)}`
     );
