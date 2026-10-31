@@ -377,6 +377,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
 .fab{position:fixed;bottom:1rem;left:1rem;z-index:400;width:46px;height:46px;border-radius:50%;border:1px solid var(--a1-soft);background:#0d0d14;color:var(--a1-soft);cursor:pointer;box-shadow:0 0 24px var(--g1);transition:.3s;font-size:1rem}
 .fab:hover{transform:scale(1.08) rotate(8deg);background:var(--a1);color:#fff}
 
+/* ==== MOBILE FIXES ==== */
 @media(max-width:900px){
   .pill-nav{display:none}
   .burger{display:grid;place-items:center}
@@ -390,6 +391,14 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
   .hero-body{padding:1.2rem 1.1rem 1.4rem}
   .panel-body{padding:1rem}
   .cursor-glow{display:none}
+}
+@media(max-width:650px) {
+  .nav-tools .icon-btn { display: none; }
+  #accLabel, .nav-tools .btn-primary span { display: none; }
+  .nav-tools .btn-primary { padding: 0.5rem 0.6rem !important; }
+  .nav-tools .acc-btn { padding: 0.45rem 0.6rem; }
+  .brand { font-size: 0.7rem; gap: 0.4rem; }
+  .brand .mark { width: 26px; height: 26px; font-size: 0.8rem; }
 }
 @media(prefers-reduced-motion:reduce){
   *{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}
@@ -423,6 +432,27 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
 #qrisImg{width:100%;max-width:240px;display:block;margin:0 auto .7rem;border-radius:12px;background:#fff;padding:.4rem}
 .pay-timer{font-family:var(--mono);font-size:.68rem;color:var(--warn);text-align:center;letter-spacing:.1em;margin-bottom:.8rem}
 @media(max-width:600px){.price-grid{grid-template-columns:1fr}}
+
+/* ===== GLITCH TEXT ===== */
+.glitch-txt { position: relative; display: inline-block; z-index: 1; }
+.glitch-txt::before, .glitch-txt::after {
+  content: attr(data-text); position: absolute; top: 0; left: 0; opacity: 0.8;
+}
+.glitch-txt::before { color: var(--a2); z-index: -1; animation: gl1 3s infinite linear alternate-reverse; }
+.glitch-txt::after { color: var(--a1-soft); z-index: -2; animation: gl2 2.5s infinite linear alternate-reverse; }
+@keyframes gl1 {
+  0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+  10% { clip-path: inset(20% 0 80% 0); transform: translate(-2px, 1px); }
+  20% { clip-path: inset(60% 0 10% 0); transform: translate(2px, -1px); }
+  30% { clip-path: inset(40% 0 50% 0); transform: translate(-2px, 2px); }
+  40%, 90% { clip-path: inset(0 0 0 0); transform: translate(0); }
+}
+@keyframes gl2 {
+  0%, 100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+  15% { clip-path: inset(10% 0 60% 0); transform: translate(2px, 1px); }
+  25% { clip-path: inset(30% 0 20% 0); transform: translate(-2px, -2px); }
+  35%, 85% { clip-path: inset(0 0 0 0); transform: translate(0); }
+}
 </style>
 </head>
 <body>
@@ -450,7 +480,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
     <div class="nav-in">
       <a href="#top" class="brand">
         <span class="mark"><i class="fa-solid fa-bolt"></i></span>
-        <span>AM PREMIUM<small>ZUKAI TERMINAL</small></span>
+        <span class="glitch-txt" data-text="AM PREMIUM">AM PREMIUM<small>ZUKAI TERMINAL</small></span>
       </a>
 
       <nav class="pill-nav" id="pillNav" aria-label="Navigasi bagian">
@@ -460,6 +490,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
         <a href="#terminal" data-sec="terminal"><i class="fa-solid fa-terminal"></i> Terminal</a>
         <a href="#api" data-sec="api"><i class="fa-solid fa-code"></i> API</a>
         <a href="#faq" data-sec="faq"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+        <a href="#tools" data-sec="tools"><i class="fa-solid fa-toolbox"></i> Tools</a>
         <a href="#tentang" data-sec="tentang"><i class="fa-solid fa-circle-info"></i> Tentang</a>
       </nav>
 
@@ -474,7 +505,9 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
         <button class="kbd-hint" onclick="openPalette()" title="Command palette"><i class="fa-solid fa-magnifying-glass"></i> <kbd>Ctrl</kbd><kbd>K</kbd></button>
         <button class="icon-btn" onclick="openSheet('historySheet')" title="Riwayat aktivasi" aria-label="Riwayat"><i class="fa-solid fa-clock-rotate-left"></i></button>
         <button class="acc-btn" id="accBtn" onclick="accClick()"><i class="fa-solid fa-user"></i> <span id="accLabel">Masuk</span></button>
-        <button class="btn btn-primary" style="padding:.5rem .85rem;font-size:.68rem" onclick="scrollToTerminal()"><i class="fa-solid fa-terminal"></i> Mulai</button>
+        <button class="btn btn-primary" style="padding:.5rem .85rem;font-size:.68rem" onclick="scrollToTerminal()">
+          <i class="fa-solid fa-terminal"></i> <span>Mulai</span>
+        </button>
         <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><i class="fa-solid fa-bars"></i></button>
       </div>
     </div>
@@ -484,6 +517,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
       <a href="#terminal"><i class="fa-solid fa-terminal"></i> Terminal</a>
       <a href="#api"><i class="fa-solid fa-code"></i> API</a>
       <a href="#faq"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+      <a href="#tools"><i class="fa-solid fa-toolbox"></i> Tools</a>
       <a href="#tentang"><i class="fa-solid fa-circle-info"></i> Tentang</a>
       <a href="#" onclick="openSheet('historySheet');return false"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat</a>
       <a href="#" onclick="accClick();return false"><i class="fa-solid fa-user"></i> Akun</a>
@@ -809,6 +843,46 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://am-premium.verce
     </div>
   </section>
 
+  <!-- MINI TOOLS SECTION -->
+  <section id="tools">
+    <div class="sec-head reveal">
+      <span class="kicker">Dev Tools</span>
+      <h2>Mini Tools / Utilitas</h2>
+      <p>Alat ringan buat mempermudah manipulasi data langsung dari browser tanpa perlu buka tab lain.</p>
+    </div>
+    <div class="grid-3">
+      <div class="card reveal">
+        <div class="ic" style="margin-bottom:0.5rem"><i class="fa-solid fa-link"></i></div>
+        <h3>URL / OOB Extractor</h3>
+        <p style="margin-bottom:0.8rem">Ambil nilai parameter OOB code secara paksa dari URL ruwet.</p>
+        <input type="text" class="inp" id="tUrl" placeholder="Tempel URL..." style="margin-bottom:0.5rem; padding:0.5rem; font-size:0.7rem">
+        <button class="btn btn-plain btn-sm btn-block" onclick="extOob()"><i class="fa-solid fa-magnifying-glass"></i> Ekstrak</button>
+        <div id="tUrlRes" style="margin-top:0.5rem; font-family:var(--mono); color:var(--a2); font-size:0.7rem; word-break:break-all"></div>
+      </div>
+      <div class="card reveal">
+        <div class="ic" style="margin-bottom:0.5rem"><i class="fa-solid fa-file-code"></i></div>
+        <h3>Base64 Encode/Decode</h3>
+        <p style="margin-bottom:0.8rem">Konversi teks biasa ke Base64 atau sebaliknya untuk payload.</p>
+        <textarea class="inp" id="tB64" rows="1" placeholder="Masukkan teks..." style="margin-bottom:0.5rem; padding:0.5rem; font-size:0.7rem"></textarea>
+        <div style="display:flex; gap:0.5rem">
+          <button class="btn btn-plain btn-sm" style="flex:1" onclick="doB64('enc')">Enc</button>
+          <button class="btn btn-plain btn-sm" style="flex:1" onclick="doB64('dec')">Dec</button>
+        </div>
+        <div id="tB64Res" style="margin-top:0.5rem; font-family:var(--mono); font-size:0.7rem; word-break:break-all"></div>
+      </div>
+      <div class="card reveal">
+        <div class="ic" style="margin-bottom:0.5rem"><i class="fa-solid fa-stopwatch"></i></div>
+        <h3>Epoch / Unix Time</h3>
+        <p style="margin-bottom:0.8rem">Cek waktu saat ini dalam format Unix Timestamp (milidetik).</p>
+        <div class="input-wrap" style="margin-bottom:0.5rem">
+          <input class="inp" id="tTime" readonly style="padding:0.5rem; font-size:0.7rem; color:var(--ok)">
+          <button class="post" style="padding:0; right:0.3rem" type="button" onclick="copyText(document.getElementById('tTime').value)"><i class="fa-regular fa-copy"></i></button>
+        </div>
+        <button class="btn btn-plain btn-sm btn-block" onclick="document.getElementById('tTime').value = Date.now()"><i class="fa-solid fa-rotate"></i> Refresh Waktu</button>
+      </div>
+    </div>
+  </section>
+
   <section id="tentang">
     <div class="sec-head reveal">
       <span class="kicker">Tentang Website</span>
@@ -1060,7 +1134,7 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://am-premium.verce
       <label class="label" for="acApiKey">API key <span class="hint">kirim via header x-api-key</span></label>
       <div class="input-wrap" style="margin-bottom:.6rem">
         <input class="inp" id="acApiKey" readonly style="font-size:.68rem">
-        <button class="post" type="button" onclick="copyText($('#acApiKey').value)"><i class="fa-regular fa-copy"></i></button>
+        <button class="post" type="button" onclick="copyText(document.getElementById('acApiKey').value)"><i class="fa-regular fa-copy"></i></button>
       </div>
       <button class="btn btn-plain btn-block" style="margin-bottom:.5rem" onclick="rotateKey()"><i class="fa-solid fa-rotate"></i> Ganti API key</button>
       <div id="acAdmin" style="display:none;margin:.9rem 0">
@@ -1224,7 +1298,7 @@ pillLinks.forEach(l=>{
   l.addEventListener('focus', ()=>movePill(l));
 });
 pillNav.addEventListener('mouseleave', ()=>movePill(pillNav.querySelector('a.active')));
-const secs = ['fitur','harga','terminal','api','faq','tentang'].map(id=>document.getElementById(id)).filter(Boolean);
+const secs = ['fitur','harga','terminal','api','faq','tools','tentang'].map(id=>document.getElementById(id)).filter(Boolean);
 const spy = new IntersectionObserver(es=>{
   es.forEach(e=>{
     if(!e.isIntersecting) return;
@@ -1541,7 +1615,7 @@ function exportHistory(){
   toast('CSV diunduh.', 'ok');
 }
 function copyText(t){
-  navigator.clipboard.writeText(t).then(()=>toast('Order ID disalin.', 'ok')).catch(()=>toast('Gagal menyalin.', 'er'));
+  navigator.clipboard.writeText(t).then(()=>toast('Teks disalin.', 'ok')).catch(()=>toast('Gagal menyalin.', 'er'));
 }
 
 /* ---------- queue ---------- */
@@ -2097,6 +2171,29 @@ function startPolling(d) {
   }, 4000);
 }
 
+/* ================= DEV TOOLS EXTRA ================= */
+function extOob(){
+  const v = $('#tUrl').value.trim();
+  if(!v) return;
+  const code = extractOobCode(v);
+  $('#tUrlRes').innerHTML = code ? `<i class="fa-solid fa-check"></i> ${code}` : '<span style="color:var(--bad)">OOB Code Tidak ditemukan</span>';
+}
+function doB64(mode){
+  const v = $('#tB64').value.trim();
+  if(!v) return;
+  try {
+    $('#tB64Res').textContent = mode === 'enc' ? btoa(v) : atob(v);
+    $('#tB64Res').style.color = 'var(--a2)';
+  } catch(e) {
+    $('#tB64Res').textContent = 'Invalid string format';
+    $('#tB64Res').style.color = 'var(--bad)';
+  }
+}
+const initTime = setInterval(()=>{
+  const tb = $('#tTime');
+  if(tb) tb.value = Date.now();
+}, 1000);
+
 /* ---------- init ---------- */
 loadMe();
 paintStats(); paintHistory(); paintQueue();
@@ -2110,4 +2207,4 @@ $('#authPass').addEventListener('keydown', e=>{ if(e.key === 'Enter') authSubmit
 setStep(1);
 </script>
 </body>
-        </html>
+</html>
