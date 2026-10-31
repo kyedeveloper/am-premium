@@ -429,7 +429,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
 
 <div id="boot" aria-hidden="true">
   <div class="boot-inner">
-    <div class="ln">&gt; zukai_kernel <b>v5.0.0</b> booting...</div>
+    <div class="ln">&gt; zukai_kernel <b>v5.1.0</b> booting...</div>
     <div class="ln">&gt; mount /api/magic-link <b>OK</b></div>
     <div class="ln">&gt; mount /api/inject <b>OK</b></div>
     <div class="ln">&gt; auth + quota module <b>OK</b></div>
@@ -832,7 +832,7 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://am-premium.verce
         <div class="kv"><span>Runtime</span><b>Vercel Functions</b></div>
         <div class="kv"><span>Stack</span><b>HTML + JS</b></div>
         <div class="kv"><span>Auth</span><b>OOB / Email Link</b></div>
-        <div class="kv"><span>Versi</span><b>v5.0.0</b></div>
+        <div class="kv"><span>Versi</span><b>v5.1.0</b></div>
         <div class="kv"><span>Lisensi</span><b>Open Source</b></div>
         <div style="margin-top:.9rem;display:flex;flex-direction:column;gap:.45rem">
           <a class="btn btn-primary btn-block" href="https://github.com/kyedeveloper/am-premium" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Repo GitHub</a>
@@ -845,7 +845,7 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://am-premium.verce
 
   <footer>
     <div class="foot">
-      <p>SYSTEM CORE v5.0.0 &copy; 2026 ZUKAI DEVELOPER</p>
+      <p>SYSTEM CORE v5.1.0 &copy; 2026 ZUKAI DEVELOPER</p>
       <div class="foot-links">
         <a href="#top">Atas</a>
         <a href="#harga">Harga</a>
@@ -902,7 +902,7 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://am-premium.verce
       <div class="kv-box">
         <div class="kv"><span>Nama</span><b>AM Premium Terminal</b></div>
         <div class="kv"><span>Developer</span><b>Zukai Dev</b></div>
-        <div class="kv"><span>Arsitektur</span><b>Serverless v5.0</b></div>
+        <div class="kv"><span>Arsitektur</span><b>Serverless v5.1</b></div>
         <div class="kv"><span>Node</span><b>ASIA-SE-01</b></div>
         <div class="kv"><span>Enkripsi</span><b>AES-256</b></div>
         <div class="kv"><span>Build</span><b>2026.10.31</b></div>
@@ -1063,6 +1063,17 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://am-premium.verce
         <button class="post" type="button" onclick="copyText($('#acApiKey').value)"><i class="fa-regular fa-copy"></i></button>
       </div>
       <button class="btn btn-plain btn-block" style="margin-bottom:.5rem" onclick="rotateKey()"><i class="fa-solid fa-rotate"></i> Ganti API key</button>
+      <div id="acAdmin" style="display:none;margin:.9rem 0">
+        <div class="kv-box">
+          <div class="kv"><span>Total user</span><b id="adUsers">—</b></div>
+          <div class="kv"><span>Inject hari ini</span><b id="adToday">—</b></div>
+        </div>
+        <div class="input-wrap" style="gap:.4rem;margin-bottom:.5rem">
+          <input class="inp" id="adEmail" placeholder="email target" style="font-size:.7rem">
+          <button class="post" type="button" onclick="adminGrant()"><i class="fa-solid fa-crown"></i></button>
+        </div>
+        <p style="font-size:.62rem;color:var(--dimmer);margin:0">Tombol mahkota = kasih premium 30 hari ke email itu.</p>
+      </div>
       <div id="acOrders" style="margin-top:.8rem"></div>
     </div>
     <div class="sheet-foot">
@@ -1761,7 +1772,7 @@ function requestInject(){
     openSheet('authSheet');
     return toast('Login dulu buat inject.', 'er');
   }
-  if(!ME.premium && QUOTA && QUOTA.remaining <= 0){
+  if(!ME.premium && !ME.owner && QUOTA && QUOTA.remaining <= 0){
     openSheet('upgradeSheet');
     return toast('Kuota harian habis. Upgrade buat unlimited.', 'er');
   }
@@ -1860,7 +1871,7 @@ Produk   : am.full.sub.annual.19q4
 Status   : SUCCESS
 --------------------------------
 Simpan file ini sebagai bukti transaksi.
-zukai developer — system core v5.0.0`;
+zukai developer — system core v5.1.0`;
   saveFile(`receipt-${lastReceipt.orderId}.txt`, txt);
   toast('Struk diunduh.', 'ok');
 }
@@ -1905,9 +1916,15 @@ function paintAccount() {
     line.classList.remove('full');
     return;
   }
-  $('#accLabel').textContent = ME.premium ? 'Premium' : ME.email.split('@')[0].slice(0, 12);
-  btn.classList.toggle('premium', !!ME.premium);
+  $('#accLabel').textContent = ME.owner ? 'Owner' : ME.premium ? 'Premium' : ME.email.split('@')[0].slice(0, 12);
+  btn.classList.toggle('premium', !!(ME.premium || ME.owner));
 
+  if (ME.owner) {
+    $('#quotaTxt').textContent = 'owner';
+    $('#quotaMeter').style.width = '100%';
+    line.classList.remove('full');
+    return;
+  }
   if (ME.premium || !QUOTA) {
     $('#quotaTxt').textContent = 'unlimited';
     $('#quotaMeter').style.width = '100%';
@@ -1935,10 +1952,13 @@ function accClick() { ME ? openAccount() : openSheet('authSheet'); }
 async function openAccount() {
   openSheet('accountSheet');
   $('#acEmail').textContent = ME.email;
-  $('#acPlan').textContent = ME.premium ? 'Premium' : 'Free';
-  $('#acQuota').textContent = ME.premium ? 'unlimited' : `${QUOTA?.used ?? 0}/${QUOTA?.limit ?? 20}`;
+  $('#acPlan').textContent = ME.owner ? 'Owner' : ME.premium ? 'Premium' : 'Free';
+  $('#acQuota').textContent = (ME.premium || ME.owner) ? 'unlimited' : `${QUOTA?.used ?? 0}/${QUOTA?.limit ?? 20}`;
   $('#acApiKey').value = ME.apiKey || '';
   $('#acOrders').innerHTML = '<div class="q-empty">memuat...</div>';
+  const adm = $('#acAdmin');
+  adm.style.display = ME.owner ? 'block' : 'none';
+  if (ME.owner) adminLoad();
   try {
     const r = await fetch('/api/payment/history');
     const d = await r.json();
@@ -1946,6 +1966,27 @@ async function openAccount() {
       ? d.orders.map(o => `<div class="kv"><span>${new Date(o.createdAt).toLocaleDateString('id-ID')}</span><b style="color:${o.status === 'paid' ? 'var(--ok)' : 'var(--warn)'}">Rp${o.total} · ${o.status}</b></div>`).join('')
       : '<div class="q-empty">Belum ada transaksi.</div>';
   } catch { $('#acOrders').innerHTML = ''; }
+}
+
+async function adminLoad() {
+  try {
+    const r = await fetch('/api/admin/stats');
+    const d = await r.json();
+    $('#adUsers').textContent = d.totalUsers ?? '—';
+    $('#adToday').textContent = d.injectToday ?? '—';
+  } catch {}
+}
+
+async function adminGrant() {
+  const email = $('#adEmail').value.trim();
+  if (!email) return toast('Isi email dulu.', 'er');
+  const r = await fetch('/api/admin/grant', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, days: 30 }),
+  });
+  const d = await r.json();
+  toast(d.message || 'Gagal.', r.ok ? 'ok' : 'er');
+  if (r.ok) { $('#adEmail').value = ''; adminLoad(); }
 }
 
 function authTab(mode) {
@@ -1973,18 +2014,22 @@ async function authSubmit() {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     });
-    const d = await r.json();
+    const raw = await r.text();
+    let d = {};
+    try { d = JSON.parse(raw); } catch {}
+
     if (r.ok && d.status === 'success') {
       ME = d.user; QUOTA = d.quota;
       paintAccount(); closeSheet('authSheet');
       $('#authPass').value = '';
       toast(mode === 'login' ? 'Masuk. Selamat datang.' : 'Akun dibuat.', 'ok');
-    } else {
-      err.textContent = d.message || 'Gagal.';
-      err.classList.add('show');
+      return;
     }
-  } catch {
-    err.textContent = 'Jaringan bermasalah.';
+    err.textContent = d.message
+      || `HTTP ${r.status} — endpoint balas HTML, bukan JSON. Cek /api/health.`;
+    err.classList.add('show');
+  } catch (e) {
+    err.textContent = 'Request gagal: ' + e.message + ' — cek /api/health.';
     err.classList.add('show');
   } finally { busy(btn, false); }
 }
@@ -2065,4 +2110,4 @@ $('#authPass').addEventListener('keydown', e=>{ if(e.key === 'Enter') authSubmit
 setStep(1);
 </script>
 </body>
-  </html>
+        </html>
