@@ -1,5 +1,5 @@
 import { currentUser } from '../../lib/auth.js';
-import { isPremium, PREMIUM_PRICE, PREMIUM_DAYS } from '../../lib/premium.js';
+import { isUnlimited, PREMIUM_PRICE, PREMIUM_DAYS } from '../../lib/premium.js';
 import { db, K } from '../../lib/db.js';
 
 const BASE = 'https://pixpayz.com';
@@ -9,7 +9,7 @@ export default async function handler(req, res) {
 
   const user = await currentUser(req);
   if (!user) return res.status(401).json({ status: 'error', message: 'Login dulu.' });
-  if (isPremium(user)) return res.status(400).json({ status: 'error', message: 'Akun kamu sudah premium.' });
+  if (isUnlimited(user)) return res.status(400).json({ status: 'error', message: 'Akun kamu sudah premium.' });
 
   const key = process.env.PIXPAYZ_API_KEY;
   if (!key) return res.status(500).json({ status: 'error', message: 'PIXPAYZ_API_KEY belum diset.' });
@@ -45,4 +45,4 @@ export default async function handler(req, res) {
   } catch (e) {
     res.status(500).json({ status: 'error', message: 'Gagal membuat invoice: ' + e.message });
   }
-        }
+}
