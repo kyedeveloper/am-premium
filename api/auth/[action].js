@@ -1,11 +1,17 @@
 import crypto from 'node:crypto';
-import { db, K } from '../../lib/db.js';
+
+// MASUKIN getUserById ke sini, barengan sama db dan K
+import { db, K, getUserById } from '../../lib/db.js'; 
+
 import { 
-  getUserById, verifyPassword, setSessionCookie, signSession, 
+  verifyPassword, setSessionCookie, signSession, 
   publicUser, clearSessionCookie, authUser, createUser, currentUser, saveUser 
-} from '../../lib/auth.js';
+} from '../../lib/auth.js'; 
+
 import { quotaInfo } from '../../lib/quota.js';
 import { isOwner, isPremium } from '../../lib/premium.js';
+
+// ... (sisa kodenya ke bawah biarin persis kayak sebelumnya)
 
 export default async function handler(req, res) {
   const origin = req.headers.origin || '*';
