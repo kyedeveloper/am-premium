@@ -1,15 +1,18 @@
 import crypto from 'node:crypto';
 
-// MASUKIN getUserById ke sini, barengan sama db dan K
-import { db, K, getUserById } from '../../lib/db.js'; 
+// MASUKIN saveUser ke sini bareng db, K, dan getUserById
+import { db, K, getUserById, saveUser } from '../../lib/db.js'; 
 
+// HAPUS saveUser dari barisan auth.js ini
 import { 
   verifyPassword, setSessionCookie, signSession, 
-  publicUser, clearSessionCookie, authUser, createUser, currentUser, saveUser 
+  publicUser, clearSessionCookie, authUser, createUser, currentUser 
 } from '../../lib/auth.js'; 
 
 import { quotaInfo } from '../../lib/quota.js';
 import { isOwner, isPremium } from '../../lib/premium.js';
+
+// ... (sisa kodenya ke bawah biarin utuh)
 
 // ... (sisa kodenya ke bawah biarin persis kayak sebelumnya)
 
