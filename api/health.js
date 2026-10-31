@@ -6,7 +6,7 @@ export default function handler(req, res) {
       apiKey: !!process.env.API_KEY,
       alightToken: !!process.env.ALIGHT_TOKEN,
       firebaseToken: !!process.env.FIREBASE_TOKEN,
-      redisUrl: !!process.env.REDIS_URL,
+      redisUrl: !!process.env.KV_REST_API_URL,
       redisToken: !!process.env.KV_REST_API_TOKEN,
       jwtSecret: !!process.env.JWT_SECRET,
       pixpayz: !!process.env.PIXPAYZ_API_KEY,
