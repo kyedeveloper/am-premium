@@ -1,6 +1,6 @@
 import { authUser } from '../lib/auth.js';
-import { isPremium } from '../lib/premium.js';
-import { quotaInfo, bumpQuota } from '../lib/quota.js';
+import { isUnlimited } from '../lib/premium.js';
+import { quotaInfo, bumpQuota, dayKey } from '../lib/quota.js';
 import { db, K } from '../lib/db.js';
 
 export default async function handler(req, res) {
@@ -14,23 +14,18 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ status: 'error', message: 'Method Not Allowed' });
 
-  // ---- GATE: akun wajib ----
   const user = await authUser(req);
   if (!user) {
     return res.status(401).json({
-      status: 'error',
-      code: 'LOGIN_REQUIRED',
-      message: 'Login dulu buat inject.',
+      status: 'error', code: 'LOGIN_REQUIRED', message: 'Login dulu buat inject.',
     });
   }
 
-  // ---- GATE: kuota ----
-  if (!isPremium(user)) {
+  if (!isUnlimited(user)) {
     const q = await quotaInfo(user);
     if (q.remaining <= 0) {
       return res.status(429).json({
-        status: 'error',
-        code: 'QUOTA_EXCEEDED',
+        status: 'error', code: 'QUOTA_EXCEEDED',
         message: `Limit harian habis (${q.limit}/hari). Upgrade premium buat unlimited.`,
         quota: q,
       });
@@ -74,15 +69,13 @@ export default async function handler(req, res) {
 
     await premiumRes.json();
 
-    // hitung kuota HANYA kalau sukses
     await bumpQuota(user);
+    await db.incr(K.globalQuota(dayKey()));
     await db.lpush(K.acts(user.id), JSON.stringify({ email, orderId, ts: Date.now() }));
     await db.ltrim(K.acts(user.id), 0, 99);
 
     res.status(200).json({
-      status: 'success',
-      message: 'Aktivasi Premium Berhasil!',
-      orderId,
+      status: 'success', message: 'Aktivasi Premium Berhasil!', orderId,
       quota: await quotaInfo(user),
     });
   } catch (error) {
