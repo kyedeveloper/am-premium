@@ -1,5 +1,5 @@
 import { currentUser } from '../../lib/auth.js';
-import { grantPremium, isPremium } from '../../lib/premium.js';
+import { grantPremium } from '../../lib/premium.js';
 import { db, K } from '../../lib/db.js';
 
 const BASE = 'https://pixpayz.com';
@@ -34,7 +34,7 @@ export default async function handler(req, res) {
     }
 
     res.status(200).json({ status: 'success', paid: false, invoiceStatus: d?.status || 'pending' });
-  } catch (e) {
+  } catch {
     res.status(200).json({ status: 'success', paid: false, invoiceStatus: 'unknown' });
   }
 }
