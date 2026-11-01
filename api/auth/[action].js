@@ -70,9 +70,10 @@ async function bumpAttempt(email, rec) {
 const dropOtp = email => db.del(otpKey(email));
 
 async function sendMail(email, code) {
+async function sendMail(email, code) {
   if (!MAIL_TOKEN) throw new Error('MAILTARGET_API_KEY belum dikonfigurasi.');
   
-  const text =
+  const bodyText =
 `Kode masuk AM PREMIUM kamu: ${code}
 
 Kode berlaku 10 menit dan cuma bisa dipakai sekali.
@@ -80,7 +81,7 @@ Kalau bukan kamu yang minta, abaikan email ini.
 
 juikoprem.my.id`;
 
-  const html =
+  const bodyHtml =
 `<div style="font-family:ui-monospace,Menlo,monospace;background:#050507;color:#e8ecf4;padding:28px;border-radius:14px">
   <p style="font-size:12px;letter-spacing:.22em;color:#00f5d4;margin:0 0 14px">AM PREMIUM</p>
   <p style="font-size:13px;color:#8b93a7;margin:0 0 18px">Kode masuk kamu:</p>
@@ -98,10 +99,16 @@ juikoprem.my.id`;
       from: { email: MAIL_FROM, name: 'AM PREMIUM' },
       to: [{ email }],
       subject: `${code} — kode masuk AM PREMIUM`,
-      text,
-      html
+      bodyText,
+      bodyHtml
     }),
   });
+
+  if (!r.ok) {
+    const detail = await r.text().catch(() => '');
+    throw new Error('Mailtarget Error ' + r.status + ': ' + detail.slice(0, 160));
+  }
+}
 
   if (!r.ok) {
     const detail = await r.text().catch(() => '');
