@@ -48,10 +48,11 @@ async function checkLimits(ip, email) {
   return { ok: true };
 }
 
-async function saveOtp(email, code) {
+/* ================= OTP HELPER (FIXED) ================= */
 async function saveOtp(email, code) {
   const payload = { h: hashCode(code), a: 0, exp: Date.now() + OTP_TTL * 1000 };
-  await db.set(otpKey(email), JSON.stringify(payload));
+  // Simpan object langsung tanpa JSON.stringify agar tidak double-serialize di Upstash/KV
+  await db.set(otpKey(email), payload);
   await db.expire(otpKey(email), OTP_TTL);
 }
 
@@ -59,14 +60,17 @@ async function readOtp(email) {
   const raw = await db.get(otpKey(email));
   if (!raw) return null;
   
-  // Jika database (seperti Upstash/Vercel KV) sudah otomatis parse ke Object
+  // Jika Redis/KV sudah otomatis parse ke Object
   if (typeof raw === 'object') return raw;
   
-  // Jika tersimpan sebagai String
+  // Jika tersimpan sebagai String JSON
   if (typeof raw === 'string') {
-    try { return JSON.parse(raw); } catch { return null; }
+    try { 
+      return JSON.parse(raw); 
+    } catch { 
+      return null; 
+    }
   }
-  
   return null;
 }
 
@@ -175,10 +179,18 @@ async function handleRequestCode(req, res) {
   return res.status(200).json({ status: 'success', message: 'Kode terkirim. Cek inbox atau folder spam.', ttl: OTP_TTL });
 }
 
+/* ================= HANDLER VERIFY CODE (FIXED) ================= */
 async function handleVerifyCode(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ status: 'error', message: 'Method Not Allowed' });
-  const email = String(req.body?.email || '').trim().toLowerCase();
-  const code = String(req.body?.code || '').replace(/\D/g, '');
+
+  // Parsing body jika berupa string JSON dari frontend
+  let body = req.body;
+  if (typeof body === 'string') {
+    try { body = JSON.parse(body); } catch {}
+  }
+
+  const email = String(body?.email || '').trim().toLowerCase();
+  const code = String(body?.code || '').replace(/\D/g, '');
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
     return res.status(400).json({ status: 'error', message: 'Email tidak valid.' });
@@ -186,7 +198,7 @@ async function handleVerifyCode(req, res) {
     return res.status(400).json({ status: 'error', message: 'Kode harus 6 digit.' });
 
   const rec = await readOtp(email);
-  if (!rec || rec.exp < Date.now()) {
+  if (!rec || !rec.exp || rec.exp < Date.now()) {
     await dropOtp(email);
     return res.status(400).json({ status: 'error', message: 'Kode kedaluwarsa. Minta kode baru.' });
   }
@@ -221,7 +233,6 @@ async function handleVerifyCode(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   return res.status(200).json({ status: 'success', user: pub, quota: await quotaInfo(user) });
 }
-
 async function handleLogin(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ status: 'error', message: 'Method Not Allowed' });
   const email = String(req.body?.email || '').trim().toLowerCase();
