@@ -161,7 +161,7 @@ body.ilock{overflow:hidden}
 .nav.solid{border-bottom-color:var(--line);background:rgba(5,5,7,.95)}
 .nav-in{display:flex;align-items:center;justify-content:space-between;gap:.8rem;padding:.7rem 0}
 .brand{display:flex;align-items:center;gap:.6rem;font-family:var(--mono);font-weight:700;letter-spacing:.13em;font-size:.78rem;color:#fff;text-decoration:none;flex:none}
-.brand .mark{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:.9rem;background:linear-gradient(140deg,var(--a1),#4b1fa8);border:1px solid var(--a1-soft);color:#fff;box-shadow:0 0 18px var(--g1);animation:pulseMark 3.4s ease-in-out infinite}
+.brand .mark{width:30px;height:30px;border-radius:99px;display:grid;place-items:center;font-size:.9rem;background:linear-gradient(140deg,var(--a1),#4b1fa8);border:1px solid var(--a1-soft);color:#fff;box-shadow:0 0 18px var(--g1);animation:pulseMark 3.4s ease-in-out infinite}
 @keyframes pulseMark{50%{box-shadow:0 0 30px var(--g1)}}
 .brand span small{display:block;font-size:.5rem;letter-spacing:.26em;color:var(--a2);font-weight:400}
 
@@ -219,6 +219,21 @@ kbd{font-family:var(--mono);font-size:.58rem;border:1px solid var(--line);border
 .stat{text-align:center}
 .stat b{display:block;font-family:var(--mono);font-size:1.05rem;color:#fff}
 .stat small{font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;color:var(--dimmer);text-transform:uppercase}
+
+/* ===== NEW SMOOTH ANIMATIONS & BUTTON BOUNCE ===== */
+.btn-bounce {
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease, border-color 0.2s ease;
+}
+.btn-bounce:active {
+  transform: scale(0.96) !important;
+}
+.glow-card {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glow-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px -10px var(--g2), 0 0 20px 2px var(--g1);
+}
 
 .btn{position:relative;overflow:hidden;border:none;border-radius:var(--r-sm);cursor:pointer;font-family:var(--sans);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.78rem;padding:.9rem 1.35rem;display:inline-flex;align-items:center;justify-content:center;gap:.55rem;transition:transform .25s var(--ease),box-shadow .3s,background .3s,color .3s;text-decoration:none}
 .btn:active{transform:scale(.975)}
@@ -406,7 +421,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
 .q-row.sent .em{color:var(--txt)}
 .q-row.fail .st{color:var(--bad)}
 .q-row.fail .em{color:var(--bad)}
-.q-empty{font-family:var(--mono);font-size:.7rem;color:var(--dimmer);padding:.8rem;text-align:center;border:1px dashed var(--line);border-radius:9px}
+.q-empty{font-family:var(--mono);font-size:.7rem;color:var(--dimmer);padding:.8rem;text-align:center;border:1px dashed var(--line);border-radius:99px}
 
 /* history */
 .h-row{display:flex;gap:.6rem;align-items:center;padding:.6rem .7rem;border:1px solid var(--line);border-radius:9px;margin-bottom:.4rem;background:#06060a}
@@ -546,6 +561,36 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
   25% { clip-path: inset(30% 0 20% 0); transform: translate(-2px, -2px); }
   35%, 85% { clip-path: inset(0 0 0 0); transform: translate(0); }
 }
+
+/* ===== CHANGELOG SECTION STYLES ===== */
+.changelog-node {
+  position: relative;
+  padding-left: 2.2rem;
+  margin-bottom: 1.8rem;
+}
+.changelog-node::before {
+  content: '';
+  position: absolute;
+  left: 0.35rem;
+  top: 0.45rem;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--a2);
+  box-shadow: 0 0 10px var(--a2);
+}
+.changelog-node::after {
+  content: '';
+  position: absolute;
+  left: 0.6rem;
+  top: 1.4rem;
+  bottom: -1.2rem;
+  width: 2px;
+  background: var(--line);
+}
+.changelog-node:last-child::after {
+  display: none;
+}
 </style>
 </head>
 <body>
@@ -559,7 +604,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
   <div class="boot-frame">
     <div class="boot-top">
       <span class="bt-brand"><i class="fa-solid fa-bolt"></i> zukai_kernel</span>
-      <span class="bt-ver" id="bootVer">v5.1.0</span>
+      <span class="bt-ver" id="bootVer">v5.2.0</span>
     </div>
 
     <div class="boot-core">
@@ -607,6 +652,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
         <a href="#harga" data-sec="harga"><i class="fa-solid fa-tags"></i> Harga</a>
         <a href="#terminal" data-sec="terminal"><i class="fa-solid fa-terminal"></i> Terminal</a>
         <a href="#api" data-sec="api"><i class="fa-solid fa-code"></i> API</a>
+        <a href="#changelog" data-sec="changelog"><i class="fa-solid fa-list-check"></i> Update</a>
         <a href="#faq" data-sec="faq"><i class="fa-solid fa-circle-question"></i> FAQ</a>
         <a href="#tools" data-sec="tools"><i class="fa-solid fa-toolbox"></i> Tools</a>
         <a href="#tentang" data-sec="tentang"><i class="fa-solid fa-circle-info"></i> Tentang</a>
@@ -619,11 +665,11 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
           <button class="c3" data-acc="lime" aria-pressed="false" aria-label="Hijau"></button>
           <button class="c4" data-acc="ember" aria-pressed="false" aria-label="Oranye"></button>
         </div>
-        <button class="icon-btn" id="soundBtn" aria-pressed="false" title="Suara notifikasi" aria-label="Suara notifikasi"><i class="fa-solid fa-volume-xmark"></i></button>
-        <button class="kbd-hint" onclick="openPalette()" title="Command palette"><i class="fa-solid fa-magnifying-glass"></i> <kbd>Ctrl</kbd><kbd>K</kbd></button>
-        <button class="icon-btn" onclick="openSheet('historySheet')" title="Riwayat aktivasi" aria-label="Riwayat"><i class="fa-solid fa-clock-rotate-left"></i></button>
-        <button class="acc-btn" id="accBtn" onclick="accClick()"><i class="fa-solid fa-user"></i> <span id="accLabel">Masuk</span></button>
-        <button class="btn btn-primary" style="padding:.5rem .85rem;font-size:.68rem" onclick="scrollToTerminal()">
+        <button class="icon-btn btn-bounce" id="soundBtn" aria-pressed="false" title="Suara notifikasi" aria-label="Suara notifikasi"><i class="fa-solid fa-volume-xmark"></i></button>
+        <button class="kbd-hint btn-bounce" onclick="openPalette()" title="Command palette"><i class="fa-solid fa-magnifying-glass"></i> <kbd>Ctrl</kbd><kbd>K</kbd></button>
+        <button class="icon-btn btn-bounce" onclick="openSheet('historySheet')" title="Riwayat aktivasi" aria-label="Riwayat"><i class="fa-solid fa-clock-rotate-left"></i></button>
+        <button class="acc-btn btn-bounce" id="accBtn" onclick="accClick()"><i class="fa-solid fa-user"></i> <span id="accLabel">Masuk</span></button>
+        <button class="btn btn-primary btn-bounce" style="padding:.5rem .85rem;font-size:.68rem" onclick="scrollToTerminal()">
           <i class="fa-solid fa-terminal"></i> <span>Mulai</span>
         </button>
         <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><i class="fa-solid fa-bars"></i></button>
@@ -635,6 +681,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
       <a href="#harga"><i class="fa-solid fa-tags"></i> Harga</a>
       <a href="#terminal"><i class="fa-solid fa-terminal"></i> Terminal</a>
       <a href="#api"><i class="fa-solid fa-code"></i> API</a>
+      <a href="#changelog"><i class="fa-solid fa-list-check"></i> Changelog Update</a>
       <a href="#faq"><i class="fa-solid fa-circle-question"></i> FAQ</a>
       <a href="#tools"><i class="fa-solid fa-toolbox"></i> Tools</a>
       <a href="#tentang"><i class="fa-solid fa-circle-info"></i> Tentang</a>
@@ -648,7 +695,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
 <div class="wrap" id="top">
 
   <header class="hero">
-    <div class="hero-card">
+    <div class="hero-card glow-card">
       <div class="media">
         <video id="bannerVideo" autoplay muted playsinline loop preload="metadata">
           <source src="/video1.mp4" type="video/mp4">
@@ -657,8 +704,8 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
         <div class="media-top">
           <span class="chip live"><span class="dot"></span>System Active</span>
           <div style="display:flex;gap:.4rem;flex-wrap:wrap">
-            <button class="chip" onclick="openQr()"><i class="fa-solid fa-qrcode me-1"></i>QR</button>
-            <button class="chip" onclick="openSheet('aboutSheet')"><i class="fa-solid fa-server me-1"></i>System Info</button>
+            <button class="chip btn-bounce" onclick="openQr()"><i class="fa-solid fa-qrcode me-1"></i>QR</button>
+            <button class="chip btn-bounce" onclick="openSheet('aboutSheet')"><i class="fa-solid fa-server me-1"></i>System Info</button>
           </div>
         </div>
       </div>
@@ -667,9 +714,9 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
         <p class="typed-line" id="typed"></p>
         <p class="hero-sub">Terminal serverless: kirim magic link ke email target, tempel OOB code, lalu inject. Semua diproses di edge function Vercel — token tidak pernah nyangkut di browser.</p>
         <div class="hero-cta">
-          <button class="btn btn-primary" onclick="scrollToTerminal()"><i class="fa-solid fa-rocket"></i> Buka Terminal</button>
-          <button class="btn btn-ghost" onclick="document.getElementById('tutorial').scrollIntoView({behavior: reduce ? 'auto' : 'smooth'})"><i class="fa-solid fa-circle-play"></i> Cara Pakai (Video)</button>
-          <button class="btn btn-plain" onclick="openSheet('aboutSheet')"><i class="fa-solid fa-circle-info"></i> Tentang</button>
+          <button class="btn btn-primary btn-bounce" onclick="scrollToTerminal()"><i class="fa-solid fa-rocket"></i> Buka Terminal</button>
+          <button class="btn btn-ghost btn-bounce" onclick="document.getElementById('tutorial').scrollIntoView({behavior: reduce ? 'auto' : 'smooth'})"><i class="fa-solid fa-circle-play"></i> Cara Pakai (Video)</button>
+          <button class="btn btn-plain btn-bounce" onclick="openSheet('aboutSheet')"><i class="fa-solid fa-circle-info"></i> Tentang</button>
         </div>
         <div class="stat-row">
           <div class="stat"><b data-count="80" data-suffix=".000+ user">0</b><small>Berhasil Inject</small></div>
@@ -695,35 +742,35 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
       <p>Tiap bagian terminal punya satu tugas jelas. Tidak ada langkah ngawur, tidak ada data sensitif yang nyangkut di frontend.</p>
     </div>
     <div class="grid-3">
-      <div class="card reveal">
+      <div class="card glow-card reveal">
         <div class="ic"><i class="fa-solid fa-paper-plane"></i></div>
         <h3>Magic Link Dispatch</h3>
         <p>Kirim email verifikasi ke akun target lewat <code>/api/magic-link</code>. Respon langsung, tanpa reload.</p>
       </div>
-      <div class="card reveal">
+      <div class="card glow-card reveal">
         <span class="badge-new">Baru</span>
         <div class="ic"><i class="fa-solid fa-layer-group"></i></div>
         <h3>Bulk Antrian</h3>
         <p>Tempel puluhan email sekaligus, kirim berurutan dengan jeda aman. Status per baris terlihat jelas.</p>
       </div>
-      <div class="card reveal">
+      <div class="card glow-card reveal">
         <span class="badge-new">Baru</span>
         <div class="ic"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
         <h3>Validator Realtime</h3>
         <p>Tempel link, langsung dicek: <code>oobCode</code> ketemu atau tidak, panjang karakter, dan tombol inject menyesuaikan.</p>
       </div>
-      <div class="card reveal">
+      <div class="card glow-card reveal">
         <div class="ic"><i class="fa-solid fa-bolt-lightning"></i></div>
         <h3>Force Inject</h3>
         <p>Payload diteruskan ke <code>/api/inject</code> dengan order ID unik sebagai jejak aktivasi.</p>
       </div>
-      <div class="card reveal">
+      <div class="card glow-card reveal">
         <span class="badge-new">Baru</span>
         <div class="ic"><i class="fa-solid fa-gauge-high"></i></div>
         <h3>Kuota &amp; Akun</h3>
         <p>20 inject per hari buat akun free, tanpa batas buat premium. Dihitung di server, bukan di browser.</p>
       </div>
-      <div class="card reveal">
+      <div class="card glow-card reveal">
         <div class="ic"><i class="fa-solid fa-shield-halved"></i></div>
         <h3>Token di Server</h3>
         <p><code>API_KEY</code>, <code>ALIGHT_TOKEN</code>, dan <code>FIREBASE_TOKEN</code> hidup sebagai env Vercel, bukan di HTML.</p>
@@ -738,7 +785,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
       <p>Tonton panduan visual di bawah ini untuk melihat alur kerja aktivasi Alight Motion Premium secara lengkap.</p>
     </div>
     
-    <div class="panel reveal" style="padding:1.2rem;">
+    <div class="panel glow-card reveal" style="padding:1.2rem;">
       <div class="tutorial-grid" style="display:grid;grid-template-columns:1.2fr 0.8fr;gap:1.2rem;align-items:start;">
         <div style="background:#040406;border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden;">
           <video id="tutorialVideo" controls autoplay muted playsinline loop preload="metadata" style="width:100%;height:auto;display:block;aspect-ratio:16/9;background:#000;">
@@ -747,7 +794,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
           </video>
           <div style="padding:.7rem .9rem;background:rgba(8,8,12,0.9);display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line);font-family:var(--mono);font-size:.68rem;color:var(--dim);">
             <span><i class="fa-solid fa-film" style="color:var(--a2)"></i> tutorial.mp4</span>
-            <a href="/tutorial.mp4" download class="tool-btn" style="padding:.25rem .5rem;font-size:.6rem;"><i class="fa-solid fa-download"></i> Download Video</a>
+            <a href="/tutorial.mp4" download class="tool-btn btn-bounce" style="padding:.25rem .5rem;font-size:.6rem;"><i class="fa-solid fa-download"></i> Download Video</a>
           </div>
         </div>
 
@@ -789,7 +836,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
           </div>
 
           <div style="margin-top:1.2rem;">
-            <button class="btn btn-primary btn-block" onclick="scrollToTerminal()">
+            <button class="btn btn-primary btn-bounce btn-block" onclick="scrollToTerminal()">
               <i class="fa-solid fa-terminal"></i> Praktek Sekarang
             </button>
           </div>
@@ -805,7 +852,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
       <p>Akun free dapat 20 inject per hari, reset tiap 00:00 WIB. Premium tanpa batas, aktif 30 hari.</p>
     </div>
     <div class="price-grid">
-      <div class="price">
+      <div class="price glow-card">
         <h3>Free</h3>
         <div class="num">Rp0 <small>/ selamanya</small></div>
         <ul>
@@ -814,9 +861,9 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
           <li><i class="fa-solid fa-check"></i>Antrian bulk</li>
           <li class="no"><i class="fa-solid fa-xmark"></i>Tanpa API key</li>
         </ul>
-        <button class="btn btn-plain btn-block" onclick="openSheet('authSheet')">Buat akun</button>
+        <button class="btn btn-plain btn-bounce btn-block" onclick="openSheet('authSheet')">Buat akun</button>
       </div>
-      <div class="price hot">
+      <div class="price hot glow-card">
         <span class="tagp">Unlimited</span>
         <h3>Premium</h3>
         <div class="num">Rp3.500 <small>/ 30 hari</small></div>
@@ -826,7 +873,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
           <li><i class="fa-solid fa-check"></i>Prioritas antrian</li>
           <li><i class="fa-solid fa-check"></i>Bayar QRIS otomatis</li>
         </ul>
-        <button class="btn btn-primary btn-block" onclick="openSheet('upgradeSheet')">Upgrade</button>
+        <button class="btn btn-primary btn-bounce btn-block" onclick="openSheet('upgradeSheet')">Upgrade</button>
       </div>
     </div>
   </section>
@@ -838,7 +885,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
       <p>Dua langkah. Isi email, ambil link dari inbox, tempel, jalankan. Order ID bisa kamu pakai sebagai penanda transaksi.</p>
     </div>
 
-    <div class="panel reveal">
+    <div class="panel glow-card reveal">
       <div class="panel-bar">
         <span class="tl r"></span><span class="tl y"></span><span class="tl g"></span>
         <span class="path">~/zukai/am-premium/injector</span>
@@ -850,10 +897,10 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
       <div class="panel-body">
 
         <div class="panel-tools">
-          <button class="tool-btn" onclick="openSheet('queueSheet')"><i class="fa-solid fa-layer-group"></i> Antrian <span class="cnt" id="qCount">0</span></button>
-          <button class="tool-btn" onclick="openSheet('historySheet')"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat <span class="cnt" id="hCount">0</span></button>
-          <button class="tool-btn" onclick="openQr()"><i class="fa-solid fa-qrcode"></i> QR</button>
-          <button class="tool-btn" onclick="openPalette()"><i class="fa-solid fa-bolt"></i> Aksi Cepat</button>
+          <button class="tool-btn btn-bounce" onclick="openSheet('queueSheet')"><i class="fa-solid fa-layer-group"></i> Antrian <span class="cnt" id="qCount">0</span></button>
+          <button class="tool-btn btn-bounce" onclick="openSheet('historySheet')"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat <span class="cnt" id="hCount">0</span></button>
+          <button class="tool-btn btn-bounce" onclick="openQr()"><i class="fa-solid fa-qrcode"></i> QR</button>
+          <button class="tool-btn btn-bounce" onclick="openPalette()"><i class="fa-solid fa-bolt"></i> Aksi Cepat</button>
         </div>
 
         <div class="quota-line" id="quotaLine">
@@ -898,7 +945,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
             </div>
             <div class="err-msg" id="emailErr"><i class="fa-solid fa-triangle-exclamation"></i> Format email tidak valid.</div>
           </div>
-          <button class="btn btn-primary btn-block" id="btnSend" onclick="sendMagicLink()">
+          <button class="btn btn-primary btn-bounce btn-block" id="btnSend" onclick="sendMagicLink()">
             <i class="fa-solid fa-paper-plane"></i> <span>Transmit Verification Link</span>
           </button>
         </div>
@@ -918,25 +965,54 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
             <div class="err-msg" id="linkErr"><i class="fa-solid fa-triangle-exclamation"></i> oobCode tidak ditemukan di link.</div>
           </div>
           <div style="display:flex;flex-direction:column;gap:.5rem">
-            <button class="btn btn-primary btn-block" id="btnInject" onclick="requestInject()" style="background:linear-gradient(120deg,#00b4d8,#0077b6);border-color:#90e0ef">
+            <button class="btn btn-primary btn-bounce btn-block" id="btnInject" onclick="requestInject()" style="background:linear-gradient(120deg,#00b4d8,#0077b6);border-color:#90e0ef">
               <i class="fa-solid fa-bolt-lightning"></i> <span>Force Inject Premium</span>
             </button>
-            <button class="btn btn-plain btn-block" onclick="resetForm(true)"><i class="fa-solid fa-rotate-left"></i> Abort / Restart</button>
+            <button class="btn btn-plain btn-bounce btn-block" onclick="resetForm(true)"><i class="fa-solid fa-rotate-left"></i> Abort / Restart</button>
           </div>
         </div>
 
         <div id="api" style="margin-top:1.4rem;padding-top:1.2rem;border-top:1px dashed var(--line)">
-          <button class="btn btn-ghost btn-block" onclick="toggleApi()" id="apiToggle">
-            <i class="fa-solid fa-code"></i> API buat bot alight motionmu
+          <button class="btn btn-ghost btn-bounce btn-block" onclick="toggleApi()" id="apiToggle">
+            <i class="fa-solid fa-code"></i> API buat bot alight motionmu (Multi-Language)
           </button>
           <div class="codewrap" id="apiDocs">
             <div class="code-head">
-              <button class="tab on" data-lang="nodejs">Node.js</button>
+              <button class="tab on" data-lang="telegram">Telegram Bot</button>
+              <button class="tab" data-lang="nodejs">Node.js</button>
               <button class="tab" data-lang="python">Python</button>
               <button class="tab" data-lang="php">PHP</button>
-              <button class="copy" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+              <button class="tab" data-lang="go">Go</button>
+              <button class="tab" data-lang="curl">cURL</button>
+              <button class="copy btn-bounce" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
             </div>
-            <pre class="code" data-lang="nodejs"><span class="c">// 1. Kirim magic link</span>
+
+            <!-- CODE TAB: TELEGRAM BOT -->
+            <pre class="code" data-lang="telegram"><span class="c">// Bot Telegram (node-telegram-bot-api)</span>
+<span class="k">import</span> TelegramBot <span class="k">from</span> <span class="s">'node-telegram-bot-api'</span>;
+<span class="k">import</span> fetch <span class="k">from</span> <span class="s">'node-fetch'</span>;
+
+<span class="k">const</span> bot = <span class="k">new</span> <span class="f">TelegramBot</span>(<span class="s">'BOT_TOKEN_KAMU'</span>, { polling: <span class="k">true</span> });
+
+bot.<span class="f">onText</span>(<span class="s">/\/cek (.+)/</span>, <span class="k">async</span> (msg, match) => {
+  <span class="k">const</span> chatId = msg.chat.id;
+  <span class="k">const</span> apiKey = match[1].trim();
+
+  <span class="k">try</span> {
+    <span class="k">const</span> res = <span class="k">await</span> <span class="f">fetch</span>(<span class="s">'https://www.juikoprem.my.id/api/auth/me'</span>, {
+      headers: { <span class="s">'X-Api-Key'</span>: apiKey, <span class="s">'Content-Type'</span>: <span class="s">'application/json'</span> }
+    });
+    <span class="k">const</span> data = <span class="k">await</span> res.<span class="f">json</span>();
+    <span class="k">if</span>(!res.ok || !data.user) <span class="k">return</span> bot.<span class="f">sendMessage</span>(chatId, <span class="s">`❌ Key Tidak Valid`</span>);
+
+    bot.<span class="f">sendMessage</span>(chatId, <span class="s">`✅ Email: \${data.user.email}\nSisa Kuota: \${data.quota?.remaining || 'Unlimited'}`</span>);
+  } <span class="k">catch</span>(err) {
+    bot.<span class="f">sendMessage</span>(chatId, <span class="s">`⚠️ Server Error`</span>);
+  }
+});</pre>
+
+            <!-- CODE TAB: NODEJS -->
+            <pre class="code" data-lang="nodejs" style="display:none"><span class="c">// 1. Kirim magic link</span>
 <span class="k">const</span> axios = <span class="f">require</span>(<span class="s">'axios'</span>);
 <span class="k">await</span> axios.<span class="f">post</span>(<span class="s">'https://www.juikoprem.my.id/api/magic-link'</span>, {
   email: <span class="s">"buyer@email.com"</span>
@@ -948,17 +1024,21 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
   oobCode: <span class="s">"OOB_CODE_NYA"</span>,
   orderId: <span class="s">"ZukaiDev-VIP-00001"</span>
 }, { headers: { <span class="s">'x-api-key'</span>: <span class="s">'am_xxxxxxxx'</span> } });</pre>
+
+            <!-- CODE TAB: PYTHON -->
             <pre class="code" data-lang="python" style="display:none"><span class="c"># 1. Kirim magic link</span>
 <span class="k">import</span> requests
 requests.<span class="f">post</span>(<span class="s">"https://www.juikoprem.my.id/api/magic-link"</span>,
   json={<span class="s">"email"</span>: <span class="s">"buyer@email.com"</span>})
 
-<span class="c"># 2. Inject — butuh akun, kirim API key</span>
+<span class="c"># 2. Inject — kirim API key</span>
 requests.<span class="f">post</span>(<span class="s">"https://www.juikoprem.my.id/api/inject"</span>,
   json={<span class="s">"email"</span>: <span class="s">"buyer@email.com"</span>,
         <span class="s">"oobCode"</span>: <span class="s">"OOB_CODE_NYA"</span>,
         <span class="s">"orderId"</span>: <span class="s">"ZukaiDev-VIP-00001"</span>},
   headers={<span class="s">"x-api-key"</span>: <span class="s">"am_xxxxxxxx"</span>})</pre>
+
+            <!-- CODE TAB: PHP -->
             <pre class="code" data-lang="php" style="display:none"><span class="k">&lt;?php</span>
 <span class="c">// 1. Kirim magic link</span>
 $c1 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my.id/api/magic-link'</span>);
@@ -967,14 +1047,34 @@ $c1 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
 <span class="f">curl_setopt</span>($c1, CURLOPT_RETURNTRANSFER, <span class="k">true</span>);
 <span class="k">echo</span> <span class="f">curl_exec</span>($c1);
 
-<span class="c">// 2. Inject — butuh akun, kirim API key</span>
+<span class="c">// 2. Inject</span>
 $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my.id/api/inject'</span>);
 <span class="f">curl_setopt</span>($c2, CURLOPT_POSTFIELDS, <span class="f">json_encode</span>([
   <span class="s">'email'</span>=><span class="s">'buyer@email.com'</span>, <span class="s">'oobCode'</span>=><span class="s">'OOB'</span>, <span class="s">'orderId'</span>=><span class="s">'ID'</span>]));
 <span class="f">curl_setopt</span>($c2, CURLOPT_HTTPHEADER, [<span class="s">'Content-Type:application/json'</span>, <span class="s">'x-api-key: am_xxxxxxxx'</span>]);
 <span class="f">curl_setopt</span>($c2, CURLOPT_RETURNTRANSFER, <span class="k">true</span>);
 <span class="k">echo</span> <span class="f">curl_exec</span>($c2);</pre>
-            <div class="code-note"><i class="fa-solid fa-circle-info" style="color:var(--a2)"></i> Endpoint <code>/api/inject</code> sekarang butuh akun. Ambil API key di panel akun.</div>
+
+            <!-- CODE TAB: GO -->
+            <pre class="code" data-lang="go" style="display:none"><span class="k">package</span> main
+<span class="k">import</span> (<span class="s">"fmt"</span>; <span class="s">"net/http"</span>; <span class="s">"io"</span>)
+
+<span class="k">func</span> <span class="f">main</span>() {
+	client := &http.Client{}
+	req, _ := http.<span class="f">NewRequest</span>(<span class="s">"GET"</span>, <span class="s">"https://www.juikoprem.my.id/api/auth/me"</span>, nil)
+	req.Header.<span class="f">Set</span>(<span class="s">"X-Api-Key"</span>, <span class="s">"am_xxxxxxxx"</span>)
+	resp, _ := client.<span class="f">Do</span>(req)
+	body, _ := io.<span class="f">ReadAll</span>(resp.Body)
+	fmt.<span class="f">Println</span>(string(body))
+}</pre>
+
+            <!-- CODE TAB: CURL -->
+            <pre class="code" data-lang="curl" style="display:none"><span class="c"># Terminal cURL Request</span>
+curl -X GET "https://www.juikoprem.my.id/api/auth/me" \
+     -H "X-Api-Key: am_xxxxxxxx" \
+     -H "Content-Type: application/json"</pre>
+
+            <div class="code-note"><i class="fa-solid fa-circle-info" style="color:var(--a2)"></i> Endpoint <code>/api/inject</code> memerlukan API Key aktif. Dapatkan di panel profil akun Anda.</div>
           </div>
         </div>
 
@@ -992,12 +1092,57 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
     </div>
   </section>
 
+  <!-- SECTION: CHANGELOG & UPDATE HISTORY -->
+  <section id="changelog">
+    <div class="sec-head reveal">
+      <span class="kicker">Riwayat Update</span>
+      <h2>Changelog System Update</h2>
+      <p>Catatan pembaruan berkala, optimasi backend, serta perbaikan bug pada AM PREMIUM Terminal.</p>
+    </div>
+
+    <div class="panel glow-card reveal" style="padding: 1.5rem;">
+      <div class="changelog-node">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.4rem">
+          <h3 style="color:#fff;font-size:0.95rem;font-weight:700">v1.2.0 — Mailtarget Integration &amp; Multi-Lang SDK</h3>
+          <span style="font-family:var(--mono);font-size:0.6rem;color:var(--a2);background:rgba(0,245,212,0.1);padding:0.1rem 0.5rem;border-radius:4px;border:1px solid rgba(0,245,212,0.3)">1 NOVEMBER 2026</span>
+        </div>
+        <ul style="font-size:0.8rem;color:var(--dim);list-style:disc;padding-left:1.2rem;display:flex;flex-direction:column;gap:0.3rem">
+          <li>Migrasi penuh pengirim OTP ke <strong>Mailtarget Transmission API</strong> (solusi <code>bodyText</code> / <code>bodyHtml</code>).</li>
+          <li>Perbaikan bug <code>readOtp</code> Object parsing pada Vercel/Upstash KV yang menyebabkan pesan "Kode Kedaluwarsa".</li>
+          <li>Penambahan contoh integrasi API untuk <strong>Bot Telegram (Node.js)</strong>, <strong>Python</strong>, <strong>PHP</strong>, <strong>Go</strong>, dan <strong>cURL</strong>.</li>
+          <li>Optimasi transisi animasi UI dengan <em>micro-interaction button bounce</em> dan <em>glassmorphic glow cards</em>.</li>
+        </ul>
+      </div>
+
+      <div class="changelog-node">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.4rem">
+          <h3 style="color:#fff;font-size:0.95rem;font-weight:700">v1.1.0 — Smart Rate Limiter &amp; Bulk Antrian</h3>
+          <span style="font-family:var(--mono);font-size:0.6rem;color:var(--dimmer);background:rgba(255,255,255,0.05);padding:0.1rem 0.5rem;border-radius:4px;border:1px solid var(--line)">25 OKTOBER 2026</span>
+        </div>
+        <ul style="font-size:0.8rem;color:var(--dim);list-style:disc;padding-left:1.2rem;display:flex;flex-direction:column;gap:0.3rem">
+          <li>Penerapan Rate Limiting per Email dan per IP Address untuk pencegahan spamming OTP.</li>
+          <li>Fitur antrian massal (*Bulk Inject*) dengan indikator status pengiriman otomatis.</li>
+        </ul>
+      </div>
+
+      <div class="changelog-node">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.4rem">
+          <h3 style="color:#fff;font-size:0.95rem;font-weight:700">v1.0.0 — Serverless Core Relaunch</h3>
+          <span style="font-family:var(--mono);font-size:0.6rem;color:var(--dimmer);background:rgba(255,255,255,0.05);padding:0.1rem 0.5rem;border-radius:4px;border:1px solid var(--line)">10 OKTOBER 2026</span>
+        </div>
+        <ul style="font-size:0.8rem;color:var(--dim);list-style:disc;padding-left:1.2rem;display:flex;flex-direction:column;gap:0.3rem">
+          <li>Rilis perdana Zukai Terminal dengan arsitektur Edge Serverless Vercel &amp; QRIS Payment Automation.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
   <section id="faq">
     <div class="sec-head reveal">
       <span class="kicker">Pertanyaan</span>
       <h2>Hal yang sering ditanya</h2>
     </div>
-    <div class="faq reveal">
+    <div class="faq glow-card reveal">
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">Ini legal atau bukan?<i class="fa-solid fa-plus"></i></button>
         <div class="faq-a"><p>Metodenya meniru alur verifikasi pembelian dari aplikasi resmi, jadi akun akan terbaca premium di Alight Motion. Risikonya cuma satu: kalau server Google atau Alight mengubah skema, endpoint bisa berhenti sampai diperbaiki.</p></div>
@@ -1036,26 +1181,26 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
       <p>Alat ringan buat mempermudah manipulasi data langsung dari browser tanpa perlu buka tab lain.</p>
     </div>
     <div class="grid-3">
-      <div class="card reveal">
+      <div class="card glow-card reveal">
         <div class="ic" style="margin-bottom:0.5rem"><i class="fa-solid fa-link"></i></div>
         <h3>URL / OOB Extractor</h3>
         <p style="margin-bottom:0.8rem">Ambil nilai parameter OOB code secara paksa dari URL ruwet.</p>
         <input type="text" class="inp" id="tUrl" placeholder="Tempel URL..." style="margin-bottom:0.5rem; padding:0.5rem; font-size:0.7rem">
-        <button class="btn btn-plain btn-sm btn-block" onclick="extOob()"><i class="fa-solid fa-magnifying-glass"></i> Ekstrak</button>
+        <button class="btn btn-plain btn-bounce btn-sm btn-block" onclick="extOob()"><i class="fa-solid fa-magnifying-glass"></i> Ekstrak</button>
         <div id="tUrlRes" style="margin-top:0.5rem; font-family:var(--mono); color:var(--a2); font-size:0.7rem; word-break:break-all"></div>
       </div>
-      <div class="card reveal">
+      <div class="card glow-card reveal">
         <div class="ic" style="margin-bottom:0.5rem"><i class="fa-solid fa-file-code"></i></div>
         <h3>Base64 Encode/Decode</h3>
         <p style="margin-bottom:0.8rem">Konversi teks biasa ke Base64 atau sebaliknya untuk payload.</p>
         <textarea class="inp" id="tB64" rows="1" placeholder="Masukkan teks..." style="margin-bottom:0.5rem; padding:0.5rem; font-size:0.7rem"></textarea>
         <div style="display:flex; gap:0.5rem">
-          <button class="btn btn-plain btn-sm" style="flex:1" onclick="doB64('enc')">Enc</button>
-          <button class="btn btn-plain btn-sm" style="flex:1" onclick="doB64('dec')">Dec</button>
+          <button class="btn btn-plain btn-bounce btn-sm" style="flex:1" onclick="doB64('enc')">Enc</button>
+          <button class="btn btn-plain btn-bounce btn-sm" style="flex:1" onclick="doB64('dec')">Dec</button>
         </div>
         <div id="tB64Res" style="margin-top:0.5rem; font-family:var(--mono); font-size:0.7rem; word-break:break-all"></div>
       </div>
-      <div class="card reveal">
+      <div class="card glow-card reveal">
         <div class="ic" style="margin-bottom:0.5rem"><i class="fa-solid fa-stopwatch"></i></div>
         <h3>Epoch / Unix Time</h3>
         <p style="margin-bottom:0.8rem">Cek waktu saat ini dalam format Unix Timestamp (milidetik).</p>
@@ -1063,7 +1208,7 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
           <input class="inp" id="tTime" readonly style="padding:0.5rem; font-size:0.7rem; color:var(--ok)">
           <button class="post" style="padding:0; right:0.3rem" type="button" onclick="copyText(document.getElementById('tTime').value)"><i class="fa-regular fa-copy"></i></button>
         </div>
-        <button class="btn btn-plain btn-sm btn-block" onclick="document.getElementById('tTime').value = Date.now()"><i class="fa-solid fa-rotate"></i> Refresh Waktu</button>
+        <button class="btn btn-plain btn-bounce btn-sm btn-block" onclick="document.getElementById('tTime').value = Date.now()"><i class="fa-solid fa-rotate"></i> Refresh Waktu</button>
       </div>
     </div>
   </section>
@@ -1075,7 +1220,7 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
       <p>Proyek kecil untuk menghilangkan langkah manual dari proses aktivasi premium.</p>
     </div>
     <div class="about-grid">
-      <div class="about-main reveal">
+      <div class="about-main glow-card reveal">
         <h3><i class="fa-solid fa-terminal" style="color:var(--a2)"></i> Kenapa dibuat</h3>
         <p><strong>AM Premium</strong> lahir dari satu masalah sederhana: proses aktivasi premium di aplikasi resmi itu panjang dan gampang salah. Kirim link, buka email, salin URL panjang, tempel ke tempat yang benar, baru jalankan.</p>
         <p>Terminal ini memotong semua itu jadi dua kolom input dan satu tombol. Semua logika berat — login OOB, pemanggilan <code>verifyPurchase</code>, dan penyimpanan token — dipindah ke serverless function supaya browser tetap bersih.</p>
@@ -1085,7 +1230,7 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
         </div>
         <div class="note">Bukan produk resmi Alight Creative. Kalau premium tiba-tiba hilang, jalankan ulang prosesnya.</div>
       </div>
-      <div class="about-side reveal">
+      <div class="about-side glow-card reveal">
         <h3 style="font-size:.8rem;font-family:var(--mono);letter-spacing:.14em;color:var(--a1-soft);text-transform:uppercase;margin-bottom:.7rem">Spesifikasi</h3>
         <div class="kv"><span>Developer</span><b>Zukai Dev</b></div>
         <div class="kv"><span>Runtime</span><b>Vercel Functions</b></div>
@@ -1094,9 +1239,9 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
         <div class="kv"><span>Versi</span><b>v5.2.0</b></div>
         <div class="kv"><span>Lisensi</span><b>Open Source</b></div>
         <div style="margin-top:.9rem;display:flex;flex-direction:column;gap:.45rem">
-          <a class="btn btn-primary btn-block" href="https://github.com/kyedeveloper/am-premium" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Repo GitHub</a>
-          <button class="btn btn-plain btn-block" onclick="openQr()"><i class="fa-solid fa-qrcode"></i> Bagikan via QR</button>
-          <button class="btn btn-plain btn-block" onclick="openSheet('guideSheet')"><i class="fa-solid fa-book"></i> Panduan</button>
+          <a class="btn btn-primary btn-bounce btn-block" href="https://github.com/kyedeveloper/am-premium" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Repo GitHub</a>
+          <button class="btn btn-plain btn-bounce btn-block" onclick="openQr()"><i class="fa-solid fa-qrcode"></i> Bagikan via QR</button>
+          <button class="btn btn-plain btn-bounce btn-block" onclick="openSheet('guideSheet')"><i class="fa-solid fa-book"></i> Panduan</button>
         </div>
       </div>
     </div>
@@ -1108,6 +1253,7 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
       <div class="foot-links">
         <a href="#top">Atas</a>
         <a href="#harga">Harga</a>
+        <a href="#changelog">Changelog</a>
         <a href="#faq">FAQ</a>
         <button onclick="openSheet('historySheet')">Riwayat</button>
         <button onclick="openSheet('aboutSheet')">System Info</button>
@@ -1117,7 +1263,7 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
   </footer>
 </div>
 
-<button class="fab" onclick="openPalette()" aria-label="Aksi cepat"><i class="fa-solid fa-bolt"></i></button>
+<button class="fab btn-bounce" onclick="openPalette()" aria-label="Aksi cepat"><i class="fa-solid fa-bolt"></i></button>
 
 <!-- ============ PALETTE ============ -->
 <div id="palette" role="dialog" aria-modal="true" aria-label="Aksi cepat">
@@ -1141,7 +1287,7 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
       </div>
     </div>
     <div class="sheet-foot" id="maintOwnerBypass" style="display:none">
-      <button class="btn btn-ghost btn-block" onclick="closeSheet('maintenanceSheet')"><i class="fa-solid fa-user-shield"></i> Bypass (Owner Mode)</button>
+      <button class="btn btn-ghost btn-bounce btn-block" onclick="closeSheet('maintenanceSheet')"><i class="fa-solid fa-user-shield"></i> Bypass (Owner Mode)</button>
     </div>
   </div>
 </div>
@@ -1163,8 +1309,8 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
       <p style="margin:0">Sebelum mulai, pastikan kamu tahu akun mana yang mau diaktifkan. Progres tidak bisa dibatalkan setelah inject.</p>
     </div>
     <div class="sheet-foot">
-      <button class="btn btn-plain" onclick="openSheet('guideSheet')"><i class="fa-solid fa-book"></i> Panduan</button>
-      <button class="btn btn-primary" onclick="closeSheet('welcomeSheet');scrollToTerminal()"><i class="fa-solid fa-arrow-right"></i> Gas</button>
+      <button class="btn btn-plain btn-bounce" onclick="openSheet('guideSheet')"><i class="fa-solid fa-book"></i> Panduan</button>
+      <button class="btn btn-primary btn-bounce" onclick="closeSheet('welcomeSheet');scrollToTerminal()"><i class="fa-solid fa-arrow-right"></i> Gas</button>
     </div>
   </div>
 </div>
@@ -1186,7 +1332,7 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
       </div>
       <p style="margin:0">Terminal berjalan penuh di atas fungsi serverless. Frontend hanya mengirim JSON; kredensial Google dan Alight dibaca dari environment variable di sisi server.</p>
     </div>
-    <div class="sheet-foot"><button class="btn btn-primary" onclick="closeSheet('aboutSheet')"><i class="fa-solid fa-check"></i> Tutup</button></div>
+    <div class="sheet-foot"><button class="btn btn-primary btn-bounce" onclick="closeSheet('aboutSheet')"><i class="fa-solid fa-check"></i> Tutup</button></div>
   </div>
 </div>
 
@@ -1205,8 +1351,8 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
       <div class="note">Gagal di tengah jalan? Tekan Abort / Restart dan mulai dari langkah 1. OOB code hanya bisa dipakai sekali.</div>
     </div>
     <div class="sheet-foot">
-      <button class="btn btn-plain" onclick="closeSheet('guideSheet')"><i class="fa-solid fa-xmark"></i> Tutup</button>
-      <button class="btn btn-primary" onclick="closeSheet('guideSheet');scrollToTerminal()"><i class="fa-solid fa-terminal"></i> Buka Terminal</button>
+      <button class="btn btn-plain btn-bounce" onclick="closeSheet('guideSheet')"><i class="fa-solid fa-xmark"></i> Tutup</button>
+      <button class="btn btn-primary btn-bounce" onclick="closeSheet('guideSheet');scrollToTerminal()"><i class="fa-solid fa-terminal"></i> Buka Terminal</button>
     </div>
   </div>
 </div>
@@ -1227,8 +1373,8 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
       <p style="margin:0">OOB code sekali pakai. Kalau proses ini gagal, link yang sama tidak bisa diulang.</p>
     </div>
     <div class="sheet-foot">
-      <button class="btn btn-plain" onclick="closeSheet('confirmSheet')"><i class="fa-solid fa-xmark"></i> Batal</button>
-      <button class="btn btn-primary" onclick="doInject()"><i class="fa-solid fa-bolt"></i> Jalankan</button>
+      <button class="btn btn-plain btn-bounce" onclick="closeSheet('confirmSheet')"><i class="fa-solid fa-xmark"></i> Batal</button>
+      <button class="btn btn-primary btn-bounce" onclick="doInject()"><i class="fa-solid fa-bolt"></i> Jalankan</button>
     </div>
   </div>
 </div>
@@ -1247,8 +1393,8 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
       <p style="font-size:.76rem;margin:0">Buka ulang Alight Motion dan cek status akun. Kalau belum berubah, tunggu 1–2 menit lalu restart aplikasi.</p>
     </div>
     <div class="sheet-foot">
-      <button class="btn btn-plain" onclick="downloadReceipt()"><i class="fa-solid fa-download"></i> Struk</button>
-      <button class="btn btn-primary" style="background:var(--a2);border-color:var(--a2);color:#04120d" onclick="closeSuccess()"><i class="fa-solid fa-power-off"></i> Selesai</button>
+      <button class="btn btn-plain btn-bounce" onclick="downloadReceipt()"><i class="fa-solid fa-download"></i> Struk</button>
+      <button class="btn btn-primary btn-bounce" style="background:var(--a2);border-color:var(--a2);color:#04120d" onclick="closeSuccess()"><i class="fa-solid fa-power-off"></i> Selesai</button>
     </div>
   </div>
 </div>
@@ -1269,9 +1415,9 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
       <div id="queueList"><div class="q-empty">Belum ada item di antrian.</div></div>
     </div>
     <div class="sheet-foot">
-      <button class="btn btn-plain" onclick="clearQueue()"><i class="fa-solid fa-eraser"></i> Bersihkan</button>
-      <button class="btn btn-plain" onclick="loadQueue()"><i class="fa-solid fa-list-check"></i> Muat</button>
-      <button class="btn btn-primary" id="btnRunQueue" onclick="runQueue()"><i class="fa-solid fa-play"></i> Kirim Semua</button>
+      <button class="btn btn-plain btn-bounce" onclick="clearQueue()"><i class="fa-solid fa-eraser"></i> Bersihkan</button>
+      <button class="btn btn-plain btn-bounce" onclick="loadQueue()"><i class="fa-solid fa-list-check"></i> Muat</button>
+      <button class="btn btn-primary btn-bounce" id="btnRunQueue" onclick="runQueue()"><i class="fa-solid fa-play"></i> Kirim Semua</button>
     </div>
   </div>
 </div>
@@ -1288,8 +1434,8 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
       <div id="historyList"><div class="q-empty">Belum ada riwayat.</div></div>
     </div>
     <div class="sheet-foot">
-      <button class="btn btn-plain" onclick="clearHistory()"><i class="fa-solid fa-trash"></i> Hapus semua</button>
-      <button class="btn btn-primary" onclick="exportHistory()"><i class="fa-solid fa-file-csv"></i> Ekspor CSV</button>
+      <button class="btn btn-plain btn-bounce" onclick="clearHistory()"><i class="fa-solid fa-trash"></i> Hapus semua</button>
+      <button class="btn btn-primary btn-bounce" onclick="exportHistory()"><i class="fa-solid fa-file-csv"></i> Ekspor CSV</button>
     </div>
   </div>
 </div>
@@ -1311,7 +1457,7 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
             <input class="inp" type="email" id="acEmailCode" placeholder="kamu@email.com" autocomplete="email" spellcheck="false">
           </div>
           <div class="err-msg" id="acSendErr"></div>
-          <button class="btn btn-primary btn-block" id="acSendBtn" onclick="sendOtp()"><i class="fa-solid fa-paper-plane"></i> <span>Kirim Kode</span></button>
+          <button class="btn btn-primary btn-bounce btn-block" id="acSendBtn" onclick="sendOtp()"><i class="fa-solid fa-paper-plane"></i> <span>Kirim Kode</span></button>
         </div>
 
         <div id="acStep2" style="display:none">
@@ -1324,10 +1470,10 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
             <input class="inp" id="acCode" inputmode="numeric" maxlength="6" placeholder="······" autocomplete="one-time-code" style="text-align:center;letter-spacing:.55em;font-size:1.15rem">
           </div>
           <div class="err-msg" id="acCodeErr"></div>
-          <button class="btn btn-primary btn-block" id="acVerifyBtn" onclick="verifyOtp()"><i class="fa-solid fa-check"></i> <span>Verifikasi &amp; Masuk</span></button>
+          <button class="btn btn-primary btn-bounce btn-block" id="acVerifyBtn" onclick="verifyOtp()"><i class="fa-solid fa-check"></i> <span>Verifikasi &amp; Masuk</span></button>
           <div style="display:flex;gap:.4rem;margin-top:.5rem">
-            <button class="btn btn-plain btn-sm" style="flex:1" id="acResendBtn" onclick="sendOtp(true)">Kirim ulang</button>
-            <button class="btn btn-plain btn-sm" style="flex:1" onclick="acBack()">Ganti email</button>
+            <button class="btn btn-plain btn-bounce btn-sm" style="flex:1" id="acResendBtn" onclick="sendOtp(true)">Kirim ulang</button>
+            <button class="btn btn-plain btn-bounce btn-sm" style="flex:1" onclick="acBack()">Ganti email</button>
           </div>
         </div>
       </div>
@@ -1346,7 +1492,7 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
           <input class="inp" type="password" id="authPass" placeholder="••••••••" autocomplete="current-password">
         </div>
         <div class="err-msg" id="authErr"></div>
-        <button class="btn btn-primary btn-block" id="authSubmit" onclick="authSubmit()"><i class="fa-solid fa-right-to-bracket"></i> <span>Masuk</span></button>
+        <button class="btn btn-primary btn-bounce btn-block" id="authSubmit" onclick="authSubmit()"><i class="fa-solid fa-right-to-bracket"></i> <span>Masuk</span></button>
       </div>
 
       <div class="center" style="margin-top:.85rem">
@@ -1385,7 +1531,7 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
             <input class="inp" id="acApiKey" readonly style="font-size:.68rem" placeholder="Tekan tombol buat API Key...">
             <button class="post" type="button" onclick="copyText(document.getElementById('acApiKey').value)"><i class="fa-regular fa-copy"></i></button>
           </div>
-          <button class="btn btn-plain btn-block" style="margin-bottom:.5rem" onclick="rotateKey(event)"><i class="fa-solid fa-rotate"></i> Buat / Ganti API key</button>
+          <button class="btn btn-plain btn-bounce btn-block" style="margin-bottom:.5rem" onclick="rotateKey(event)"><i class="fa-solid fa-rotate"></i> Buat / Ganti API key</button>
         </div>
       </div>
 
@@ -1406,12 +1552,12 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
             <input class="inp" id="adAnnounceInput" placeholder="Tulis pesan pengumuman..." style="font-size:.7rem">
           </div>
           <div style="display:flex;gap:.4rem;margin-bottom:.8rem">
-            <button class="btn btn-primary btn-sm" style="flex:1" onclick="setAnnouncement()"><i class="fa-solid fa-paper-plane"></i> Kirim</button>
-            <button class="btn btn-plain btn-sm" onclick="clearAnnouncement()"><i class="fa-solid fa-trash"></i> Hapus</button>
+            <button class="btn btn-primary btn-bounce btn-sm" style="flex:1" onclick="setAnnouncement()"><i class="fa-solid fa-paper-plane"></i> Kirim</button>
+            <button class="btn btn-plain btn-bounce btn-sm" onclick="clearAnnouncement()"><i class="fa-solid fa-trash"></i> Hapus</button>
           </div>
 
           <label class="label"><span><i class="fa-solid fa-screwdriver-wrench" style="color:var(--warn)"></i> Pemeliharaan Web (Maintenance)</span></label>
-          <button class="btn btn-ghost btn-sm btn-block" id="btnToggleMaint" onclick="toggleMaintenanceMode()">
+          <button class="btn btn-ghost btn-bounce btn-sm btn-block" id="btnToggleMaint" onclick="toggleMaintenanceMode()">
             <i class="fa-solid fa-power-off"></i> <span id="maintBtnTxt">Aktifkan Maintenance</span>
           </button>
         </div>
@@ -1419,8 +1565,8 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
       <div id="acOrders" style="margin-top:.8rem"></div>
     </div>
     <div class="sheet-foot">
-      <button class="btn btn-plain" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i> Keluar</button>
-      <button class="btn btn-primary" onclick="openSheet('upgradeSheet')"><i class="fa-solid fa-crown"></i> Upgrade</button>
+      <button class="btn btn-plain btn-bounce" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i> Keluar</button>
+      <button class="btn btn-primary btn-bounce" onclick="openSheet('upgradeSheet')"><i class="fa-solid fa-crown"></i> Upgrade</button>
     </div>
   </div>
 </div>
@@ -1443,7 +1589,7 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
       <p style="font-size:.64rem;color:var(--dimmer);text-align:center;margin:0">Kode referral: <b style="color:var(--a2)">REYY30C1A3</b></p>
     </div>
     <div class="sheet-foot">
-      <button class="btn btn-primary btn-block" id="payBtn" onclick="startPayment()"><i class="fa-solid fa-qrcode"></i> <span>Buat Invoice QRIS</span></button>
+      <button class="btn btn-primary btn-bounce btn-block" id="payBtn" onclick="startPayment()"><i class="fa-solid fa-qrcode"></i> <span>Buat Invoice QRIS</span></button>
     </div>
   </div>
 </div>
@@ -1460,7 +1606,7 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
       <div id="qrBox"></div>
       <div class="kv-box" style="text-align:left"><div class="kv"><span>URL</span><b id="qrUrl" style="word-break:break-all">—</b></div></div>
     </div>
-    <div class="sheet-foot"><button class="btn btn-primary" onclick="copyShare()"><i class="fa-regular fa-copy"></i> Copy Link</button></div>
+    <div class="sheet-foot"><button class="btn btn-primary btn-bounce" onclick="copyShare()"><i class="fa-regular fa-copy"></i> Copy Link</button></div>
   </div>
 </div>
 
@@ -1578,7 +1724,7 @@ pillLinks.forEach(l=>{
   l.addEventListener('focus', ()=>movePill(l));
 });
 pillNav.addEventListener('mouseleave', ()=>movePill(pillNav.querySelector('a.active')));
-const secs = ['fitur','tutorial','harga','terminal','api','faq','tools','tentang'].map(id=>document.getElementById(id)).filter(Boolean);
+const secs = ['fitur','tutorial','harga','terminal','api','changelog','faq','tools','tentang'].map(id=>document.getElementById(id)).filter(Boolean);
 const spy = new IntersectionObserver(es=>{
   es.forEach(e=>{
     if(!e.isIntersecting) return;
@@ -1598,6 +1744,7 @@ const ACTIONS = [
   {t:'Buka terminal', s:'navigasi', i:'fa-terminal', f:()=>{closePalette();scrollToTerminal();}},
   {t:'Video tutorial inject', s:'bantuan', i:'fa-circle-play', f:()=>{closePalette();document.getElementById('tutorial').scrollIntoView({behavior:'smooth'});}},
   {t:'Panduan langkah', s:'bantuan', i:'fa-book', f:()=>{closePalette();openSheet('guideSheet');}},
+  {t:'Changelog Update v1.2.0', s:'info', i:'fa-list-check', f:()=>{closePalette();document.getElementById('changelog').scrollIntoView({behavior:'smooth'});}},
   {t:'Akun gue', s:'akun', i:'fa-user', f:()=>{closePalette();accClick();}},
   {t:'Upgrade premium', s:'akun', i:'fa-crown', f:()=>{closePalette();openSheet('upgradeSheet');}},
   {t:'Antrian massal', s:'fitur', i:'fa-layer-group', f:()=>{closePalette();openSheet('queueSheet');}},
@@ -1778,7 +1925,7 @@ function toggleApi(){
   $('#apiDocs').classList.toggle('open', apiOpen);
   $('#apiToggle').innerHTML = apiOpen
     ? '<i class="fa-solid fa-chevron-up"></i> Sembunyikan API'
-    : '<i class="fa-solid fa-code"></i> API buat bot alight motionmu';
+    : '<i class="fa-solid fa-code"></i> API buat bot alight motionmu (Multi-Language)';
 }
 $$('.tab').forEach(t=>t.onclick = ()=>{
   $$('.tab').forEach(x=>x.classList.remove('on'));
@@ -2677,7 +2824,7 @@ async function startPayment() {
     $('#payArea').innerHTML = `
       <img id="qrisImg" src="${d.qrisImage}" alt="QRIS">
       <div class="pay-timer" id="payTimer">—</div>
-      <a class="btn btn-plain btn-block" style="margin-bottom:.5rem" href="${d.paymentLink}" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> Buka halaman bayar</a>
+      <a class="btn btn-plain btn-bounce btn-block" style="margin-bottom:.5rem" href="${d.paymentLink}" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> Buka halaman bayar</a>
       <p style="font-size:.7rem;color:var(--dimmer);text-align:center;margin:0">Total Rp${d.total} (termasuk fee). Status dicek otomatis.</p>`;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Menunggu pembayaran...</span>';
     btn.disabled = true;
@@ -2965,4 +3112,4 @@ $('#authPass').addEventListener('keydown', e=>{ if(e.key === 'Enter') authSubmit
 setStep(1);
 </script>
 </body>
-  </html>
+</html>
