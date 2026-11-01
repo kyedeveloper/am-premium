@@ -71,9 +71,10 @@ async function doExec(req, res) {
 
 /* ---------- downloader ---------- */
 async function cobalt(url, fmt, key) {
+  const base = (process.env.COBALT_API || 'https://api.cobalt.tools').replace(/\/+$/, '');
   const h = { 'Accept': 'application/json', 'Content-Type': 'application/json' };
-  if (key) h['api-key'] = key;
-  const r = await tf('https://api.cobalt.tools/', {
+  if (key) h['Authorization'] = 'Api-Key ' + key;
+  const r = await tf(base + '/', {
     method: 'POST', headers: h,
     body: JSON.stringify({ url, videoQuality: '1080', audioBitrate: '320', downloadMode: fmt === 'mp3' ? 'audio' : 'auto' })
   }, 9000);
@@ -84,7 +85,7 @@ async function cobalt(url, fmt, key) {
     return d.picker.map(p => ({ url: p.url, label: p.type || 'media', type: fmt === 'mp3' ? 'audio' : 'video', provider: 'cobalt' }));
   if (d.url) return [{ url: d.url, label: d.filename || 'media', type: fmt === 'mp3' ? 'audio' : 'video', provider: 'cobalt' }];
   throw new Error('cobalt kosong');
-}
+    }
 
 async function tikwm(url) {
   const r = await tf('https://tikwm.com/api/?hd=1&url=' + encodeURIComponent(url), {}, 9000);
