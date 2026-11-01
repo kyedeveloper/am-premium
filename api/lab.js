@@ -1,5 +1,3 @@
-export const config = { maxDuration: 30 };
-
 const PISTON = 'https://emkc.org/api/v2/piston/execute';
 const MAILTM = 'https://api.mail.tm';
 const ONESEC = 'https://www.1secmail.com/api/v1/';
@@ -26,7 +24,7 @@ function hit(ip, act) {
   return r.n <= (CAPS[act] || 40);
 }
 
-async function tf(url, opt = {}, ms = 13000) {
+async function tf(url, opt = {}, ms = 9000) {
   const c = new AbortController();
   const t = setTimeout(() => c.abort(), ms);
   try { return await fetch(url, { ...opt, signal: c.signal }); }
@@ -49,7 +47,7 @@ async function doExec(req, res) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ language: lang, version: '*', files, stdin: String(body.stdin || '') })
-  }, 16000);
+  }, 10000);
 
   const d = await r.json().catch(() => ({}));
   if (!r.ok) return out(res, 502, { status: 'error', message: d.message || 'Sandbox menolak (' + r.status + ')' });
@@ -70,10 +68,10 @@ async function cobalt(url, fmt, key) {
   const r = await tf('https://api.cobalt.tools/', {
     method: 'POST', headers: h,
     body: JSON.stringify({ url, videoQuality: '1080', audioBitrate: '320', downloadMode: fmt === 'mp3' ? 'audio' : 'auto' })
-  }, 15000);
+  }, 9000);
   if (!r.ok) throw new Error('cobalt ' + r.status);
   const d = await r.json();
-  if (d.status === 'error') throw new Error(d.error && d.error.code || 'cobalt error');
+  if (d.status === 'error') throw new Error((d.error && d.error.code) || 'cobalt error');
   if (d.status === 'picker' && Array.isArray(d.picker))
     return d.picker.map(p => ({ url: p.url, label: p.type || 'media', type: fmt === 'mp3' ? 'audio' : 'video', provider: 'cobalt' }));
   if (d.url) return [{ url: d.url, label: d.filename || 'media', type: fmt === 'mp3' ? 'audio' : 'video', provider: 'cobalt' }];
@@ -81,7 +79,7 @@ async function cobalt(url, fmt, key) {
 }
 
 async function tikwm(url) {
-  const r = await tf('https://tikwm.com/api/?hd=1&url=' + encodeURIComponent(url), {}, 13000);
+  const r = await tf('https://tikwm.com/api/?hd=1&url=' + encodeURIComponent(url), {}, 9000);
   const d = await r.json();
   if (!d || d.code !== 0 || !d.data) throw new Error('tikwm gagal');
   const x = d.data, list = [];
@@ -92,12 +90,12 @@ async function tikwm(url) {
 }
 
 async function oceansaver(url, fmt) {
-  const r = await tf('https://p.oceansaver.in/ajax/download.php?format=' + fmt + '&url=' + encodeURIComponent(url), {}, 13000);
+  const r = await tf('https://p.oceansaver.in/ajax/download.php?format=' + fmt + '&url=' + encodeURIComponent(url), {}, 9000);
   const d = await r.json();
   if (!d || !d.success || !d.id) throw new Error('oceansaver gagal');
-  for (let i = 0; i < 8; i++) {
-    await new Promise(x => setTimeout(x, 900));
-    const p = await tf('https://p.oceansaver.in/api/progress?id=' + d.id, {}, 8000);
+  for (let i = 0; i < 5; i++) {
+    await new Promise(x => setTimeout(x, 700));
+    const p = await tf('https://p.oceansaver.in/api/progress?id=' + d.id, {}, 7000);
     const j = await p.json().catch(() => ({}));
     if (j && j.download_url) return [{ url: j.download_url, label: fmt === 'mp3' ? 'Audio MP3' : 'Video', type: fmt === 'mp3' ? 'audio' : 'video', provider: 'oceansaver' }];
     if (j && j.success === 0 && j.error) break;
@@ -137,7 +135,7 @@ async function doDl(req, res) {
 async function doNet(req, res) {
   const url = String(req.query.url || (req.body && req.body.url) || '').trim();
   if (!/^https?:\/\//i.test(url)) return out(res, 400, { status: 'error', message: 'URL tidak valid.' });
-  const r = await tf(url, { headers: { 'User-Agent': 'zukai-lab/1.0' } }, 14000);
+  const r = await tf(url, { headers: { 'User-Agent': 'zukai-lab/1.0' } }, 9000);
   const txt = (await r.text()).slice(0, 60000);
   return out(res, 200, { status: 'success', code: r.status, type: r.headers.get('content-type') || '', body: txt });
 }
@@ -146,7 +144,7 @@ async function doNet(req, res) {
 async function mt(path, opt = {}, token) {
   const h = { 'Accept': 'application/json', 'Content-Type': 'application/json' };
   if (token) h['Authorization'] = 'Bearer ' + token;
-  const r = await tf(MAILTM + path, { ...opt, headers: h }, 13000);
+  const r = await tf(MAILTM + path, { ...opt, headers: h }, 9000);
   const d = await r.json().catch(() => ({}));
   return { ok: r.ok, code: r.status, d };
 }
@@ -216,7 +214,7 @@ async function doMail(req, res) {
   if (step === 'onesec') {
     const login = String(b.name || '').replace(/[^a-z0-9]/gi, '').slice(0, 20);
     const domain = String(b.domain || '1secmail.com');
-    const list = await tf(ONESEC + '?action=getMessages&login=' + login + '&domain=' + domain, {}, 12000);
+    const list = await tf(ONESEC + '?action=getMessages&login=' + login + '&domain=' + domain, {}, 9000);
     const arr = await list.json().catch(() => []);
     const msgs = (Array.isArray(arr) ? arr : []).map(m => ({
       id: m.id, from: m.from, subject: m.subject, intro: '', seen: false, at: m.date
@@ -250,4 +248,4 @@ export default async function handler(req, res) {
   } catch (e) {
     return out(res, 500, { status: 'error', message: e.message || 'internal error' });
   }
-}
+             }
