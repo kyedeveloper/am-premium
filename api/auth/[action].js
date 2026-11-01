@@ -70,7 +70,6 @@ async function bumpAttempt(email, rec) {
 const dropOtp = email => db.del(otpKey(email));
 
 async function sendMail(email, code) {
-async function sendMail(email, code) {
   if (!MAIL_TOKEN) throw new Error('MAILTARGET_API_KEY belum dikonfigurasi.');
   
   const bodyText =
@@ -103,12 +102,6 @@ juikoprem.my.id`;
       bodyHtml
     }),
   });
-
-  if (!r.ok) {
-    const detail = await r.text().catch(() => '');
-    throw new Error('Mailtarget Error ' + r.status + ': ' + detail.slice(0, 160));
-  }
-}
 
   if (!r.ok) {
     const detail = await r.text().catch(() => '');
