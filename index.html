@@ -1415,16 +1415,18 @@ curl -X GET "https://www.juikoprem.my.id/api/auth/me" \
         <span class="path">~/lab/tempmail</span>
         <span class="tag">INBOX</span>
       </div>
-      <div class="panel-body">
-        <div class="field">
-          <label class="label">
-            <span>Provider</span>
-            <span class="seg" role="group">
-              <button class="on" data-mprov="mailtm" onclick="setMailProv('mailtm')">mail.tm</button>
-              <button data-mprov="1sec" onclick="setMailProv('1sec')">1secmail</button>
-            </span>
-          </label>
-        </div>
+      <div class="field">
+          <label class="label" for="mProv">Provider <span class="hint">auto pindah kalau satu mati</span></label>
+          <select class="inp" id="mProv" onchange="setMailProv(this.value)">
+            <option value="auto">Otomatis (pilih yang hidup)</option>
+            <option value="plus">tempmail.plus — rover.info / fexpost.com</option>
+            <option value="guerrilla">guerrillamail</option>
+            <option value="mailtm">mail.tm</option>
+            <option value="mailgw">mail.gw</option>
+            <option value="maildrop">maildrop.cc</option>
+            <option value="onesec">1secmail</option>
+          </select>
+	  </div>
         <div class="field">
           <label class="label">Alamat baru</label>
           <div style="display:flex;gap:.4rem;flex-wrap:wrap">
@@ -3460,30 +3462,40 @@ async function runDl(){
 }
 
 /* ================= LAB: TEMP MAIL ================= */
-let mailProv = 'mailtm', mailSess = null, mailTimer = null;
+let mailProv = localStorage.getItem('zukai-mprov') || 'auto';
+let mailSess = null, mailTimer = null;
 const MAIL_KEY = 'zukai-mail';
+const AUTO_ORDER = ['plus', 'guerrilla', 'mailgw', 'mailtm', 'maildrop', 'onesec'];
+const PROV_LABEL = { plus: 'tempmail.plus', guerrilla: 'guerrillamail', mailtm: 'mail.tm', mailgw: 'mail.gw', maildrop: 'maildrop.cc', onesec: '1secmail' };
 
 function setMailProv(p){
   mailProv = p;
-  $$('[data-mprov]').forEach(b=>b.classList.toggle('on', b.dataset.mprov === p));
-  if(p === '1sec'){
-    $('#mDomain').innerHTML = ['1secmail.com','1secmail.net','1secmail.org','wwjmp.com','esiix.com','xojxe.com','yoggm.com']
-      .map(d=>`<option>${d}</option>`).join('');
-  } else if(mailProv === 'mailtm'){
-    loadMailDomains();
-  }
+  localStorage.setItem('zukai-mprov', p);
+  if($('#mProv')) $('#mProv').value = p;
+  loadMailDomains();
+}
+async function mailApi(step, extra){
+  const body = Object.assign({ step, provider: mailSess ? mailSess.provider : mailProv }, extra || {});
+  const r = await fetch('/api/lab?action=mail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  const d = await r.json().catch(()=>({}));
+  return { ok: r.ok, code: r.status, d };
 }
 async function loadMailDomains(){
   const sel = $('#mDomain');
+  if(!sel) return;
+  const list = mailProv === 'auto' ? AUTO_ORDER : [mailProv];
   sel.innerHTML = '<option>memuat...</option>';
-  try{
-    const r = await fetch('/api/lab?action=mail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ step:'domains' }) });
-    const d = await r.json();
-    if(!r.ok || !d.domains) throw new Error(d.message || 'gagal');
-    sel.innerHTML = d.domains.map(x=>`<option>${x}</option>`).join('');
-  }catch(e){
-    sel.innerHTML = '<option>gagal memuat domain</option>';
+  for(const p of list){
+    try{
+      const r = await mailApi('domains', { provider: p });
+      if(r.ok && r.d.domains){
+        sel.innerHTML = r.d.domains.map(x=>`<option value="${x}" data-prov="${p}">${x}</option>`).join('');
+        if(mailProv === 'auto') $('#mProv').dataset.picked = p;
+        return;
+      }
+    }catch(e){}
   }
+  sel.innerHTML = '<option value="">gagal memuat domain</option>';
 }
 function paintMail(){
   const on = !!mailSess;
@@ -3493,10 +3505,11 @@ function paintMail(){
 }
 async function mailBoot(){
   try{ mailSess = JSON.parse(localStorage.getItem(MAIL_KEY) || 'null'); }catch(e){ mailSess = null; }
-  if(mailProv === 'mailtm' && $('#mDomain').options.length < 2) loadMailDomains();
+  if($('#mProv')) $('#mProv').value = mailProv;
+  if(!$('#mDomain').options.length || $('#mDomain').options[0].textContent === 'memuat...') loadMailDomains();
   paintMail();
   if(mailSess){
-    if(mailSess.provider === 'mailtm' && !mailSess.token) await mailReauth();
+    if((mailSess.provider === 'mailtm' || mailSess.provider === 'mailgw') && !mailSess.token) await mailReauth();
     mailRefresh();
     clearInterval(mailTimer);
     mailTimer = setInterval(mailRefresh, 15000);
@@ -3505,61 +3518,49 @@ async function mailBoot(){
 async function mailReauth(){
   if(!mailSess || !mailSess.password) return false;
   try{
-    const r = await fetch('/api/lab?action=mail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ step:'token', address: mailSess.address, password: mailSess.password }) });
-    const d = await r.json();
-    if(d.token){ mailSess.token = d.token; localStorage.setItem(MAIL_KEY, JSON.stringify(mailSess)); return true; }
+    const r = await mailApi('token', { address: mailSess.address, password: mailSess.password });
+    if(r.ok && r.d.token){ mailSess.token = r.d.token; localStorage.setItem(MAIL_KEY, JSON.stringify(mailSess)); return true; }
   }catch(e){}
   return false;
 }
 async function mailCreate(){
   const name = $('#mName').value.trim().toLowerCase();
+  const opt = $('#mDomain').selectedOptions[0];
   const domain = $('#mDomain').value;
   if(name.length < 3) return toast('Nama minimal 3 karakter.', 'er');
-  if(!domain) return toast('Pilih domain dulu.', 'er');
+  if(!domain) return toast('Domain belum siap. Tunggu sebentar.', 'er');
 
-  if(mailProv === '1sec'){
-    const safe = name.replace(/[^a-z0-9]/g, '') || 'user' + Math.floor(Math.random()*9999);
-    mailSess = { address: safe + '@' + domain, name: safe, domain, provider: '1sec' };
-    localStorage.setItem(MAIL_KEY, JSON.stringify(mailSess));
-    paintMail(); mailRefresh(); mailTimer = setInterval(mailRefresh, 15000);
-    return toast('Mailbox 1secmail aktif.', 'ok');
-  }
-
-  const btn = $('#mDomain');
+  const target = mailProv === 'auto' ? (opt && opt.dataset.prov) || 'plus' : mailProv;
   try{
-    const r = await fetch('/api/lab?action=mail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ step:'new', name, domain }) });
-    const d = await r.json();
-    if(!r.ok) return toast(d.message || 'Gagal membuat mailbox.', 'er');
-    mailSess = { address: d.address, password: d.password, token: d.token, provider: 'mailtm' };
+    const r = await mailApi('new', { provider: target, name, domain });
+    if(!r.ok) return toast(r.d.message || 'Gagal membuat mailbox.', 'er');
+    mailSess = Object.assign({}, r.d);
     localStorage.setItem(MAIL_KEY, JSON.stringify(mailSess));
     paintMail(); mailRefresh();
     clearInterval(mailTimer); mailTimer = setInterval(mailRefresh, 15000);
-    beep('ok'); toast('Mailbox siap: ' + d.address, 'ok');
-  }catch(e){ toast('Gagal terhubung.', 'er'); }
+    beep('ok'); toast('Mailbox siap: ' + mailSess.address, 'ok');
+  }catch(e){ toast('Gagal terhubung ke provider.', 'er'); }
 }
 async function mailRefresh(){
   if(!mailSess) return;
   const list = $('#mList');
   try{
-    let msgs = [];
-    if(mailSess.provider === '1sec'){
-      const r = await fetch('/api/lab?action=mail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ step:'onesec', name: mailSess.name, domain: mailSess.domain }) });
-      const d = await r.json();
-      msgs = d.messages || [];
-    } else {
-      let r = await fetch('/api/lab?action=mail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ step:'list', token: mailSess.token }) });
-      let d = await r.json();
-      if(r.status === 401 && await mailReauth()){
-        r = await fetch('/api/lab?action=mail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ step:'list', token: mailSess.token }) });
-        d = await r.json();
-      }
-      msgs = d.messages || [];
+    let r = await mailApi('list', {
+      token: mailSess.token, sid: mailSess.sid, name: mailSess.name,
+      domain: mailSess.domain, address: mailSess.address
+    });
+    if(r.code === 401 && await mailReauth()){
+      r = await mailApi('list', {
+        token: mailSess.token, sid: mailSess.sid, name: mailSess.name,
+        domain: mailSess.domain, address: mailSess.address
+      });
     }
+    const msgs = r.d.messages || [];
     if(!msgs.length){ list.innerHTML = '<div class="q-empty">Belum ada pesan. Tunggu beberapa detik.</div>'; return; }
     list.innerHTML = msgs.map(m=>`
       <div class="m-row ${m.seen ? '' : 'unread'}" onclick="mailRead('${m.id}')">
         <span class="av"><i class="fa-solid fa-envelope"></i></span>
-        <span class="tx"><b>${m.subject}</b><small>${m.from} · ${m.at ? new Date(m.at).toLocaleTimeString('id-ID') : ''}</small></span>
+        <span class="tx"><b>${m.subject}</b><small>${m.from}${m.at ? ' · ' + new Date(m.at).toLocaleTimeString('id-ID') : ''}</small></span>
       </div>`).join('');
   }catch(e){ list.innerHTML = '<div class="q-empty" style="color:var(--bad)">gagal memuat inbox</div>'; }
 }
@@ -3568,17 +3569,14 @@ async function mailRead(id){
   box.classList.add('open');
   box.innerHTML = '<div class="q-empty">memuat pesan...</div>';
   try{
-    if(mailSess.provider === '1sec'){
-      const r = await fetch(`https://www.1secmail.com/api/v1/?action=readMessage&login=${mailSess.name}&domain=${mailSess.domain}&id=${id}`);
-      const d = await r.json();
-      box.innerHTML = `<div style="font-size:.72rem;color:var(--dim);margin-bottom:.5rem">${d.from} · ${d.subject}</div><div style="font-family:var(--mono);font-size:.74rem;white-space:pre-wrap">${d.textBody || '(kosong)'}</div>`;
-      return;
-    }
-    const r = await fetch('/api/lab?action=mail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ step:'read', id, token: mailSess.token }) });
-    const d = await r.json();
-    if(!r.ok) throw new Error(d.message || 'gagal');
+    const r = await mailApi('read', {
+      id, token: mailSess.token, sid: mailSess.sid, name: mailSess.name,
+      domain: mailSess.domain, address: mailSess.address
+    });
+    if(!r.ok) throw new Error(r.d.message || 'gagal');
+    const d = r.d;
     box.innerHTML = `<div style="font-size:.72rem;color:var(--dim);margin-bottom:.5rem">${d.from} · ${d.subject}</div>` +
-      (d.html ? `<iframe srcdoc="${d.html.replace(/"/g,'&quot;')}" sandbox></iframe>` : `<div style="font-family:var(--mono);font-size:.74rem;white-space:pre-wrap">${d.text || '(kosong)'}</div>`);
+      (d.html ? `<iframe srcdoc="${String(d.html).replace(/"/g,'&quot;')}" sandbox></iframe>` : `<div style="font-family:var(--mono);font-size:.74rem;white-space:pre-wrap">${d.text || '(kosong)'}</div>`);
     mailRefresh();
   }catch(e){ box.innerHTML = '<div class="q-empty" style="color:var(--bad)">gagal membuka pesan</div>'; }
 }
@@ -3588,7 +3586,7 @@ function mailDrop(){
   paintMail(); $('#mList').innerHTML = '<div class="q-empty">Belum ada pesan.</div>';
   $('#mRead').classList.remove('open');
   toast('Mailbox dihapus.', 'sy');
-}
+	}
 
 /* ================= LAB: PENGATURAN ================= */
 function localKeys(){ return Object.keys(localStorage).filter(k=>k.startsWith('zukai-') || k.startsWith('am-')); }
