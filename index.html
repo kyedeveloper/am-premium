@@ -52,17 +52,105 @@ body.locked{overflow:hidden}
   background:radial-gradient(circle,var(--g1) 0%,transparent 62%);opacity:.4;transform:translate(-50%,-50%);left:50%;top:20%}
 #scrollBar{position:fixed;top:0;left:0;height:3px;width:0;z-index:200;background:linear-gradient(90deg,var(--a1),var(--a2));box-shadow:0 0 14px var(--g1)}
 
-#boot{position:fixed;inset:0;z-index:900;background:#040406;display:flex;align-items:center;justify-content:center;animation:bootOut .7s var(--ease) 1.9s forwards}
-#boot .boot-inner{width:min(430px,86vw);font-family:var(--mono);font-size:.74rem;color:var(--dim)}
-#boot .ln{opacity:0;animation:bootLine .35s forwards;margin-bottom:.35rem}
-#boot .ln:nth-child(1){animation-delay:.05s}#boot .ln:nth-child(2){animation-delay:.28s}#boot .ln:nth-child(3){animation-delay:.5s}
-#boot .ln:nth-child(4){animation-delay:.72s}#boot .ln:nth-child(5){animation-delay:.95s}#boot .ln:nth-child(6){animation-delay:1.2s}
-#boot b{color:var(--a2)}
-#boot .bar{margin-top:1rem;height:3px;background:#141420;border-radius:9px;overflow:hidden}
-#boot .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--a1),var(--a2));animation:bootFill 1.9s ease-in forwards}
-@keyframes bootLine{to{opacity:1}}
-@keyframes bootFill{to{width:100%}}
-@keyframes bootOut{to{opacity:0;visibility:hidden}}
+/* ===== BOOT / COLD START ===== */
+body.booting{overflow:hidden}
+#boot{position:fixed;inset:0;z-index:10000;background:#040406;display:grid;place-items:center;overflow:hidden;
+  transition:opacity .75s var(--ease),filter .75s var(--ease),transform .9s var(--ease)}
+#boot.out{opacity:0;filter:blur(9px);transform:scale(1.06);pointer-events:none}
+#boot .boot-bg{position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(157,78,221,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(157,78,221,.07) 1px,transparent 1px);
+  background-size:44px 44px;animation:bootGrid 6s linear infinite;
+  mask-image:radial-gradient(circle at 50% 50%,#000 0%,transparent 70%);
+  -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 0%,transparent 70%)}
+@keyframes bootGrid{to{background-position:44px 44px}}
+#boot .boot-glow{position:absolute;width:72vmin;height:72vmin;border-radius:50%;
+  background:radial-gradient(circle,var(--g1),transparent 65%);filter:blur(46px);opacity:.5;animation:bootGlow 4.2s ease-in-out infinite}
+@keyframes bootGlow{50%{transform:scale(1.18);opacity:.8}}
+#boot .boot-scan{position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,245,212,.055) 0 1px,transparent 1px 4px);opacity:.45;mix-blend-mode:screen}
+#boot .boot-sweep{position:absolute;left:0;right:0;height:190px;pointer-events:none;
+  background:linear-gradient(180deg,transparent,var(--g2),transparent);animation:bootSweep 3.4s linear infinite}
+@keyframes bootSweep{0%{top:-190px}100%{top:100%}}
+
+.boot-frame{position:relative;z-index:3;width:min(440px,88vw);font-family:var(--mono)}
+.boot-top{display:flex;justify-content:space-between;align-items:center;font-size:.58rem;
+  letter-spacing:.24em;text-transform:uppercase;color:var(--dimmer);margin-bottom:1.5rem}
+.boot-top .bt-brand{display:flex;align-items:center;gap:.5rem;color:#fff;letter-spacing:.2em}
+.boot-top .bt-brand i{color:var(--a1-soft);animation:blink 1.1s steps(1) infinite}
+.boot-top .bt-ver{color:var(--a2)}
+
+.boot-core{position:relative;width:152px;height:152px;margin:0 auto 1.5rem;display:grid;place-items:center}
+.boot-core .rg{position:absolute;border-radius:50%}
+.boot-core .r1{inset:0;border:1px dashed rgba(157,78,221,.38);animation:spin 11s linear infinite}
+.boot-core .r2{inset:16px;border:1px solid rgba(0,245,212,.28);border-top-color:var(--a2);animation:spin 2.4s linear infinite reverse}
+.boot-core .r3{inset:34px;border:1px solid rgba(157,78,221,.45);border-bottom-color:var(--a1-soft);animation:spin 1.5s linear infinite}
+.boot-core .core{width:64px;height:64px;border-radius:18px;display:grid;place-items:center;
+  font-family:var(--sans);font-weight:800;font-size:1.32rem;letter-spacing:.02em;color:#fff;
+  background:linear-gradient(140deg,var(--a1),#4b1fa8);border:1px solid var(--a1-soft);
+  box-shadow:0 0 44px var(--g1);animation:corePulse 2.1s ease-in-out infinite}
+@keyframes corePulse{50%{box-shadow:0 0 74px var(--g1);transform:scale(1.06)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.boot-pct{display:flex;align-items:baseline;justify-content:center;gap:.08rem;line-height:1;color:#fff}
+.boot-pct b{font-size:2.15rem;font-weight:700;letter-spacing:-.03em}
+.boot-pct span{font-size:.78rem;color:var(--dimmer)}
+.boot-bar{height:3px;background:#13131e;border-radius:99px;overflow:hidden;margin:.95rem 0 1rem;box-shadow:inset 0 0 0 1px rgba(255,255,255,.03)}
+.boot-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--a1),var(--a2));box-shadow:0 0 16px var(--a2)}
+.boot-log{height:8.4rem;overflow:hidden;font-size:.655rem;line-height:1.6;
+  mask-image:linear-gradient(180deg,transparent,#000 26%);-webkit-mask-image:linear-gradient(180deg,transparent,#000 26%)}
+.boot-log div{display:flex;gap:.45rem;animation:bootLn .3s both}
+.boot-log .tag{flex:none;font-weight:700;letter-spacing:.04em}
+.boot-log .tag.ok{color:var(--ok)}.boot-log .tag.sy{color:var(--a2)}
+.boot-log .tag.er{color:var(--bad)}.boot-log .tag.boot{color:var(--a1-soft)}
+.boot-log .tag.wn{color:var(--warn)}
+.boot-log .msg{color:#9aa3b5;word-break:break-word}
+@keyframes bootLn{from{opacity:0;transform:translateX(-9px)}}
+.boot-foot{display:flex;justify-content:space-between;gap:.6rem;font-size:.55rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--dimmer);margin-top:1rem;border-top:1px dashed var(--line);padding-top:.72rem}
+.boot-foot b{color:var(--a2);font-weight:400}
+
+/* ===== INJECTION LOADER ===== */
+body.ilock{overflow:hidden}
+.iload{position:fixed;inset:0;z-index:8000;display:grid;place-items:center;padding:1rem;
+  background:rgba(3,3,5,.87);backdrop-filter:blur(10px);opacity:0;visibility:hidden;transition:.35s}
+.iload.open{opacity:1;visibility:visible}
+.iload-card{width:min(432px,100%);border:1px solid rgba(0,245,212,.35);border-radius:20px;
+  padding:1.5rem 1.35rem 1.25rem;background:linear-gradient(180deg,#0d0d16,#07070c);
+  box-shadow:0 0 80px -22px var(--g2),0 40px 100px #000;text-align:center;
+  transform:translateY(18px) scale(.97);transition:.42s var(--ease)}
+.iload.open .iload-card{transform:none}
+.iload.fail .iload-card{border-color:rgba(255,77,109,.45);box-shadow:0 0 80px -22px rgba(255,77,109,.55),0 40px 100px #000}
+.iload-ring{position:relative;width:92px;height:92px;margin:.2rem auto 1rem;display:grid;place-items:center}
+.iload-ring::before{content:'';position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 0deg,var(--a2) 300deg,transparent 360deg);
+  mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 3px));
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 3px));
+  animation:spin 1.1s linear infinite}
+.iload.fail .iload-ring::before{animation:none;background:conic-gradient(from 0deg,var(--bad),transparent 80%)}
+.iload-ring i{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-size:1.15rem;
+  color:var(--a2);background:rgba(0,245,212,.09);border:1px solid rgba(0,245,212,.35);box-shadow:0 0 30px var(--g2)}
+.iload.fail .iload-ring i{color:var(--bad);background:rgba(255,77,109,.1);border-color:rgba(255,77,109,.4)}
+.iload-title{font-family:var(--mono);font-size:.82rem;letter-spacing:.2em;color:#fff;text-transform:uppercase}
+.iload-sub{font-size:.72rem;color:var(--dim);margin-top:.3rem}
+.iload-meta{display:grid;grid-template-columns:1fr 1fr auto;gap:.4rem;margin:1rem 0 .85rem;text-align:left}
+.iload-meta div{border:1px solid var(--line);border-radius:8px;padding:.4rem .5rem;background:#06060a;min-width:0}
+.iload-meta small{display:block;font-family:var(--mono);font-size:.5rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dimmer)}
+.iload-meta b{font-family:var(--mono);font-size:.63rem;color:var(--a2);word-break:break-all}
+.iload-bar{height:3px;background:#14141f;border-radius:99px;overflow:hidden}
+.iload-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--a1),var(--a2));box-shadow:0 0 14px var(--a2)}
+.iload.fail .iload-bar i{background:linear-gradient(90deg,#ff4d6d,#ff8fa3)}
+.iload-pct{font-family:var(--mono);font-size:.6rem;color:var(--dimmer);letter-spacing:.16em;margin:.42rem 0 .85rem;text-align:right}
+.iload-steps{list-style:none;display:flex;flex-direction:column;gap:.32rem;text-align:left;
+  border-top:1px dashed var(--line);padding-top:.8rem}
+.iload-steps li{display:flex;align-items:center;gap:.55rem;font-family:var(--mono);font-size:.63rem;color:var(--dimmer);transition:.3s}
+.iload-steps li .sd{width:13px;height:13px;border-radius:50%;border:1px solid var(--line);flex:none;display:grid;place-items:center;font-size:.44rem}
+.iload-steps li.on{color:var(--a2)}
+.iload-steps li.on .sd{border-color:var(--a2);background:rgba(0,245,212,.18);box-shadow:0 0 12px var(--g2)}
+.iload-steps li.ok{color:var(--txt)}
+.iload-steps li.ok .sd{border-color:var(--ok);background:rgba(61,220,151,.16);color:var(--ok)}
+.iload-steps li.er{color:var(--bad)}
+.iload-steps li.er .sd{border-color:var(--bad);background:rgba(255,77,109,.16);color:var(--bad)}
+@media(max-width:420px){.iload-meta{grid-template-columns:1fr 1fr}.iload-meta div:last-child{display:none}}
 
 /* ANNOUNCEMENT BANNER */
 .announcement-banner{position:relative;z-index:130;background:linear-gradient(90deg,var(--a1),#4b1fa8);color:#fff;font-family:var(--mono);font-size:.75rem;padding:.5rem 0;box-shadow:0 0 20px var(--g1);border-bottom:1px solid rgba(255,255,255,.1)}
@@ -461,14 +549,30 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
 <body>
 
 <div id="boot" aria-hidden="true">
-  <div class="boot-inner">
-    <div class="ln">&gt; zukai_kernel <b>v5.1.0</b> booting...</div>
-    <div class="ln">&gt; mount /api/magic-link <b>OK</b></div>
-    <div class="ln">&gt; mount /api/inject <b>OK</b></div>
-    <div class="ln">&gt; auth + quota module <b>OK</b></div>
-    <div class="ln">&gt; node asia-se-01 <b>14ms</b></div>
-    <div class="ln">&gt; <b>READY</b></div>
-    <div class="bar"><i></i></div>
+  <div class="boot-bg"></div>
+  <div class="boot-glow"></div>
+  <div class="boot-scan"></div>
+  <div class="boot-sweep"></div>
+
+  <div class="boot-frame">
+    <div class="boot-top">
+      <span class="bt-brand"><i class="fa-solid fa-bolt"></i> zukai_kernel</span>
+      <span class="bt-ver" id="bootVer">v5.1.0</span>
+    </div>
+
+    <div class="boot-core">
+      <span class="rg r1"></span><span class="rg r2"></span><span class="rg r3"></span>
+      <span class="core">AM</span>
+    </div>
+
+    <div class="boot-pct"><b id="bootPct">00</b><span>%</span></div>
+    <div class="boot-bar"><i id="bootFill"></i></div>
+    <div class="boot-log" id="bootLog"></div>
+
+    <div class="boot-foot">
+      <span id="bootStatus">INITIALIZING</span>
+      <span>NODE <b id="bootNode">ASIA-SE-01</b></span>
+    </div>
   </div>
 </div>
 
@@ -1334,6 +1438,23 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
   </div>
 </div>
 
+<!-- ============ INJECTION LOADER ============ -->
+<div class="iload" id="injectLoad" role="dialog" aria-modal="true" aria-label="Proses inject premium">
+  <div class="iload-card">
+    <div class="iload-ring"><i class="fa-solid fa-bolt-lightning"></i></div>
+    <h3 class="iload-title" id="iloadTitle">Force Inject</h3>
+    <p class="iload-sub" id="iloadSub">Jangan tutup atau refresh tab ini.</p>
+    <div class="iload-meta">
+      <div><small>Target</small><b id="iloadEmail">—</b></div>
+      <div><small>Order ID</small><b id="iloadOrder">—</b></div>
+      <div><small>Elapsed</small><b id="iloadTimer">0.0s</b></div>
+    </div>
+    <div class="iload-bar"><i id="iloadFill"></i></div>
+    <div class="iload-pct"><span id="iloadPct">0</span>% COMPLETE</div>
+    <ul class="iload-steps" id="iloadSteps"></ul>
+  </div>
+</div>
+
 <div id="toasts" aria-live="polite"></div>
 <canvas id="confetti" style="position:fixed;inset:0;z-index:700;pointer-events:none" aria-hidden="true"></canvas>
 
@@ -2014,7 +2135,9 @@ function requestInject(){
   $('#confirmSheet').dataset.oob = oob;
 }
 
+let injecting = false;
 async function doInject(){
+  if(injecting) return;
   const email = $('#emailInput').value.trim();
   const sheet = $('#confirmSheet');
   const orderId = sheet.dataset.orderId;
@@ -2022,8 +2145,10 @@ async function doInject(){
   closeSheet('confirmSheet');
 
   const btn = $('#btnInject');
+  injecting = true;
   showLog('Validating payload via secure backend API...', 'sy');
   busy(btn, true, 'Menginject...');
+  ILoad.start(email, orderId);
 
   try{
     const res = await fetch('/api/inject', {
@@ -2040,21 +2165,25 @@ async function doInject(){
       if(idMode === 'seq') nextSeq(true);
       pushHist({ email, orderId: finalId, status:'ok', ts:Date.now() });
       loadMe();
-      setTimeout(()=>showSuccess(email, finalId), 420);
+      ILoad.finish(true);
+      setTimeout(()=>showSuccess(email, finalId), 780);
     } else {
       showLog('API error: ' + (data.message || 'HTTP ' + res.status), 'er');
       pushHist({ email, orderId, status:'er', ts:Date.now() });
       beep('er');
+      ILoad.finish(false, data.message || ('HTTP ' + res.status));
       toast('Inject gagal. Cek detail di terminal.', 'er');
-      if(res.status === 401){ openSheet('authSheet'); }
-      if(res.status === 429){ await loadMe(); openSheet('upgradeSheet'); }
+      if(res.status === 401){ setTimeout(()=>openSheet('authSheet'), 1750); }
+      if(res.status === 429){ await loadMe(); setTimeout(()=>openSheet('upgradeSheet'), 1750); }
     }
   }catch(err){
     showLog('Injection failed: ' + err.message, 'er');
     pushHist({ email, orderId, status:'er', ts:Date.now() });
     beep('er');
+    ILoad.finish(false, 'Koneksi ke server terputus.');
     toast('Inject gagal karena jaringan.', 'er');
   }finally{
+    injecting = false;
     busy(btn, false);
   }
 }
@@ -2451,12 +2580,231 @@ const initTime = setInterval(()=>{
   if(tb) tb.value = Date.now();
 }, 1000);
 
+/* ================= BOOT SEQUENCE (REAL HEALTH PROBE) ================= */
+(function(){
+  const el = $('#boot');
+  if(!el) return;
+
+  const fill = $('#bootFill'), pctEl = $('#bootPct'), logEl = $('#bootLog'),
+        statEl = $('#bootStatus'), verEl = $('#bootVer'), nodeEl = $('#bootNode');
+  const params = new URLSearchParams(location.search);
+  const quick = sessionStorage.getItem('am-booted') === '1' && !params.has('boot');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const MAXLOG = 9;
+
+  document.body.classList.add('booting');
+
+  let p = 0, target = 4, ended = false, armed = false, health = null;
+
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  function log(tag, msg){
+    const d = document.createElement('div');
+    const lbl = { ok:' OK ', er:'FAIL', sy:' SYS', boot:'BOOT', wn:'WARN' }[tag] || ' SYS';
+    d.innerHTML = '<span class="tag ' + tag + '">[' + lbl + ']</span><span class="msg"></span>';
+    d.querySelector('.msg').textContent = msg;
+    logEl.appendChild(d);
+    while(logEl.children.length > MAXLOG) logEl.firstChild.remove();
+  }
+  function paint(){
+    fill.style.width = Math.min(100, p) + '%';
+    pctEl.textContent = String(Math.min(100, Math.floor(p))).padStart(2, '0');
+    statEl.textContent = p < 30 ? 'PROBING' : p < 62 ? 'MOUNTING MODULES' : p < 99 ? 'FINALIZING' : 'READY';
+  }
+
+  const tick = setInterval(() => {
+    if(armed) target = 100;
+    p += Math.max(0.12, (target - p) * 0.12);
+    if(p > target + 0.6) p = target + 0.6;
+    paint();
+    if(p >= 99.3) finish();
+  }, reduced ? 44 : 32);
+
+  function finish(){
+    if(ended) return;
+    ended = true;
+    clearInterval(tick);
+    target = 100; p = 100; paint();
+    sessionStorage.setItem('am-booted', '1');
+    setTimeout(() => {
+      el.classList.add('out');
+      document.body.classList.remove('booting');
+      setTimeout(() => el.remove(), 900);
+      if(health && !health.ok) toast('Health probe gagal — backend mungkin sedang bermasalah.', 'er');
+      else if(health && health.degraded) toast('Sebagian env server belum diset. Cek /api/health.', 'er');
+      if(!localStorage.getItem('zukai-seen')){
+        openSheet('welcomeSheet');
+        localStorage.setItem('zukai-seen', '1');
+      }
+    }, (quick || reduced) ? 130 : 430);
+  }
+
+  async function probeHealth(timeout){
+    const ctrl = new AbortController();
+    const to = setTimeout(() => ctrl.abort(), timeout);
+    const t0 = performance.now();
+    try{
+      const r = await fetch('/api/health', { cache:'no-store', signal: ctrl.signal });
+      clearTimeout(to);
+      const ms = Math.round(performance.now() - t0);
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      const data = await r.json();
+      return { ok:true, ms, data };
+    }catch(e){
+      clearTimeout(to);
+      return { ok:false, err: e.name === 'AbortError' ? 'timeout' : (e.message || 'network error') };
+    }
+  }
+
+  const FIELDS = [
+    ['apiKey','API_KEY'], ['alightToken','ALIGHT_TOKEN'], ['firebaseToken','FIREBASE_TOKEN'],
+    ['redisUrl','KV_REST_URL'], ['redisToken','KV_REST_TOKEN'], ['jwtSecret','JWT_SECRET'],
+    ['pixpayz','PIXPAYZ_KEY'], ['owner','OWNER_EMAIL']
+  ];
+
+  (async function run(){
+    log('boot', 'zukai_kernel v5.1.0 — cold start');
+    paint();
+    await sleep(quick ? 40 : 110);
+
+    log('sy', 'probe /api/health');
+    target = 12;
+    health = await probeHealth(quick ? 1800 : 4200);
+
+    if(!health.ok){
+      log('er', 'health probe gagal · ' + health.err);
+      target = 38;
+      await sleep(120);
+      log('wn', 'lanjut mode offline-safe · cache lokal dipakai');
+      target = 52;
+      await sleep(120);
+      nodeEl.textContent = 'OFFLINE';
+    } else {
+      const d = health.data || {};
+      verEl.textContent = 'v' + (d.version || '5.1.0');
+      log('ok', 'health 200 · respons ' + health.ms + 'ms');
+      $('#pingLive').textContent = health.ms + 'ms';
+      target = 24;
+      await sleep(100);
+
+      const env = d.env || {};
+      for(const [key, label] of FIELDS){
+        if(ended) return;
+        log(env[key] ? 'ok' : 'wn', (env[key] ? 'env ok · ' : 'env kosong · ') + label);
+        if(!env[key]) health.degraded = true;
+        target += 3.7;
+        await sleep(quick ? 34 : 56);
+      }
+      log('ok', 'mount /api/inject');
+      target = 66;
+    }
+
+    await sleep(70);
+    log('ok', 'restore prefs lokal');
+    target = 74;
+    await sleep(70);
+    log('ok', 'history store + quota guard');
+    target = 83;
+    await sleep(70);
+    log('sy', 'warming render pipeline');
+    target = 91;
+    armed = true;
+  })();
+
+  addEventListener('load', () => { if(armed) target = 100; }, { once:true });
+  setTimeout(() => { armed = true; }, 5000);
+  setTimeout(finish, 7000);
+})();
+
+/* ================= INJECTION LOADER ================= */
+const ILoad = (function(){
+  const el = $('#injectLoad');
+  const fill = $('#iloadFill'), pctEl = $('#iloadPct'), stepsEl = $('#iloadSteps'),
+        timerEl = $('#iloadTimer'), titleEl = $('#iloadTitle'), subEl = $('#iloadSub');
+  const STEPS = [
+    'Handshake ke edge function',
+    'Validasi sesi + kuota harian',
+    'emailLinkSignin (identitytoolkit)',
+    'Minting idToken',
+    'verifyPurchase (alight cloud fn)',
+    'Menulis record aktivasi'
+  ];
+  const MARKS = [12, 26, 40, 54, 68, 82];
+  let p = 0, idx = 0, cap = 18, t0 = 0, raf = null, done = true;
+
+  function paint(){
+    fill.style.width = p + '%';
+    pctEl.textContent = String(Math.floor(p));
+  }
+  function mark(n, state){
+    const li = stepsEl.querySelector('li[data-i="' + n + '"]');
+    if(li) li.className = state;
+  }
+  function loop(){
+    timerEl.textContent = ((performance.now() - t0) / 1000).toFixed(1) + 's';
+    cap = Math.min(90, cap + 0.3);
+    p += (cap - p) * 0.05 + 0.12;
+    if(p > cap) p = cap;
+    while(idx < STEPS.length && p >= MARKS[idx]){ mark(idx, 'ok'); idx++; }
+    if(idx < STEPS.length){
+      const nx = stepsEl.querySelector('li[data-i="' + idx + '"]');
+      if(nx && nx.className === '') nx.className = 'on';
+    }
+    paint();
+    if(!done) raf = requestAnimationFrame(loop);
+  }
+  function hide(){
+    el.classList.remove('open');
+    document.body.classList.remove('ilock');
+    setTimeout(() => {
+      el.classList.remove('fail');
+      stepsEl.innerHTML = '';
+      p = 0; idx = 0; cap = 18; paint();
+      titleEl.textContent = 'Force Inject';
+      subEl.textContent = 'Jangan tutup atau refresh tab ini.';
+    }, 420);
+  }
+
+  return {
+    start(email, orderId){
+      done = false;
+      stepsEl.innerHTML = STEPS.map((s, n) =>
+        '<li data-i="' + n + '"><span class="sd"><i class="fa-solid fa-check"></i></span>' + s + '</li>').join('');
+      mark(0, 'on');
+      $('#iloadEmail').textContent = email || '—';
+      $('#iloadOrder').textContent = orderId || '—';
+      timerEl.textContent = '0.0s';
+      p = 0; idx = 0; cap = 18; paint();
+      t0 = performance.now();
+      el.classList.add('open');
+      document.body.classList.add('ilock');
+      raf = requestAnimationFrame(loop);
+    },
+    finish(ok, msg){
+      if(done) return;
+      done = true;
+      cancelAnimationFrame(raf);
+      if(ok){
+        p = 100; paint();
+        stepsEl.querySelectorAll('li').forEach(li => li.className = 'ok');
+        titleEl.textContent = 'Premium Active';
+        subEl.textContent = 'Aktivasi selesai. Menyiapkan struk...';
+        setTimeout(hide, 720);
+      } else {
+        el.classList.add('fail');
+        titleEl.textContent = 'Injection Failed';
+        subEl.textContent = msg || 'Server menolak permintaan.';
+        const cur = stepsEl.querySelector('li.on');
+        if(cur) cur.className = 'er';
+        setTimeout(hide, 1700);
+      }
+    }
+  };
+})();
+
 /* ---------- init ---------- */
 loadMe();
 paintStats(); paintHistory(); paintQueue();
-if(!localStorage.getItem('zukai-seen')){
-  setTimeout(()=>{ openSheet('welcomeSheet'); localStorage.setItem('zukai-seen','1'); }, 2900);
-}
 $('#emailInput').addEventListener('keydown', e=>{ if(e.key === 'Enter') sendMagicLink(); });
 $('#linkInput').addEventListener('keydown', e=>{ if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); requestInject(); } });
 $('#orderIdInput').addEventListener('keydown', e=>{ if(e.key === 'Enter') $('#emailInput').focus(); });
@@ -2464,4 +2812,4 @@ $('#authPass').addEventListener('keydown', e=>{ if(e.key === 'Enter') authSubmit
 setStep(1);
 </script>
 </body>
-</html>
+  </html>
