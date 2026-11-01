@@ -1,8 +1,7 @@
 {
   "version": 2,
   "functions": {
-    "api/**/*.js": {
-      "includeFiles": "lib/**"
-    }
+    "api/**/*.js": { "includeFiles": "lib/**" },
+    "api/lab.js": { "maxDuration": 30 }
   }
 }
