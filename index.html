@@ -510,6 +510,8 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
 .auth-tabs{display:flex;gap:.3rem;padding:.25rem;border:1px solid var(--line);border-radius:99px;background:#06060a;margin-bottom:1rem}
 .auth-tabs button{flex:1;font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:.45rem;border-radius:7px;border:none;background:none;color:var(--dimmer);cursor:pointer}
 .auth-tabs button.on{background:rgba(0,245,212,.13);color:var(--a2)}
+.linkish{background:none;border:none;color:var(--a2);font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:.3rem}
+.linkish:hover{color:var(--a1-soft)}
 .price-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
 .price{border:1px solid var(--line);border-radius:var(--r);padding:1.2rem;background:var(--panel);position:relative;overflow:hidden}
 .price.hot{border-color:rgba(0,245,212,.45);box-shadow:0 0 40px -18px var(--g2)}
@@ -649,7 +651,6 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
     <div class="hero-card">
       <div class="media">
         <video id="bannerVideo" autoplay muted playsinline loop preload="metadata">
-          <!-- Absolute path untuk kebal custom domain -->
           <source src="/video1.mp4" type="video/mp4">
         </video>
         <div class="scan"></div><div class="sweep"></div>
@@ -730,7 +731,6 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
     </div>
   </section>
 
-  <!-- SECTION TUTORIAL VIDEO -->
   <section id="tutorial">
     <div class="sec-head reveal">
       <span class="kicker">Panduan Visual</span>
@@ -740,10 +740,8 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
     
     <div class="panel reveal" style="padding:1.2rem;">
       <div class="tutorial-grid" style="display:grid;grid-template-columns:1.2fr 0.8fr;gap:1.2rem;align-items:start;">
-        <!-- Player Box -->
         <div style="background:#040406;border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden;">
           <video id="tutorialVideo" controls autoplay muted playsinline loop preload="metadata" style="width:100%;height:auto;display:block;aspect-ratio:16/9;background:#000;">
-            <!-- Absolute path & parameter anti-cache agar work di custom domain -->
             <source src="/tutorial.mp4?v=2" type="video/mp4">
             Browser Anda tidak mendukung pemutar video HTML5.
           </video>
@@ -753,7 +751,6 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
           </div>
         </div>
 
-        <!-- Detail Langkah -->
         <div>
           <h3 style="color:#fff;font-size:1.05rem;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;">
             <i class="fa-solid fa-list-check" style="color:var(--a1-soft);"></i> Ringkasan Langkah Inject
@@ -763,7 +760,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
             <span class="num">1</span>
             <div>
               <h4>Masuk &amp; Atur Order ID</h4>
-              <p>Login ke akunmu, tentukan format Order ID (Mode Acak atau Urut) untuk penanda transaksi.</p>
+              <p>Masuk pakai kode email, lalu tentukan format Order ID (Mode Acak atau Urut) untuk penanda transaksi.</p>
             </div>
           </div>
 
@@ -1014,8 +1011,8 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
         <div class="faq-a"><p>Ya, begitu QRIS discan dan dibayar, status akun berubah otomatis dalam beberapa detik. Halaman pembayaran ngecek status sendiri, jadi nggak perlu kirim bukti transfer.</p></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Email magic link nggak masuk, kenapa?<i class="fa-solid fa-plus"></i></button>
-        <div class="faq-a"><p>Cek folder spam/promosi dulu, tunggu 1–2 menit, lalu kirim ulang. Pastikan email diketik lengkap tanpa spasi. Beberapa domain email kantor memblokir pengirim pihak ketiga.</p></div>
+        <button class="faq-q" onclick="toggleFaq(this)">Kode verifikasi nggak masuk, kenapa?<i class="fa-solid fa-plus"></i></button>
+        <div class="faq-a"><p>Cek folder spam/promosi dulu, tunggu 1–2 menit, lalu minta kode baru. Kode berlaku 10 menit dan cuma bisa dipakai sekali. Kalau email kantor kamu memblokir pengirim pihak ketiga, pakai jalur password.</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">Link yang ditempel bentuknya aneh, masih bisa?<i class="fa-solid fa-plus"></i></button>
@@ -1032,7 +1029,6 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
     </div>
   </section>
 
-  <!-- MINI TOOLS SECTION -->
   <section id="tools">
     <div class="sec-head reveal">
       <span class="kicker">Dev Tools</span>
@@ -1095,7 +1091,7 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
         <div class="kv"><span>Runtime</span><b>Vercel Functions</b></div>
         <div class="kv"><span>Stack</span><b>HTML + JS</b></div>
         <div class="kv"><span>Auth</span><b>OOB / Email Link</b></div>
-        <div class="kv"><span>Versi</span><b>v5.1.0</b></div>
+        <div class="kv"><span>Versi</span><b>v5.2.0</b></div>
         <div class="kv"><span>Lisensi</span><b>Open Source</b></div>
         <div style="margin-top:.9rem;display:flex;flex-direction:column;gap:.45rem">
           <a class="btn btn-primary btn-block" href="https://github.com/kyedeveloper/am-premium" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Repo GitHub</a>
@@ -1108,7 +1104,7 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
 
   <footer>
     <div class="foot">
-      <p>SYSTEM CORE v5.1.0 &copy; 2026 ZUKAI DEVELOPER</p>
+      <p>SYSTEM CORE v5.2.0 &copy; 2026 ZUKAI DEVELOPER</p>
       <div class="foot-links">
         <a href="#top">Atas</a>
         <a href="#harga">Harga</a>
@@ -1183,10 +1179,10 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
       <div class="kv-box">
         <div class="kv"><span>Nama</span><b>AM Premium Terminal</b></div>
         <div class="kv"><span>Developer</span><b>Zukai Dev</b></div>
-        <div class="kv"><span>Arsitektur</span><b>Serverless v5.1</b></div>
+        <div class="kv"><span>Arsitektur</span><b>Serverless v5.2</b></div>
         <div class="kv"><span>Node</span><b>ASIA-SE-01</b></div>
         <div class="kv"><span>Enkripsi</span><b>AES-256</b></div>
-        <div class="kv"><span>Build</span><b>2026.10.31</b></div>
+        <div class="kv"><span>Build</span><b>2026.11.01</b></div>
       </div>
       <p style="margin:0">Terminal berjalan penuh di atas fungsi serverless. Frontend hanya mengirim JSON; kredensial Google dan Alight dibaca dari environment variable di sisi server.</p>
     </div>
@@ -1201,7 +1197,7 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
       <button class="x" onclick="closeSheet('guideSheet')" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="sheet-body">
-      <div class="gstep"><span class="num">1</span><div><h4>Bikin akun</h4><p>Daftar pakai email. Akun free dapat 20 inject per hari.</p></div></div>
+      <div class="gstep"><span class="num">1</span><div><h4>Bikin akun</h4><p>Masuk pakai kode yang dikirim ke email kamu. Akun free dapat 20 inject per hari.</p></div></div>
       <div class="gstep"><span class="num">2</span><div><h4>Kirim magic link</h4><p>Isi email akun yang mau diaktifkan, tekan Transmit. Tunggu 1–2 menit, cek spam kalau perlu.</p></div></div>
       <div class="gstep"><span class="num">3</span><div><h4>Salin link dari email</h4><p>Buka email masuk, salin seluruh URL login-nya — jangan dipotong.</p></div></div>
       <div class="gstep"><span class="num">4</span><div><h4>Tempel &amp; inject</h4><p>Tempel di kolom kedua. Validator akan menandai kalau link valid, lalu tekan Force Inject.</p></div></div>
@@ -1298,6 +1294,7 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
   </div>
 </div>
 
+<!-- AUTH -->
 <div class="overlay" id="authSheet" role="dialog" aria-modal="true">
   <div class="sheet">
     <div class="sheet-head">
@@ -1305,23 +1302,57 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
       <button class="x" onclick="closeSheet('authSheet')" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="sheet-body">
-      <div class="auth-tabs">
-        <button class="on" id="tabLogin" onclick="authTab('login')">Masuk</button>
-        <button id="tabReg" onclick="authTab('reg')">Daftar</button>
+
+      <div id="authCodeFlow">
+        <div id="acStep1">
+          <p style="font-size:.78rem">Masuk atau bikin akun pakai kode. Kode dikirim ke email kamu, berlaku 10 menit, sekali pakai.</p>
+          <div class="field">
+            <label class="label" for="acEmailCode">Email</label>
+            <input class="inp" type="email" id="acEmailCode" placeholder="kamu@email.com" autocomplete="email" spellcheck="false">
+          </div>
+          <div class="err-msg" id="acSendErr"></div>
+          <button class="btn btn-primary btn-block" id="acSendBtn" onclick="sendOtp()"><i class="fa-solid fa-paper-plane"></i> <span>Kirim Kode</span></button>
+        </div>
+
+        <div id="acStep2" style="display:none">
+          <div class="target-box">
+            <div><small>Kode dikirim ke</small><b id="acTarget">—</b></div>
+            <i class="fa-solid fa-envelope-circle-check" style="font-size:1.5rem;color:var(--a2)"></i>
+          </div>
+          <div class="field">
+            <label class="label" for="acCode">Kode 6 digit <span class="hint">berlaku 10 menit</span></label>
+            <input class="inp" id="acCode" inputmode="numeric" maxlength="6" placeholder="······" autocomplete="one-time-code" style="text-align:center;letter-spacing:.55em;font-size:1.15rem">
+          </div>
+          <div class="err-msg" id="acCodeErr"></div>
+          <button class="btn btn-primary btn-block" id="acVerifyBtn" onclick="verifyOtp()"><i class="fa-solid fa-check"></i> <span>Verifikasi &amp; Masuk</span></button>
+          <div style="display:flex;gap:.4rem;margin-top:.5rem">
+            <button class="btn btn-plain btn-sm" style="flex:1" id="acResendBtn" onclick="sendOtp(true)">Kirim ulang</button>
+            <button class="btn btn-plain btn-sm" style="flex:1" onclick="acBack()">Ganti email</button>
+          </div>
+        </div>
       </div>
-      <div class="field">
-        <label class="label" for="authEmail">Email</label>
-        <input class="inp" type="email" id="authEmail" placeholder="kamu@email.com" autocomplete="email">
+
+      <div id="authPassFlow" style="display:none">
+        <div class="auth-tabs">
+          <button class="on" id="tabLogin" onclick="authTab('login')">Masuk</button>
+          <button id="tabReg" onclick="authTab('reg')">Daftar</button>
+        </div>
+        <div class="field">
+          <label class="label" for="authEmail">Email</label>
+          <input class="inp" type="email" id="authEmail" placeholder="kamu@email.com" autocomplete="email">
+        </div>
+        <div class="field">
+          <label class="label" for="authPass">Password <span class="hint">min 6 karakter</span></label>
+          <input class="inp" type="password" id="authPass" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <div class="err-msg" id="authErr"></div>
+        <button class="btn btn-primary btn-block" id="authSubmit" onclick="authSubmit()"><i class="fa-solid fa-right-to-bracket"></i> <span>Masuk</span></button>
       </div>
-      <div class="field">
-        <label class="label" for="authPass">Password <span class="hint">min 6 karakter</span></label>
-        <input class="inp" type="password" id="authPass" placeholder="••••••••" autocomplete="current-password">
+
+      <div class="center" style="margin-top:.85rem">
+        <button class="linkish" id="acModeToggle" onclick="toggleAuthMode()">Masuk pakai password</button>
       </div>
-      <div class="err-msg" id="authErr"></div>
-      <p style="font-size:.72rem;margin:0">Akun dipakai buat nyimpen kuota &amp; status premium. Email nggak dipakai buat apa pun selain login.</p>
-    </div>
-    <div class="sheet-foot">
-      <button class="btn btn-primary btn-block" id="authSubmit" onclick="authSubmit()"><i class="fa-solid fa-right-to-bracket"></i> <span>Masuk</span></button>
+      <p style="font-size:.7rem;margin:.7rem 0 0">Akun dipakai buat nyimpen kuota &amp; status premium. Email nggak dipakai buat apa pun selain login.</p>
     </div>
   </div>
 </div>
@@ -1339,11 +1370,9 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
         <div class="kv"><span>Kuota</span><b id="acQuota">—</b></div>
       </div>
       
-      <!-- BAGIAN API KEY -->
       <div id="apiKeySection">
         <label class="label">API key <span class="hint">kirim via header x-api-key</span></label>
         
-        <!-- AREA TERKUNCI (Tampil jika Free & < 25 Inject) -->
         <div id="apiLockArea" style="display:none; padding: .8rem; background: rgba(255,255,255,.02); border: 1px dashed var(--line); border-radius: var(--r-sm); text-align: center; margin-bottom: .8rem;">
           <i class="fa-solid fa-lock" style="color: var(--dimmer); font-size: 1.2rem; margin-bottom: .5rem;"></i>
           <p style="font-size: .72rem; color: var(--dim); margin-bottom: .3rem;">Fitur khusus Premium / Owner.</p>
@@ -1351,7 +1380,6 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
           <div style="margin-top: .6rem; font-family: var(--mono); font-size: .65rem; color: var(--ok); background: rgba(61,220,151,.1); padding: .2rem; border-radius: 4px; border: 1px solid rgba(61,220,151,.2);">Progres Saat Ini: <span id="apiProgressText">0/25</span></div>
         </div>
 
-        <!-- AREA TERBUKA (Tampil jika Premium/Owner atau Free >= 25 Inject) -->
         <div id="apiInputArea" style="display:none;">
           <div class="input-wrap" style="margin-bottom:.6rem">
             <input class="inp" id="acApiKey" readonly style="font-size:.68rem" placeholder="Tekan tombol buat API Key...">
@@ -1360,7 +1388,6 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
           <button class="btn btn-plain btn-block" style="margin-bottom:.5rem" onclick="rotateKey(event)"><i class="fa-solid fa-rotate"></i> Buat / Ganti API key</button>
         </div>
       </div>
-      <!-- END BAGIAN API KEY -->
 
       <div id="acAdmin" style="display:none;margin:.9rem 0">
         <div class="kv-box">
@@ -1373,7 +1400,6 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
         </div>
         <p style="font-size:.62rem;color:var(--dimmer);margin:0">Tombol mahkota = kasih premium 30 hari ke email itu.</p>
 
-        <!-- FITUR KHUSUS OWNER -->
         <div style="border-top:1px dashed var(--line);margin-top:.8rem;padding-top:.8rem">
           <label class="label"><span><i class="fa-solid fa-bullhorn" style="color:var(--a2)"></i> Pengumuman Global</span></label>
           <div class="input-wrap" style="margin-bottom:.4rem">
@@ -1466,7 +1492,6 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const LS = { hist:'zukai-hist', seq:'zukai-seq', sound:'zukai-sound', ann:'am-announcement', maint:'am-maintenance' };
 let soundOn = localStorage.getItem(LS.sound) === '1';
 
-/* ---------- audio ---------- */
 let actx = null;
 function beep(kind){
   if(!soundOn) return;
@@ -1496,7 +1521,6 @@ sb.onclick = ()=>{
 };
 paintSound();
 
-/* ---------- toast ---------- */
 function toast(msg, kind='sy'){
   const icons = {ok:'fa-circle-check', er:'fa-circle-exclamation', sy:'fa-circle-info'};
   const el = document.createElement('div');
@@ -1506,11 +1530,11 @@ function toast(msg, kind='sy'){
   setTimeout(()=>{ el.classList.add('out'); setTimeout(()=>el.remove(), 350); }, 4200);
 }
 
-/* ---------- sheets ---------- */
 function openSheet(id){
   $$('.overlay.open').forEach(o=>o.classList.remove('open'));
   const s = document.getElementById(id);
   s.classList.add('open'); document.body.classList.add('locked');
+  if(id === 'authSheet') acReset();
   setTimeout(()=>{ const b = s.querySelector('.btn-primary, .btn-plain, .x'); b && b.focus(); }, 120);
 }
 function closeSheet(id){
@@ -1520,7 +1544,6 @@ function closeSheet(id){
 }
 $$('.overlay').forEach(o=>o.addEventListener('click', e=>{ if(e.target === o) closeSheet(o.id); }));
 
-/* ---------- accent ---------- */
 const savedAcc = localStorage.getItem('zukai-acc');
 if(savedAcc && ACCENTS.includes(savedAcc)) applyAccent(savedAcc);
 function applyAccent(a){
@@ -1530,7 +1553,6 @@ function applyAccent(a){
 }
 $$('.acc-switch button').forEach(b=>b.onclick = ()=>applyAccent(b.dataset.acc));
 
-/* ---------- nav ---------- */
 const nav = $('#nav');
 addEventListener('scroll', ()=>{
   nav.classList.toggle('solid', scrollY > 40);
@@ -1543,7 +1565,6 @@ $('#burger').onclick = e => {
 };
 $$('#mobileMenu a').forEach(a=>a.onclick = ()=>$('#mobileMenu').classList.remove('open'));
 
-/* pill indicator + scroll spy */
 const pillNav = $('#pillNav'), pillInd = $('#pillInd');
 const pillLinks = $$('.pill-nav a');
 function movePill(el){
@@ -1573,7 +1594,6 @@ function scrollToTerminal(){
   setTimeout(()=>$('#emailInput').focus({preventScroll:true}), 620);
 }
 
-/* ---------- palette ---------- */
 const ACTIONS = [
   {t:'Buka terminal', s:'navigasi', i:'fa-terminal', f:()=>{closePalette();scrollToTerminal();}},
   {t:'Video tutorial inject', s:'bantuan', i:'fa-circle-play', f:()=>{closePalette();document.getElementById('tutorial').scrollIntoView({behavior:'smooth'});}},
@@ -1621,7 +1641,6 @@ function closePalette(){
 $('#palInput').addEventListener('input', renderPal);
 $('#palette').addEventListener('click', e=>{ if(e.target.id === 'palette') closePalette(); });
 
-/* ---------- keyboard ---------- */
 addEventListener('keydown', e=>{
   const palOpen = $('#palette').classList.contains('open');
   if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k'){ e.preventDefault(); palOpen ? closePalette() : openPalette(); return; }
@@ -1643,7 +1662,6 @@ addEventListener('keydown', e=>{
   }
 });
 
-/* ---------- reveal / counters / tilt / ripple / cursor ---------- */
 const io = new IntersectionObserver(es=>{
   es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
 },{threshold:.14, rootMargin:'0px 0px -40px'});
@@ -1690,7 +1708,6 @@ if(matchMedia('(pointer:fine)').matches && !reduce){
   }, {passive:true});
 }
 
-/* ---------- particles ---------- */
 (function(){
   const cv = $('#bgCanvas'), ctx = cv.getContext('2d');
   let w, h, pts = [];
@@ -1718,7 +1735,6 @@ if(matchMedia('(pointer:fine)').matches && !reduce){
   if(!reduce) loop();
 })();
 
-/* ---------- typed ---------- */
 (function(){
   const words = ['> magic link dispatch_', '> oob code validator_', '> quota guard 20/day_', '> serverless. no token leak._'];
   const el = $('#typed'); let wi = 0, ci = 0, del = false;
@@ -1733,7 +1749,6 @@ if(matchMedia('(pointer:fine)').matches && !reduce){
   })();
 })();
 
-/* ---------- banner video ---------- */
 (function(){
   const v = $('#bannerVideo');
   const list = ['/video1.mp4','/video2.mp4']; let i = 0;
@@ -1748,7 +1763,6 @@ if(matchMedia('(pointer:fine)').matches && !reduce){
 $('#sessId').textContent = Math.random().toString(36).slice(2,8).toUpperCase();
 setInterval(()=>{ $('#pingLive').textContent = (10 + Math.floor(Math.random()*14)) + 'ms'; }, 3200);
 
-/* ---------- faq ---------- */
 function toggleFaq(btn){
   const item = btn.parentElement, a = item.querySelector('.faq-a'), open = item.classList.contains('open');
   $$('.faq-item').forEach(it=>{
@@ -1758,7 +1772,6 @@ function toggleFaq(btn){
   if(!open){ item.classList.add('open'); a.style.maxHeight = a.scrollHeight + 'px'; }
 }
 
-/* ---------- api panel ---------- */
 let apiOpen = false;
 function toggleApi(){
   apiOpen = !apiOpen;
@@ -1781,7 +1794,6 @@ function copyCode(btn){
   }).catch(()=>toast('Gagal menyalin. Blok manual saja.', 'er'));
 }
 
-/* ---------- log ---------- */
 function getTimestamp(){
   const d = new Date();
   return [d.getHours(), d.getMinutes(), d.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');
@@ -1810,7 +1822,6 @@ function saveFile(name, text, type='text/plain'){
   URL.revokeObjectURL(a.href);
 }
 
-/* ---------- order id mode ---------- */
 let idMode = localStorage.getItem('zukai-idmode') || 'rand';
 function setIdMode(m){
   idMode = m;
@@ -1831,7 +1842,6 @@ function buildOrderId(prefix){
 }
 setIdMode(idMode);
 
-/* ---------- stats + history ---------- */
 function readHist(){ try{ return JSON.parse(localStorage.getItem(LS.hist) || '[]'); }catch(e){ return []; } }
 function writeHist(h){ localStorage.setItem(LS.hist, JSON.stringify(h.slice(0, 60))); paintStats(); }
 function paintStats(){
@@ -1878,7 +1888,6 @@ function copyText(t){
   navigator.clipboard.writeText(t).then(()=>toast('Teks disalin.', 'ok')).catch(()=>toast('Gagal menyalin.', 'er'));
 }
 
-/* ---------- queue ---------- */
 let queue = [];
 function parseQueueInput(){
   return [...new Set($('#queueInput').value.split(/[\n,;\s]+/).map(s=>s.trim()).filter(s=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s)))].slice(0, 30);
@@ -1935,7 +1944,6 @@ async function runQueue(){
   toast(`Antrian selesai: ${ok} terkirim, ${fail} gagal.`, fail ? 'er' : 'ok');
 }
 
-/* ---------- qr ---------- */
 let qrLoaded = false;
 function loadQrLib(){
   return new Promise((res, rej)=>{
@@ -1965,7 +1973,6 @@ function copyShare(){
   navigator.clipboard.writeText(location.href).then(()=>toast('Link disalin.', 'ok')).catch(()=>toast('Gagal menyalin.', 'er'));
 }
 
-/* ---------- core ---------- */
 function setStep(n){
   const s1 = $('#stp1'), s2 = $('#stp2');
   s1.className = 'stp' + (n === 1 ? ' on' : ' done');
@@ -2007,7 +2014,6 @@ function extractOobCode(fullUrl){
   }catch(e){ return null; }
 }
 
-/* live validator */
 let valTimer;
 $('#linkInput').addEventListener('input', ()=>{
   clearTimeout(valTimer);
@@ -2213,12 +2219,11 @@ Produk   : am.full.sub.annual.19q4
 Status   : SUCCESS
 --------------------------------
 Simpan file ini sebagai bukti transaksi.
-zukai developer — system core v5.1.0`;
+zukai developer — system core v5.2.0`;
   saveFile(`receipt-${lastReceipt.orderId}.txt`, txt);
   toast('Struk diunduh.', 'ok');
 }
 
-/* ---------- confetti ---------- */
 function burst(){
   if(reduce) return;
   const cv = $('#confetti'), ctx = cv.getContext('2d');
@@ -2292,13 +2297,214 @@ async function loadMe() {
 
 function accClick() { ME ? openAccount() : openSheet('authSheet'); }
 
+/* ================= AUTH: KODE EMAIL + FALLBACK PASSWORD ================= */
+let authMode = 'code';
+let otpEmail = '';
+let resendTimer = null;
+
+function toggleAuthMode(){
+  authMode = authMode === 'code' ? 'pass' : 'code';
+  $('#authCodeFlow').style.display = authMode === 'code' ? 'block' : 'none';
+  $('#authPassFlow').style.display = authMode === 'pass' ? 'block' : 'none';
+  $('#acModeToggle').textContent = authMode === 'code' ? 'Masuk pakai password' : 'Masuk pakai kode email';
+}
+
+function acReset(){
+  clearInterval(resendTimer);
+  otpEmail = '';
+  $('#acStep1').style.display = 'block';
+  $('#acStep2').style.display = 'none';
+  $('#acEmailCode').value = '';
+  $('#acCode').value = '';
+  $('#acSendErr').classList.remove('show');
+  $('#acCodeErr').classList.remove('show');
+  $('#acSendBtn').disabled = false;
+  $('#acVerifyBtn').disabled = false;
+  $('#acResendBtn').disabled = false;
+  $('#acResendBtn').textContent = 'Kirim ulang';
+  $('#authErr').classList.remove('show');
+  $('#authPass').value = '';
+}
+
+function acBack(){
+  clearInterval(resendTimer);
+  otpEmail = '';
+  $('#acStep2').style.display = 'none';
+  $('#acStep1').style.display = 'block';
+  $('#acCode').value = '';
+  $('#acCodeErr').classList.remove('show');
+  $('#acResendBtn').disabled = false;
+  $('#acResendBtn').textContent = 'Kirim ulang';
+  setTimeout(()=>$('#acEmailCode').focus(), 80);
+}
+
+function startCooldown(){
+  let left = 60;
+  clearInterval(resendTimer);
+  $('#acResendBtn').disabled = true;
+  $('#acResendBtn').textContent = 'Kirim ulang (' + left + 's)';
+  resendTimer = setInterval(()=>{
+    left--;
+    if(left <= 0){
+      clearInterval(resendTimer);
+      $('#acResendBtn').disabled = false;
+      $('#acResendBtn').textContent = 'Kirim ulang';
+    } else {
+      $('#acResendBtn').textContent = 'Kirim ulang (' + left + 's)';
+    }
+  }, 1000);
+}
+
+async function sendOtp(isResend){
+  const email = (isResend ? otpEmail : $('#acEmailCode').value).trim().toLowerCase();
+  const errBox = isResend ? $('#acCodeErr') : $('#acSendErr');
+  const btn = isResend ? $('#acResendBtn') : $('#acSendBtn');
+
+  errBox.classList.remove('show');
+
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    errBox.textContent = 'Format email tidak valid.';
+    errBox.classList.add('show');
+    return;
+  }
+
+  busy(btn, true, 'Mengirim...');
+  try{
+    const r = await fetch('/api/auth/request-code', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email })
+    });
+    const d = await r.json().catch(()=>({}));
+    if(r.ok && d.status === 'success'){
+      otpEmail = email;
+      $('#acTarget').textContent = email;
+      $('#acStep1').style.display = 'none';
+      $('#acStep2').style.display = 'block';
+      $('#acCode').value = '';
+      $('#acCodeErr').classList.remove('show');
+      startCooldown();
+      beep('ok');
+      toast('Kode terkirim. Cek inbox atau spam.', 'ok');
+      setTimeout(()=>$('#acCode').focus(), 120);
+    } else {
+      errBox.textContent = d.message || ('Gagal kirim kode (HTTP ' + r.status + ').');
+      errBox.classList.add('show');
+      beep('er');
+    }
+  }catch(e){
+    errBox.textContent = 'Jaringan bermasalah. Coba lagi.';
+    errBox.classList.add('show');
+    beep('er');
+  }finally{
+    busy(btn, false);
+  }
+}
+
+async function verifyOtp(){
+  const code = $('#acCode').value.replace(/\D/g, '');
+  const errBox = $('#acCodeErr');
+  const btn = $('#acVerifyBtn');
+  errBox.classList.remove('show');
+
+  if(code.length !== 6){
+    errBox.textContent = 'Kode harus 6 digit.';
+    errBox.classList.add('show');
+    return;
+  }
+
+  busy(btn, true, 'Memverifikasi...');
+  try{
+    const r = await fetch('/api/auth/verify-code', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email: otpEmail, code })
+    });
+    const d = await r.json().catch(()=>({}));
+    if(r.ok && d.status === 'success'){
+      ME = d.user; QUOTA = d.quota;
+      paintAccount();
+      clearInterval(resendTimer);
+      closeSheet('authSheet');
+      checkMaintenanceAndAnnouncement();
+      beep('ok');
+      toast('Masuk. Selamat datang.', 'ok');
+    } else {
+      errBox.textContent = d.message || 'Kode salah atau kedaluwarsa.';
+      errBox.classList.add('show');
+      $('#acCode').classList.add('err');
+      beep('er');
+      $('#acCode').select();
+    }
+  }catch(e){
+    errBox.textContent = 'Jaringan bermasalah. Coba lagi.';
+    errBox.classList.add('show');
+    beep('er');
+  }finally{
+    busy(btn, false);
+  }
+}
+
+$('#acCode').addEventListener('input', e=>{
+  e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6);
+  e.target.classList.remove('err');
+  if(e.target.value.length === 6 && !$('#acVerifyBtn').disabled) verifyOtp();
+});
+$('#acEmailCode').addEventListener('keydown', e=>{ if(e.key === 'Enter') sendOtp(); });
+$('#acCode').addEventListener('keydown', e=>{ if(e.key === 'Enter') verifyOtp(); });
+
+function authTab(mode) {
+  $('#authSheet').dataset.mode = mode;
+  $('#tabLogin').classList.toggle('on', mode === 'login');
+  $('#tabReg').classList.toggle('on', mode === 'reg');
+  $('#authSubmit').querySelector('span').textContent = mode === 'login' ? 'Masuk' : 'Daftar';
+}
+
+async function authSubmit() {
+  const mode = $('#authSheet').dataset.mode || 'login';
+  const email = $('#authEmail').value.trim();
+  const password = $('#authPass').value;
+  const err = $('#authErr'), btn = $('#authSubmit');
+  err.classList.remove('show');
+
+  if (!email || password.length < 6) {
+    err.textContent = 'Email valid + password minimal 6 karakter.';
+    err.classList.add('show');
+    return;
+  }
+  busy(btn, true, 'Memproses...');
+  try {
+    const r = await fetch('/api/auth/' + (mode === 'login' ? 'login' : 'register'), {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    const raw = await r.text();
+    let d = {};
+    try { d = JSON.parse(raw); } catch {}
+
+    if (r.ok && d.status === 'success') {
+      ME = d.user; QUOTA = d.quota;
+      paintAccount(); closeSheet('authSheet');
+      $('#authPass').value = '';
+      checkMaintenanceAndAnnouncement();
+      toast(mode === 'login' ? 'Masuk. Selamat datang.' : 'Akun dibuat.', 'ok');
+      return;
+    }
+    err.textContent = d.message
+      || `HTTP ${r.status} — endpoint balas HTML, bukan JSON. Cek /api/health.`;
+    err.classList.add('show');
+  } catch (e) {
+    err.textContent = 'Request gagal: ' + e.message + ' — cek /api/health.';
+    err.classList.add('show');
+  } finally { busy(btn, false); }
+}
+
 async function openAccount() {
   openSheet('accountSheet');
   $('#acEmail').textContent = ME.email;
   $('#acPlan').textContent = ME.owner ? 'Owner' : ME.premium ? 'Premium' : 'Free';
   $('#acQuota').textContent = (ME.premium || ME.owner) ? 'unlimited' : `${QUOTA?.used ?? 0}/${QUOTA?.limit ?? 20}`;
   
-  // LOGIKA UNLOCK API KEY UNTUK 25x INJECT
   const okCount = readHist().filter(x => x.status === 'ok').length;
   const apiUnlocked = ME.premium || ME.owner || okCount >= 25;
   
@@ -2334,7 +2540,6 @@ async function adminLoad() {
     $('#adToday').textContent = d.injectToday ?? '—';
   } catch {}
   
-  // Load pengumuman & maintenance state di panel owner
   const curAnn = localStorage.getItem(LS.ann) || '';
   $('#adAnnounceInput').value = curAnn;
   const isMaint = localStorage.getItem(LS.maint) === '1';
@@ -2353,7 +2558,6 @@ async function adminGrant() {
   if (r.ok) { $('#adEmail').value = ''; adminLoad(); }
 }
 
-/* ================= OWNER CONTROL LOGIC ================= */
 async function setAnnouncement() {
   const txt = $('#adAnnounceInput').value.trim();
   if(!txt) return toast('Isi teks pengumuman dulu.', 'er');
@@ -2408,7 +2612,6 @@ async function toggleMaintenanceMode() {
 }
 
 function checkMaintenanceAndAnnouncement() {
-  // Check maintenance state
   const isMaint = localStorage.getItem(LS.maint) === '1';
   if (isMaint) {
     openSheet('maintenanceSheet');
@@ -2421,55 +2624,8 @@ function checkMaintenanceAndAnnouncement() {
     closeSheet('maintenanceSheet');
   }
 
-  // Check announcement state
   const annTxt = localStorage.getItem(LS.ann) || '';
   renderAnnouncement(annTxt);
-}
-
-function authTab(mode) {
-  $('#authSheet').dataset.mode = mode;
-  $('#tabLogin').classList.toggle('on', mode === 'login');
-  $('#tabReg').classList.toggle('on', mode === 'reg');
-  $('#authSubmit').querySelector('span').textContent = mode === 'login' ? 'Masuk' : 'Daftar';
-}
-
-async function authSubmit() {
-  const mode = $('#authSheet').dataset.mode || 'login';
-  const email = $('#authEmail').value.trim();
-  const password = $('#authPass').value;
-  const err = $('#authErr'), btn = $('#authSubmit');
-  err.classList.remove('show');
-
-  if (!email || password.length < 6) {
-    err.textContent = 'Email valid + password minimal 6 karakter.';
-    err.classList.add('show');
-    return;
-  }
-  busy(btn, true, 'Memproses...');
-  try {
-    const r = await fetch('/api/auth/' + (mode === 'login' ? 'login' : 'register'), {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-    const raw = await r.text();
-    let d = {};
-    try { d = JSON.parse(raw); } catch {}
-
-    if (r.ok && d.status === 'success') {
-      ME = d.user; QUOTA = d.quota;
-      paintAccount(); closeSheet('authSheet');
-      $('#authPass').value = '';
-      checkMaintenanceAndAnnouncement();
-      toast(mode === 'login' ? 'Masuk. Selamat datang.' : 'Akun dibuat.', 'ok');
-      return;
-    }
-    err.textContent = d.message
-      || `HTTP ${r.status} — endpoint balas HTML, bukan JSON. Cek /api/health.`;
-    err.classList.add('show');
-  } catch (e) {
-    err.textContent = 'Request gagal: ' + e.message + ' — cek /api/health.';
-    err.classList.add('show');
-  } finally { busy(btn, false); }
 }
 
 async function doLogout() {
@@ -2481,7 +2637,6 @@ async function doLogout() {
 }
 
 async function rotateKey(e) {
-  // Pastikan kembali progresnya sebelum request ke server (Cegah user free asal klik)
   const okCount = readHist().filter(x => x.status === 'ok').length;
   if (!ME.premium && !ME.owner && okCount < 25) {
     return toast('Capai 25x sukses inject dulu buat unlock API Key.', 'er');
@@ -2507,7 +2662,6 @@ async function rotateKey(e) {
   }
 }
 
-/* ================= PEMBAYARAN ================= */
 async function startPayment() {
   if (!ME) { closeSheet('upgradeSheet'); return openSheet('authSheet'); }
   const btn = $('#payBtn');
@@ -2557,7 +2711,6 @@ function startPolling(d) {
   }, 4000);
 }
 
-/* ================= DEV TOOLS EXTRA ================= */
 function extOob(){
   const v = $('#tUrl').value.trim();
   if(!v) return;
@@ -2663,7 +2816,7 @@ const initTime = setInterval(()=>{
   ];
 
   (async function run(){
-    log('boot', 'zukai_kernel v5.1.0 — cold start');
+    log('boot', 'zukai_kernel v5.2.0 — cold start');
     paint();
     await sleep(quick ? 40 : 110);
 
@@ -2681,7 +2834,7 @@ const initTime = setInterval(()=>{
       nodeEl.textContent = 'OFFLINE';
     } else {
       const d = health.data || {};
-      verEl.textContent = 'v' + (d.version || '5.1.0');
+      verEl.textContent = 'v' + (d.version || '5.2.0');
       log('ok', 'health 200 · respons ' + health.ms + 'ms');
       $('#pingLive').textContent = health.ms + 'ms';
       target = 24;
