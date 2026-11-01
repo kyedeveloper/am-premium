@@ -70,7 +70,7 @@ async function bumpAttempt(email, rec) {
 const dropOtp = email => db.del(otpKey(email));
 
 async function sendMail(email, code) {
-  if (!MAIL_TOKEN) throw new Error('MAILTRAP_TOKEN belum diset.');
+  if (!MAIL_TOKEN) throw new Error('MAILTRAP_TOKEN belum diset di Environment Variables.');
   const text =
 `Kode masuk AM PREMIUM kamu: ${code}
 
@@ -114,6 +114,11 @@ export default async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
+  // Parsing body jika berupa string
+  if (typeof req.body === 'string') {
+    try { req.body = JSON.parse(req.body); } catch {}
+  }
+
   const { action } = req.query;
 
   try {
@@ -148,7 +153,8 @@ async function handleRequestCode(req, res) {
   try {
     await sendMail(email, code);
   } catch (e) {
-    return res.status(502).json({ status: 'error', message: 'Gagal kirim email: ' + e.message });
+    // Diubah dari 502 ke 500 dan mengembalikan error detail Mailtrap ke response
+    return res.status(500).json({ status: 'error', message: 'Gagal kirim email: ' + e.message });
   }
 
   res.setHeader('Cache-Control', 'no-store');
@@ -259,4 +265,4 @@ async function handleKey(req, res) {
   await saveUser(u);
   await db.set(K.key(u.apiKey), u.id);
   res.status(200).json({ status: 'success', apiKey: u.apiKey });
-                                        }
+}
