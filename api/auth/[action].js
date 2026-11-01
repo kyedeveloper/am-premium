@@ -49,14 +49,25 @@ async function checkLimits(ip, email) {
 }
 
 async function saveOtp(email, code) {
-  await db.set(otpKey(email), JSON.stringify({ h: hashCode(code), a: 0, exp: Date.now() + OTP_TTL * 1000 }));
+async function saveOtp(email, code) {
+  const payload = { h: hashCode(code), a: 0, exp: Date.now() + OTP_TTL * 1000 };
+  await db.set(otpKey(email), JSON.stringify(payload));
   await db.expire(otpKey(email), OTP_TTL);
 }
 
 async function readOtp(email) {
   const raw = await db.get(otpKey(email));
   if (!raw) return null;
-  try { return JSON.parse(raw); } catch { return null; }
+  
+  // Jika database (seperti Upstash/Vercel KV) sudah otomatis parse ke Object
+  if (typeof raw === 'object') return raw;
+  
+  // Jika tersimpan sebagai String
+  if (typeof raw === 'string') {
+    try { return JSON.parse(raw); } catch { return null; }
+  }
+  
+  return null;
 }
 
 async function bumpAttempt(email, rec) {
