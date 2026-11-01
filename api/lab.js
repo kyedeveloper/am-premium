@@ -1,5 +1,4 @@
 const PISTON = 'https://emkc.org/api/v2/piston/execute';
-const MAILTM = 'https://api.mail.tm';
 const ONESEC = 'https://www.1secmail.com/api/v1/';
 const RL = new Map();
 const CAPS = { exec: 24, dl: 24, net: 40, mail: 80 };
@@ -9,6 +8,15 @@ const LANG = {
   node: 'javascript', js: 'javascript', javascript: 'javascript',
   python: 'python', python3: 'python', py: 'python',
   php: 'php', go: 'go', c: 'c', cpp: 'c++', java: 'java', ruby: 'ruby', lua: 'lua'
+};
+
+/* ---------- provider temp mail ---------- */
+const MT_BASE = { mailtm: 'https://api.mail.tm', mailgw: 'https://api.mail.gw' };
+const STATIC_DOM = {
+  plus: ['rover.info', 'fexpost.com', 'mailto.plus', 'fextemp.com', 'fexbox.org', 'fexbox.ru', 'mailbox.in.ua', 'chitthi.in', 'any.pink', 'merepost.com', 'tofeat.com'],
+  guerrilla: ['guerrillamail.com', 'sharklasers.com', 'guerrillamailblock.com', 'pokemail.net', 'spam4.me'],
+  maildrop: ['maildrop.cc'],
+  onesec: ['1secmail.com', '1secmail.net', '1secmail.org', 'wwjmp.com', 'esiix.com', 'xojxe.com', 'yoggm.com']
 };
 
 function out(res, code, obj) {
@@ -140,24 +148,50 @@ async function doNet(req, res) {
   return out(res, 200, { status: 'success', code: r.status, type: r.headers.get('content-type') || '', body: txt });
 }
 
-/* ---------- temp mail (mail.tm) ---------- */
-async function mt(path, opt = {}, token) {
+/* ---------- temp mail: helper ---------- */
+async function mt(prov, path, opt = {}, token) {
   const h = { 'Accept': 'application/json', 'Content-Type': 'application/json' };
   if (token) h['Authorization'] = 'Bearer ' + token;
-  const r = await tf(MAILTM + path, { ...opt, headers: h }, 9000);
+  const r = await tf(MT_BASE[prov] + path, { ...opt, headers: h }, 9000);
   const d = await r.json().catch(() => ({}));
   return { ok: r.ok, code: r.status, d };
 }
 
+async function gm(f, extra = '') {
+  const r = await tf('https://api.guerrillamail.com/ajax.php?f=' + f + '&agent=zukai-lab' + extra, {}, 9000);
+  return { ok: r.ok, code: r.status, d: await r.json().catch(() => ({})) };
+}
+
+async function plusList(addr) {
+  const r = await tf('https://tempmail.plus/api/mails?email=' + encodeURIComponent(addr) + '&epin=&first_id=0', {}, 9000);
+  return { ok: r.ok, code: r.status, d: await r.json().catch(() => ({})) };
+}
+
+async function dropGraphql(query, vars) {
+  const r = await tf('https://api.maildrop.cc/graphql', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query, variables: vars })
+  }, 9000);
+  return { ok: r.ok, code: r.status, d: await r.json().catch(() => ({})) };
+}
+
+/* ---------- temp mail: router ---------- */
 async function doMail(req, res) {
   const b = req.body || {};
   const step = String(b.step || req.query.step || '');
+  const prov = String(b.provider || 'mailtm').toLowerCase();
 
   if (step === 'domains') {
-    const r = await mt('/domains?page=1');
-    const list = ((r.d && r.d['hydra:member']) || []).filter(x => !x.isPrivate && x.isActive !== false).map(x => x.domain);
-    if (!list.length) return out(res, 502, { status: 'error', message: 'Domain tidak tersedia.' });
-    return out(res, 200, { status: 'success', domains: list.slice(0, 12) });
+    if (MT_BASE[prov]) {
+      const r = await mt(prov, '/domains?page=1');
+      const list = ((r.d && r.d['hydra:member']) || []).filter(x => !x.isPrivate && x.isActive !== false).map(x => x.domain);
+      if (!list.length) return out(res, 502, { status: 'error', message: 'Domain tidak tersedia di provider ini.' });
+      return out(res, 200, { status: 'success', domains: list.slice(0, 12) });
+    }
+    const stat = STATIC_DOM[prov];
+    if (!stat) return out(res, 400, { status: 'error', message: 'Provider tidak dikenal.' });
+    return out(res, 200, { status: 'success', domains: stat });
   }
 
   if (step === 'new') {
@@ -165,61 +199,138 @@ async function doMail(req, res) {
     const domain = String(b.domain || '').trim();
     if (name.length < 3) return out(res, 400, { status: 'error', message: 'Nama minimal 3 karakter.' });
     if (!domain) return out(res, 400, { status: 'error', message: 'Domain kosong.' });
-
     const address = name + '@' + domain;
-    const password = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
-    const c = await mt('/accounts', { method: 'POST', body: JSON.stringify({ address, password }) });
-    if (!c.ok) return out(res, 409, { status: 'error', message: c.d['hydra:description'] || 'Alamat sudah dipakai, coba nama lain.' });
 
-    const t = await mt('/token', { method: 'POST', body: JSON.stringify({ address, password }) });
-    if (!t.ok || !t.d.token) return out(res, 502, { status: 'error', message: 'Gagal membuat sesi mailbox.' });
-    return out(res, 200, { status: 'success', address, password, token: t.d.token, provider: 'mailtm' });
+    if (MT_BASE[prov]) {
+      const password = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+      const c = await mt(prov, '/accounts', { method: 'POST', body: JSON.stringify({ address, password }) });
+      if (!c.ok) return out(res, 409, { status: 'error', message: c.d['hydra:description'] || 'Alamat sudah dipakai, coba nama lain.' });
+      const t = await mt(prov, '/token', { method: 'POST', body: JSON.stringify({ address, password }) });
+      if (!t.ok || !t.d.token) return out(res, 502, { status: 'error', message: 'Gagal membuat sesi mailbox.' });
+      return out(res, 200, { status: 'success', address, name, domain, provider: prov, password, token: t.d.token });
+    }
+
+    if (prov === 'guerrilla') {
+      const s = await gm('get_email_address');
+      if (!s.ok || !s.d.sid_token) return out(res, 502, { status: 'error', message: 'Guerrilla menolak sesi baru.' });
+      const u = await gm('set_email_user', '&email_user=' + encodeURIComponent(name) + '&sid_token=' + s.d.sid_token);
+      const addr = (u.d && u.d.email_addr) || s.d.email_addr;
+      return out(res, 200, { status: 'success', address: addr, name: String(addr).split('@')[0], domain: String(addr).split('@')[1], provider: prov, sid: s.d.sid_token });
+    }
+
+    if (prov === 'plus' || prov === 'maildrop' || prov === 'onesec') {
+      return out(res, 200, { status: 'success', address, name, domain, provider: prov });
+    }
+
+    return out(res, 400, { status: 'error', message: 'Provider tidak dikenal.' });
   }
 
   if (step === 'token') {
-    const t = await mt('/token', { method: 'POST', body: JSON.stringify({ address: b.address, password: b.password }) });
+    if (!MT_BASE[prov]) return out(res, 200, { status: 'success' });
+    const t = await mt(prov, '/token', { method: 'POST', body: JSON.stringify({ address: b.address, password: b.password }) });
     if (!t.ok || !t.d.token) return out(res, 401, { status: 'error', message: 'Sesi mailbox habis, buat alamat baru.' });
     return out(res, 200, { status: 'success', token: t.d.token });
   }
 
   if (step === 'list') {
-    const r = await mt('/messages?page=1', {}, b.token);
-    if (r.code === 401) return out(res, 401, { status: 'error', message: 'Sesi kedaluwarsa.' });
-    const arr = (r.d['hydra:member'] || []).map(m => ({
-      id: m.id, from: (m.from && m.from.address) || '?', subject: m.subject || '(tanpa subjek)', intro: m.intro || '', seen: !!m.seen, at: m.createdAt
-    }));
-    return out(res, 200, { status: 'success', messages: arr });
+    const addr = String(b.address || '');
+
+    if (MT_BASE[prov]) {
+      const r = await mt(prov, '/messages?page=1', {}, b.token);
+      if (r.code === 401) return out(res, 401, { status: 'error', message: 'Sesi kedaluwarsa.' });
+      const arr = (r.d['hydra:member'] || []).map(m => ({
+        id: m.id, from: (m.from && m.from.address) || '?', subject: m.subject || '(tanpa subjek)', seen: !!m.seen, at: m.createdAt
+      }));
+      return out(res, 200, { status: 'success', messages: arr });
+    }
+
+    if (prov === 'guerrilla') {
+      const r = await gm('get_email_list', '&offset=0&sid_token=' + encodeURIComponent(String(b.sid || '')));
+      const arr = ((r.d && r.d.list) || []).map(m => ({
+        id: String(m.mail_id), from: m.mail_from, subject: m.mail_subject || '(tanpa subjek)', seen: false, at: new Date((m.mail_timestamp || 0) * 1000).toISOString()
+      }));
+      return out(res, 200, { status: 'success', messages: arr });
+    }
+
+    if (prov === 'plus') {
+      const r = await plusList(addr);
+      const arr = ((r.d && r.d.mail_list) || []).map(m => ({
+        id: String(m.id), from: m.from_mail || '?', subject: m.subject || '(tanpa subjek)', seen: !!m.seen, at: m.time || ''
+      }));
+      return out(res, 200, { status: 'success', messages: arr });
+    }
+
+    if (prov === 'maildrop') {
+      const name = String(b.name || '');
+      const r = await dropGraphql('query($m:String!){inbox(mailbox:$m){id headerfrom subject date}}', { m: name });
+      const arr = (((r.d && r.d.data && r.d.data.inbox) || [])).map(m => ({
+        id: m.id, from: m.headerfrom, subject: m.subject || '(tanpa subjek)', seen: false, at: m.date
+      }));
+      return out(res, 200, { status: 'success', messages: arr });
+    }
+
+    if (prov === 'onesec') {
+      const list = await tf(ONESEC + '?action=getMessages&login=' + encodeURIComponent(String(b.name || '')) + '&domain=' + encodeURIComponent(String(b.domain || '')), {}, 9000);
+      const arr = await list.json().catch(() => []);
+      const msgs = (Array.isArray(arr) ? arr : []).map(m => ({
+        id: String(m.id), from: m.from, subject: m.subject || '(tanpa subjek)', seen: false, at: m.date
+      }));
+      return out(res, 200, { status: 'success', messages: msgs });
+    }
+
+    return out(res, 400, { status: 'error', message: 'Provider tidak dikenal.' });
   }
 
   if (step === 'read') {
-    const r = await mt('/messages/' + encodeURIComponent(String(b.id || '')), {}, b.token);
-    if (!r.ok) return out(res, 404, { status: 'error', message: 'Pesan tidak ditemukan.' });
-    await mt('/messages/' + encodeURIComponent(String(b.id)), { method: 'PATCH', body: JSON.stringify({ seen: true }) }, b.token).catch(() => {});
-    const m = r.d;
-    return out(res, 200, {
-      status: 'success',
-      subject: m.subject || '(tanpa subjek)',
-      from: (m.from && m.from.address) || '?',
-      at: m.createdAt,
-      html: Array.isArray(m.html) ? m.html.join('\n') : '',
-      text: m.text || ''
-    });
+    const id = encodeURIComponent(String(b.id || ''));
+
+    if (MT_BASE[prov]) {
+      const r = await mt(prov, '/messages/' + id, {}, b.token);
+      if (!r.ok) return out(res, 404, { status: 'error', message: 'Pesan tidak ditemukan.' });
+      await mt(prov, '/messages/' + id, { method: 'PATCH', body: JSON.stringify({ seen: true }) }, b.token).catch(() => {});
+      const m = r.d;
+      return out(res, 200, {
+        status: 'success', subject: m.subject || '(tanpa subjek)', from: (m.from && m.from.address) || '?', at: m.createdAt,
+        html: Array.isArray(m.html) ? m.html.join('\n') : '', text: m.text || ''
+      });
+    }
+
+    if (prov === 'guerrilla') {
+      const r = await gm('fetch_email', '&email_id=' + id + '&sid_token=' + encodeURIComponent(String(b.sid || '')));
+      if (!r.ok) return out(res, 404, { status: 'error', message: 'Pesan tidak ditemukan.' });
+      return out(res, 200, { status: 'success', subject: r.d.mail_subject || '(tanpa subjek)', from: r.d.mail_from || '?', at: '', html: r.d.mail_body || '', text: '' });
+    }
+
+    if (prov === 'plus') {
+      const r = await tf('https://tempmail.plus/api/mails/' + id + '?email=' + encodeURIComponent(String(b.address || '')) + '&epin=', {}, 9000);
+      if (!r.ok) return out(res, 404, { status: 'error', message: 'Pesan tidak ditemukan.' });
+      const m = await r.json().catch(() => ({}));
+      return out(res, 200, { status: 'success', subject: m.subject || '(tanpa subjek)', from: m.from_mail || '?', at: m.time || '', html: m.html || '', text: m.text || '' });
+    }
+
+    if (prov === 'maildrop') {
+      const r = await dropGraphql('query($m:String!,$i:String!){message(mailbox:$m,id:$i){id headerfrom subject html data}}', { m: String(b.name || ''), i: String(b.id || '') });
+      const m = (r.d && r.d.data && r.d.data.message) || null;
+      if (!m) return out(res, 404, { status: 'error', message: 'Pesan tidak ditemukan.' });
+      return out(res, 200, { status: 'success', subject: m.subject || '(tanpa subjek)', from: m.headerfrom || '?', at: '', html: m.html || '', text: m.data || '' });
+    }
+
+    if (prov === 'onesec') {
+      const r = await tf(ONESEC + '?action=readMessage&login=' + encodeURIComponent(String(b.name || '')) + '&domain=' + encodeURIComponent(String(b.domain || '')) + '&id=' + id, {}, 9000);
+      const m = await r.json().catch(() => ({}));
+      return out(res, 200, { status: 'success', subject: m.subject || '(tanpa subjek)', from: m.from || '?', at: m.date || '', html: m.htmlBody || '', text: m.textBody || '' });
+    }
+
+    return out(res, 400, { status: 'error', message: 'Provider tidak dikenal.' });
   }
 
   if (step === 'del') {
-    await mt('/messages/' + encodeURIComponent(String(b.id || '')), { method: 'DELETE' }, b.token).catch(() => {});
+    const id = encodeURIComponent(String(b.id || ''));
+    try {
+      if (MT_BASE[prov]) await mt(prov, '/messages/' + id, { method: 'DELETE' }, b.token);
+      else if (prov === 'guerrilla') await gm('del_email', '&email_ids[]=' + id + '&sid_token=' + encodeURIComponent(String(b.sid || '')));
+    } catch (e) {}
     return out(res, 200, { status: 'success' });
-  }
-
-  if (step === 'onesec') {
-    const login = String(b.name || '').replace(/[^a-z0-9]/gi, '').slice(0, 20);
-    const domain = String(b.domain || '1secmail.com');
-    const list = await tf(ONESEC + '?action=getMessages&login=' + login + '&domain=' + domain, {}, 9000);
-    const arr = await list.json().catch(() => []);
-    const msgs = (Array.isArray(arr) ? arr : []).map(m => ({
-      id: m.id, from: m.from, subject: m.subject, intro: '', seen: false, at: m.date
-    }));
-    return out(res, 200, { status: 'success', messages: msgs });
   }
 
   return out(res, 400, { status: 'error', message: 'step tidak dikenal.' });
@@ -248,4 +359,4 @@ export default async function handler(req, res) {
   } catch (e) {
     return out(res, 500, { status: 'error', message: e.message || 'internal error' });
   }
-             }
+    }
