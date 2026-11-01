@@ -14,7 +14,7 @@ const MAX_ATTEMPT = 5;
 const MAX_PER_EMAIL = 3;
 const MAX_PER_IP = 10;
 const MAX_PER_DAY = 25;
-const MAIL_TOKEN = process.env.MAILTRAP_TOKEN;
+const MAIL_TOKEN = process.env.MAILTARGET_API_KEY || process.env.MAILTRAP_TOKEN;
 const MAIL_FROM = process.env.MAIL_FROM || 'no-reply@juikoprem.my.id';
 
 const otpKey = email => `otp:${email}`;
@@ -70,7 +70,8 @@ async function bumpAttempt(email, rec) {
 const dropOtp = email => db.del(otpKey(email));
 
 async function sendMail(email, code) {
-  if (!MAIL_TOKEN) throw new Error('MAILTRAP_TOKEN belum diset di Environment Variables.');
+  if (!MAIL_TOKEN) throw new Error('MAILTARGET_API_KEY belum dikonfigurasi.');
+  
   const text =
 `Kode masuk AM PREMIUM kamu: ${code}
 
@@ -87,20 +88,24 @@ juikoprem.my.id`;
   <p style="font-size:12px;color:#8b93a7;margin:0">Berlaku 10 menit, sekali pakai.</p>
 </div>`;
 
-  const r = await fetch('https://send.api.mailtrap.io/api/send', {
+  const r = await fetch('https://transmission.mailtarget.co/v1/layang/transmissions', {
     method: 'POST',
-    headers: { 'Api-Token': MAIL_TOKEN, 'Content-Type': 'application/json' },
+    headers: {
+      'Authorization': `Bearer ${MAIL_TOKEN}`,
+      'Content-Type': 'application/json'
+    },
     body: JSON.stringify({
       from: { email: MAIL_FROM, name: 'AM PREMIUM' },
       to: [{ email }],
       subject: `${code} — kode masuk AM PREMIUM`,
-      text, html, category: 'otp',
+      text,
+      html
     }),
   });
 
   if (!r.ok) {
     const detail = await r.text().catch(() => '');
-    throw new Error('Mailtrap ' + r.status + ': ' + detail.slice(0, 160));
+    throw new Error('Mailtarget Error ' + r.status + ': ' + detail.slice(0, 160));
   }
 }
 
@@ -114,7 +119,6 @@ export default async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  // Parsing body jika berupa string
   if (typeof req.body === 'string') {
     try { req.body = JSON.parse(req.body); } catch {}
   }
@@ -153,7 +157,6 @@ async function handleRequestCode(req, res) {
   try {
     await sendMail(email, code);
   } catch (e) {
-    // Diubah dari 502 ke 500 dan mengembalikan error detail Mailtrap ke response
     return res.status(500).json({ status: 'error', message: 'Gagal kirim email: ' + e.message });
   }
 
