@@ -64,6 +64,9 @@ body.locked{overflow:hidden}
 @keyframes bootFill{to{width:100%}}
 @keyframes bootOut{to{opacity:0;visibility:hidden}}
 
+/* ANNOUNCEMENT BANNER */
+.announcement-banner{position:relative;z-index:130;background:linear-gradient(90deg,var(--a1),#4b1fa8);color:#fff;font-family:var(--mono);font-size:.75rem;padding:.5rem 0;box-shadow:0 0 20px var(--g1);border-bottom:1px solid rgba(255,255,255,.1)}
+
 .wrap{position:relative;z-index:2;width:100%;max-width:1080px;margin:0 auto;padding:0 1.15rem}
 
 .nav{position:sticky;top:0;z-index:120;backdrop-filter:blur(18px);background:linear-gradient(180deg,rgba(5,5,7,.94),rgba(5,5,7,.6) 70%,transparent);border-bottom:1px solid transparent;transition:border-color .3s,background .3s}
@@ -85,7 +88,7 @@ body.locked{overflow:hidden}
 .pill-nav a.active{color:#fff}
 .pill-nav a.active i{opacity:1}
 .nav-tools{display:flex;align-items:center;gap:.4rem}
-.icon-btn{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:rgba(10,10,16,.7);color:var(--dim);cursor:pointer;display:grid;place-items:center;font-size:.78rem;transition:.25s}
+.icon-btn{width:34px;height:34px;border-radius:99px;border:1px solid var(--line);background:rgba(10,10,16,.7);color:var(--dim);cursor:pointer;display:grid;place-items:center;font-size:.78rem;transition:.25s}
 .icon-btn:hover{color:var(--a2);border-color:var(--a2);box-shadow:0 0 16px var(--g2)}
 .icon-btn[aria-pressed="true"]{color:var(--a2);border-color:rgba(0,245,212,.5);background:rgba(0,245,212,.1)}
 .kbd-hint{display:flex;align-items:center;gap:.3rem;font-family:var(--mono);font-size:.58rem;color:var(--dimmer);border:1px solid var(--line);border-radius:8px;padding:.4rem .5rem;background:rgba(10,10,16,.7);cursor:pointer;transition:.25s}
@@ -96,7 +99,7 @@ kbd{font-family:var(--mono);font-size:.58rem;border:1px solid var(--line);border
 .acc-switch button:hover{transform:scale(1.18)}
 .acc-switch button[aria-pressed="true"]{border-color:#fff;transform:scale(1.15)}
 .acc-switch .c1{background:#9d4edd}.acc-switch .c2{background:#0099ff}.acc-switch .c3{background:#7bff3d}.acc-switch .c4{background:#ff5c35}
-.burger{display:none;background:none;border:1px solid var(--line);color:var(--txt);width:36px;height:36px;border-radius:9px;cursor:pointer}
+.burger{display:none;background:none;border:1px solid var(--line);color:var(--txt);width:36px;height:36px;border-radius:99px;cursor:pointer}
 .mobile-menu{display:none;flex-direction:column;gap:.2rem;padding:.4rem 0 1rem}
 .mobile-menu a{color:var(--dim);text-decoration:none;padding:.7rem;border-radius:8px;font-family:var(--mono);font-size:.8rem;text-transform:uppercase;display:flex;gap:.6rem;align-items:center}
 .mobile-menu a:hover{background:rgba(255,255,255,.05);color:#fff}
@@ -184,7 +187,7 @@ code{font-family:var(--mono);font-size:.72rem;color:var(--a2)}
 
 .panel-tools{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.1rem}
 .tool-btn{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
-  padding:.42rem .65rem;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.02);color:var(--dim);cursor:pointer;transition:.25s}
+  padding:.42rem .65rem;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.02);color:var(--dim);cursor:pointer;transition:.25s;text-decoration:none}
 .tool-btn:hover{color:var(--a2);border-color:var(--a2);background:rgba(0,245,212,.07)}
 .tool-btn .cnt{font-size:.55rem;background:rgba(0,245,212,.16);color:var(--a2);border-radius:99px;padding:.05rem .34rem}
 
@@ -384,7 +387,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
   .kbd-hint{display:none}
 }
 @media(max-width:820px){
-  .about-grid{grid-template-columns:1fr}
+  .about-grid,.tutorial-grid{grid-template-columns:1fr !important}
   .acc-switch{display:none}
   .stat-row{grid-template-columns:repeat(2,1fr);gap:.8rem}
   .media{height:180px}
@@ -416,7 +419,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
 .quota-line .meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--a1),var(--a2));transition:width .5s}
 .quota-line.full .meter i{background:linear-gradient(90deg,#ff4d6d,#ff8fa3)}
 .quota-line button{margin-left:auto;background:none;border:none;color:var(--a2);cursor:pointer;font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase}
-.auth-tabs{display:flex;gap:.3rem;padding:.25rem;border:1px solid var(--line);border-radius:9px;background:#06060a;margin-bottom:1rem}
+.auth-tabs{display:flex;gap:.3rem;padding:.25rem;border:1px solid var(--line);border-radius:99px;background:#06060a;margin-bottom:1rem}
 .auth-tabs button{flex:1;font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:.45rem;border-radius:7px;border:none;background:none;color:var(--dimmer);cursor:pointer}
 .auth-tabs button.on{background:rgba(0,245,212,.13);color:var(--a2)}
 .price-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
@@ -469,6 +472,14 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
   </div>
 </div>
 
+<!-- GLOBAL ANNOUNCEMENT BANNER -->
+<div id="globalAnnouncement" class="announcement-banner" style="display:none">
+  <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:1rem">
+    <span><i class="fa-solid fa-bullhorn" style="color:var(--a2)"></i> <strong id="announcementText">...</strong></span>
+    <button onclick="closeAnnouncement()" style="background:none;border:none;color:inherit;cursor:pointer;font-size:0.9rem"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+</div>
+
 <canvas id="bgCanvas" aria-hidden="true"></canvas>
 <div class="grid-layer" aria-hidden="true"></div>
 <div class="aurora" aria-hidden="true"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span></div>
@@ -486,6 +497,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
       <nav class="pill-nav" id="pillNav" aria-label="Navigasi bagian">
         <span class="pill-ind" id="pillInd"></span>
         <a href="#fitur" data-sec="fitur"><i class="fa-solid fa-layer-group"></i> Fitur</a>
+        <a href="#tutorial" data-sec="tutorial"><i class="fa-solid fa-circle-play"></i> Tutorial</a>
         <a href="#harga" data-sec="harga"><i class="fa-solid fa-tags"></i> Harga</a>
         <a href="#terminal" data-sec="terminal"><i class="fa-solid fa-terminal"></i> Terminal</a>
         <a href="#api" data-sec="api"><i class="fa-solid fa-code"></i> API</a>
@@ -513,6 +525,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
     </div>
     <div class="mobile-menu" id="mobileMenu">
       <a href="#fitur"><i class="fa-solid fa-layer-group"></i> Fitur</a>
+      <a href="#tutorial"><i class="fa-solid fa-circle-play"></i> Tutorial Video</a>
       <a href="#harga"><i class="fa-solid fa-tags"></i> Harga</a>
       <a href="#terminal"><i class="fa-solid fa-terminal"></i> Terminal</a>
       <a href="#api"><i class="fa-solid fa-code"></i> API</a>
@@ -532,7 +545,8 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
     <div class="hero-card">
       <div class="media">
         <video id="bannerVideo" autoplay muted playsinline loop preload="metadata">
-          <source src="video1.mp4" type="video/mp4">
+          <!-- Absolute path untuk kebal custom domain -->
+          <source src="/video1.mp4" type="video/mp4">
         </video>
         <div class="scan"></div><div class="sweep"></div>
         <div class="media-top">
@@ -549,7 +563,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
         <p class="hero-sub">Terminal serverless: kirim magic link ke email target, tempel OOB code, lalu inject. Semua diproses di edge function Vercel — token tidak pernah nyangkut di browser.</p>
         <div class="hero-cta">
           <button class="btn btn-primary" onclick="scrollToTerminal()"><i class="fa-solid fa-rocket"></i> Buka Terminal</button>
-          <button class="btn btn-ghost" onclick="openSheet('guideSheet')"><i class="fa-solid fa-book"></i> Cara Pakai</button>
+          <button class="btn btn-ghost" onclick="document.getElementById('tutorial').scrollIntoView({behavior: reduce ? 'auto' : 'smooth'})"><i class="fa-solid fa-circle-play"></i> Cara Pakai (Video)</button>
           <button class="btn btn-plain" onclick="openSheet('aboutSheet')"><i class="fa-solid fa-circle-info"></i> Tentang</button>
         </div>
         <div class="stat-row">
@@ -608,6 +622,77 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
         <div class="ic"><i class="fa-solid fa-shield-halved"></i></div>
         <h3>Token di Server</h3>
         <p><code>API_KEY</code>, <code>ALIGHT_TOKEN</code>, dan <code>FIREBASE_TOKEN</code> hidup sebagai env Vercel, bukan di HTML.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION TUTORIAL VIDEO -->
+  <section id="tutorial">
+    <div class="sec-head reveal">
+      <span class="kicker">Panduan Visual</span>
+      <h2>Video Tutorial Cara Inject</h2>
+      <p>Tonton panduan visual di bawah ini untuk melihat alur kerja aktivasi Alight Motion Premium secara lengkap.</p>
+    </div>
+    
+    <div class="panel reveal" style="padding:1.2rem;">
+      <div class="tutorial-grid" style="display:grid;grid-template-columns:1.2fr 0.8fr;gap:1.2rem;align-items:start;">
+        <!-- Player Box -->
+        <div style="background:#040406;border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden;">
+          <video id="tutorialVideo" controls autoplay muted playsinline loop preload="metadata" style="width:100%;height:auto;display:block;aspect-ratio:16/9;background:#000;">
+            <!-- Absolute path & parameter anti-cache agar work di custom domain -->
+            <source src="/tutorial.mp4?v=2" type="video/mp4">
+            Browser Anda tidak mendukung pemutar video HTML5.
+          </video>
+          <div style="padding:.7rem .9rem;background:rgba(8,8,12,0.9);display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line);font-family:var(--mono);font-size:.68rem;color:var(--dim);">
+            <span><i class="fa-solid fa-film" style="color:var(--a2)"></i> tutorial.mp4</span>
+            <a href="/tutorial.mp4" download class="tool-btn" style="padding:.25rem .5rem;font-size:.6rem;"><i class="fa-solid fa-download"></i> Download Video</a>
+          </div>
+        </div>
+
+        <!-- Detail Langkah -->
+        <div>
+          <h3 style="color:#fff;font-size:1.05rem;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;">
+            <i class="fa-solid fa-list-check" style="color:var(--a1-soft);"></i> Ringkasan Langkah Inject
+          </h3>
+
+          <div class="gstep">
+            <span class="num">1</span>
+            <div>
+              <h4>Masuk &amp; Atur Order ID</h4>
+              <p>Login ke akunmu, tentukan format Order ID (Mode Acak atau Urut) untuk penanda transaksi.</p>
+            </div>
+          </div>
+
+          <div class="gstep">
+            <span class="num">2</span>
+            <div>
+              <h4>Kirim Verification Link</h4>
+              <p>Ketik email akun Alight Motion target lalu tekan tombol <b>Transmit Verification Link</b>.</p>
+            </div>
+          </div>
+
+          <div class="gstep">
+            <span class="num">3</span>
+            <div>
+              <h4>Salin URL dari Inbox</h4>
+              <p>Buka pesan email verifikasi Alight Motion di inbox/spam, lalu salin seluruh link loginnya.</p>
+            </div>
+          </div>
+
+          <div class="gstep">
+            <span class="num">4</span>
+            <div>
+              <h4>Tempel &amp; Force Inject</h4>
+              <p>Tempel URL di kolom terminal. Sistem akan memvalidasi <code>oobCode</code> otomatis. Klik <b>Force Inject Premium</b>.</p>
+            </div>
+          </div>
+
+          <div style="margin-top:1.2rem;">
+            <button class="btn btn-primary btn-block" onclick="scrollToTerminal()">
+              <i class="fa-solid fa-terminal"></i> Praktek Sekarang
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -943,6 +1028,24 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
   </div>
 </div>
 
+<!-- ============ MAINTENANCE OVERLAY ============ -->
+<div class="overlay" id="maintenanceSheet" role="dialog" aria-modal="true" style="z-index:9999">
+  <div class="sheet warn center" style="max-width:440px">
+    <div style="font-size:2.8rem;color:var(--warn);margin:1rem 0 .5rem"><i class="fa-solid fa-screwdriver-wrench fa-bounce"></i></div>
+    <div class="sheet-body">
+      <h3 style="color:#fff;font-size:1.2rem;margin-bottom:.4rem">Sistem Sedang Maintenance</h3>
+      <p style="font-size:.82rem;color:var(--dim)">Server sedang dalam perbaikan atau perbaruan kode. Mohon tunggu beberapa saat hingga proses selesai.</p>
+      <div class="kv-box" style="text-align:left;margin-top:.8rem">
+        <div class="kv"><span>Status</span><b style="color:var(--warn)">Maintenance Active</b></div>
+        <div class="kv"><span>Estimasi</span><b>Segera Kembali</b></div>
+      </div>
+    </div>
+    <div class="sheet-foot" id="maintOwnerBypass" style="display:none">
+      <button class="btn btn-ghost btn-block" onclick="closeSheet('maintenanceSheet')"><i class="fa-solid fa-user-shield"></i> Bypass (Owner Mode)</button>
+    </div>
+  </div>
+</div>
+
 <!-- ============ SHEETS ============ -->
 <div class="overlay" id="welcomeSheet" role="dialog" aria-modal="true">
   <div class="sheet warn">
@@ -1131,12 +1234,30 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
         <div class="kv"><span>Paket</span><b id="acPlan">—</b></div>
         <div class="kv"><span>Kuota</span><b id="acQuota">—</b></div>
       </div>
-      <label class="label" for="acApiKey">API key <span class="hint">kirim via header x-api-key</span></label>
-      <div class="input-wrap" style="margin-bottom:.6rem">
-        <input class="inp" id="acApiKey" readonly style="font-size:.68rem">
-        <button class="post" type="button" onclick="copyText(document.getElementById('acApiKey').value)"><i class="fa-regular fa-copy"></i></button>
+      
+      <!-- BAGIAN API KEY -->
+      <div id="apiKeySection">
+        <label class="label">API key <span class="hint">kirim via header x-api-key</span></label>
+        
+        <!-- AREA TERKUNCI (Tampil jika Free & < 25 Inject) -->
+        <div id="apiLockArea" style="display:none; padding: .8rem; background: rgba(255,255,255,.02); border: 1px dashed var(--line); border-radius: var(--r-sm); text-align: center; margin-bottom: .8rem;">
+          <i class="fa-solid fa-lock" style="color: var(--dimmer); font-size: 1.2rem; margin-bottom: .5rem;"></i>
+          <p style="font-size: .72rem; color: var(--dim); margin-bottom: .3rem;">Fitur khusus Premium / Owner.</p>
+          <p style="font-size: .65rem; color: var(--dimmer); margin: 0;">Pengguna Free bisa membuka fitur ini otomatis setelah mencapai <b style="color:var(--a2)">25x sukses inject</b>.</p>
+          <div style="margin-top: .6rem; font-family: var(--mono); font-size: .65rem; color: var(--ok); background: rgba(61,220,151,.1); padding: .2rem; border-radius: 4px; border: 1px solid rgba(61,220,151,.2);">Progres Saat Ini: <span id="apiProgressText">0/25</span></div>
+        </div>
+
+        <!-- AREA TERBUKA (Tampil jika Premium/Owner atau Free >= 25 Inject) -->
+        <div id="apiInputArea" style="display:none;">
+          <div class="input-wrap" style="margin-bottom:.6rem">
+            <input class="inp" id="acApiKey" readonly style="font-size:.68rem" placeholder="Tekan tombol buat API Key...">
+            <button class="post" type="button" onclick="copyText(document.getElementById('acApiKey').value)"><i class="fa-regular fa-copy"></i></button>
+          </div>
+          <button class="btn btn-plain btn-block" style="margin-bottom:.5rem" onclick="rotateKey(event)"><i class="fa-solid fa-rotate"></i> Buat / Ganti API key</button>
+        </div>
       </div>
-      <button class="btn btn-plain btn-block" style="margin-bottom:.5rem" onclick="rotateKey()"><i class="fa-solid fa-rotate"></i> Ganti API key</button>
+      <!-- END BAGIAN API KEY -->
+
       <div id="acAdmin" style="display:none;margin:.9rem 0">
         <div class="kv-box">
           <div class="kv"><span>Total user</span><b id="adUsers">—</b></div>
@@ -1147,6 +1268,23 @@ $c2 = <span class="f">curl_init</span>(<span class="s">'https://www.juikoprem.my
           <button class="post" type="button" onclick="adminGrant()"><i class="fa-solid fa-crown"></i></button>
         </div>
         <p style="font-size:.62rem;color:var(--dimmer);margin:0">Tombol mahkota = kasih premium 30 hari ke email itu.</p>
+
+        <!-- FITUR KHUSUS OWNER -->
+        <div style="border-top:1px dashed var(--line);margin-top:.8rem;padding-top:.8rem">
+          <label class="label"><span><i class="fa-solid fa-bullhorn" style="color:var(--a2)"></i> Pengumuman Global</span></label>
+          <div class="input-wrap" style="margin-bottom:.4rem">
+            <input class="inp" id="adAnnounceInput" placeholder="Tulis pesan pengumuman..." style="font-size:.7rem">
+          </div>
+          <div style="display:flex;gap:.4rem;margin-bottom:.8rem">
+            <button class="btn btn-primary btn-sm" style="flex:1" onclick="setAnnouncement()"><i class="fa-solid fa-paper-plane"></i> Kirim</button>
+            <button class="btn btn-plain btn-sm" onclick="clearAnnouncement()"><i class="fa-solid fa-trash"></i> Hapus</button>
+          </div>
+
+          <label class="label"><span><i class="fa-solid fa-screwdriver-wrench" style="color:var(--warn)"></i> Pemeliharaan Web (Maintenance)</span></label>
+          <button class="btn btn-ghost btn-sm btn-block" id="btnToggleMaint" onclick="toggleMaintenanceMode()">
+            <i class="fa-solid fa-power-off"></i> <span id="maintBtnTxt">Aktifkan Maintenance</span>
+          </button>
+        </div>
       </div>
       <div id="acOrders" style="margin-top:.8rem"></div>
     </div>
@@ -1204,7 +1342,7 @@ const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const ACCENTS = ['violet','cyan','lime','ember'];
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const LS = { hist:'zukai-hist', seq:'zukai-seq', sound:'zukai-sound' };
+const LS = { hist:'zukai-hist', seq:'zukai-seq', sound:'zukai-sound', ann:'am-announcement', maint:'am-maintenance' };
 let soundOn = localStorage.getItem(LS.sound) === '1';
 
 /* ---------- audio ---------- */
@@ -1298,7 +1436,7 @@ pillLinks.forEach(l=>{
   l.addEventListener('focus', ()=>movePill(l));
 });
 pillNav.addEventListener('mouseleave', ()=>movePill(pillNav.querySelector('a.active')));
-const secs = ['fitur','harga','terminal','api','faq','tools','tentang'].map(id=>document.getElementById(id)).filter(Boolean);
+const secs = ['fitur','tutorial','harga','terminal','api','faq','tools','tentang'].map(id=>document.getElementById(id)).filter(Boolean);
 const spy = new IntersectionObserver(es=>{
   es.forEach(e=>{
     if(!e.isIntersecting) return;
@@ -1317,6 +1455,7 @@ function scrollToTerminal(){
 /* ---------- palette ---------- */
 const ACTIONS = [
   {t:'Buka terminal', s:'navigasi', i:'fa-terminal', f:()=>{closePalette();scrollToTerminal();}},
+  {t:'Video tutorial inject', s:'bantuan', i:'fa-circle-play', f:()=>{closePalette();document.getElementById('tutorial').scrollIntoView({behavior:'smooth'});}},
   {t:'Panduan langkah', s:'bantuan', i:'fa-book', f:()=>{closePalette();openSheet('guideSheet');}},
   {t:'Akun gue', s:'akun', i:'fa-user', f:()=>{closePalette();accClick();}},
   {t:'Upgrade premium', s:'akun', i:'fa-crown', f:()=>{closePalette();openSheet('upgradeSheet');}},
@@ -1476,7 +1615,7 @@ if(matchMedia('(pointer:fine)').matches && !reduce){
 /* ---------- banner video ---------- */
 (function(){
   const v = $('#bannerVideo');
-  const list = ['video1.mp4','video2.mp4']; let i = 0;
+  const list = ['/video1.mp4','/video2.mp4']; let i = 0;
   v.addEventListener('ended', ()=>{
     i = (i+1) % list.length;
     v.src = list[i];
@@ -2018,6 +2157,7 @@ async function loadMe() {
     QUOTA = d.quota || null;
   } catch { ME = null; QUOTA = null; }
   paintAccount();
+  checkMaintenanceAndAnnouncement();
   return ME;
 }
 
@@ -2028,11 +2168,26 @@ async function openAccount() {
   $('#acEmail').textContent = ME.email;
   $('#acPlan').textContent = ME.owner ? 'Owner' : ME.premium ? 'Premium' : 'Free';
   $('#acQuota').textContent = (ME.premium || ME.owner) ? 'unlimited' : `${QUOTA?.used ?? 0}/${QUOTA?.limit ?? 20}`;
-  $('#acApiKey').value = ME.apiKey || '';
+  
+  // LOGIKA UNLOCK API KEY UNTUK 25x INJECT
+  const okCount = readHist().filter(x => x.status === 'ok').length;
+  const apiUnlocked = ME.premium || ME.owner || okCount >= 25;
+  
+  if (apiUnlocked) {
+    $('#apiLockArea').style.display = 'none';
+    $('#apiInputArea').style.display = 'block';
+    $('#acApiKey').value = ME.apiKey || '';
+  } else {
+    $('#apiLockArea').style.display = 'block';
+    $('#apiInputArea').style.display = 'none';
+    $('#apiProgressText').textContent = `${okCount}/25`;
+  }
+
   $('#acOrders').innerHTML = '<div class="q-empty">memuat...</div>';
   const adm = $('#acAdmin');
   adm.style.display = ME.owner ? 'block' : 'none';
   if (ME.owner) adminLoad();
+  
   try {
     const r = await fetch('/api/payment/history');
     const d = await r.json();
@@ -2049,6 +2204,12 @@ async function adminLoad() {
     $('#adUsers').textContent = d.totalUsers ?? '—';
     $('#adToday').textContent = d.injectToday ?? '—';
   } catch {}
+  
+  // Load pengumuman & maintenance state di panel owner
+  const curAnn = localStorage.getItem(LS.ann) || '';
+  $('#adAnnounceInput').value = curAnn;
+  const isMaint = localStorage.getItem(LS.maint) === '1';
+  $('#maintBtnTxt').textContent = isMaint ? 'Matikan Maintenance Mode' : 'Aktifkan Maintenance Mode';
 }
 
 async function adminGrant() {
@@ -2061,6 +2222,79 @@ async function adminGrant() {
   const d = await r.json();
   toast(d.message || 'Gagal.', r.ok ? 'ok' : 'er');
   if (r.ok) { $('#adEmail').value = ''; adminLoad(); }
+}
+
+/* ================= OWNER CONTROL LOGIC ================= */
+async function setAnnouncement() {
+  const txt = $('#adAnnounceInput').value.trim();
+  if(!txt) return toast('Isi teks pengumuman dulu.', 'er');
+  localStorage.setItem(LS.ann, txt);
+  try {
+    await fetch('/api/admin/announcement', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: txt })
+    });
+  } catch(e){}
+  renderAnnouncement(txt);
+  toast('Pengumuman global dipublikasikan!', 'ok');
+}
+
+async function clearAnnouncement() {
+  localStorage.removeItem(LS.ann);
+  $('#adAnnounceInput').value = '';
+  try {
+    await fetch('/api/admin/announcement', { method: 'DELETE' });
+  } catch(e){}
+  renderAnnouncement('');
+  toast('Pengumuman dihapus.', 'sy');
+}
+
+function renderAnnouncement(txt) {
+  const banner = $('#globalAnnouncement');
+  if(txt) {
+    $('#announcementText').textContent = txt;
+    banner.style.display = 'block';
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+function closeAnnouncement() {
+  $('#globalAnnouncement').style.display = 'none';
+}
+
+async function toggleMaintenanceMode() {
+  const cur = localStorage.getItem(LS.maint) === '1';
+  const nextState = !cur;
+  localStorage.setItem(LS.maint, nextState ? '1' : '0');
+  try {
+    await fetch('/api/admin/maintenance', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ active: nextState })
+    });
+  } catch(e){}
+  $('#maintBtnTxt').textContent = nextState ? 'Matikan Maintenance Mode' : 'Aktifkan Maintenance Mode';
+  toast(nextState ? 'Maintenance Mode Aktif!' : 'Maintenance Mode Dimatikan.', nextState ? 'er' : 'ok');
+  checkMaintenanceAndAnnouncement();
+}
+
+function checkMaintenanceAndAnnouncement() {
+  // Check maintenance state
+  const isMaint = localStorage.getItem(LS.maint) === '1';
+  if (isMaint) {
+    openSheet('maintenanceSheet');
+    if (ME && ME.owner) {
+      $('#maintOwnerBypass').style.display = 'flex';
+    } else {
+      $('#maintOwnerBypass').style.display = 'none';
+    }
+  } else {
+    closeSheet('maintenanceSheet');
+  }
+
+  // Check announcement state
+  const annTxt = localStorage.getItem(LS.ann) || '';
+  renderAnnouncement(annTxt);
 }
 
 function authTab(mode) {
@@ -2096,6 +2330,7 @@ async function authSubmit() {
       ME = d.user; QUOTA = d.quota;
       paintAccount(); closeSheet('authSheet');
       $('#authPass').value = '';
+      checkMaintenanceAndAnnouncement();
       toast(mode === 'login' ? 'Masuk. Selamat datang.' : 'Akun dibuat.', 'ok');
       return;
     }
@@ -2112,13 +2347,35 @@ async function doLogout() {
   await fetch('/api/auth/logout', { method: 'POST' });
   ME = null; QUOTA = null; paintAccount();
   closeSheet('accountSheet');
+  checkMaintenanceAndAnnouncement();
   toast('Udah keluar.', 'sy');
 }
 
-async function rotateKey() {
-  const r = await fetch('/api/auth/key', { method: 'POST' });
-  const d = await r.json();
-  if (d.apiKey) { ME.apiKey = d.apiKey; $('#acApiKey').value = d.apiKey; toast('API key diganti.', 'ok'); }
+async function rotateKey(e) {
+  // Pastikan kembali progresnya sebelum request ke server (Cegah user free asal klik)
+  const okCount = readHist().filter(x => x.status === 'ok').length;
+  if (!ME.premium && !ME.owner && okCount < 25) {
+    return toast('Capai 25x sukses inject dulu buat unlock API Key.', 'er');
+  }
+
+  const btn = e ? e.currentTarget : $('#apiInputArea button');
+  busy(btn, true, 'Membuat...');
+  
+  try {
+    const r = await fetch('/api/auth/key', { method: 'POST' });
+    const d = await r.json();
+    if (d.apiKey) { 
+      ME.apiKey = d.apiKey; 
+      $('#acApiKey').value = d.apiKey; 
+      toast('API key berhasil dibuat/diganti.', 'ok'); 
+    } else {
+      toast(d.message || 'Gagal membuat API key.', 'er');
+    }
+  } catch(err) {
+    toast('Gagal terhubung ke server.', 'er');
+  } finally {
+    busy(btn, false);
+  }
 }
 
 /* ================= PEMBAYARAN ================= */
