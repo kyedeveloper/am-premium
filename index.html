@@ -666,13 +666,28 @@ body[data-view="shell"] #labView,body[data-view="dl"] #labView,body[data-view="m
 .reader{max-height:75vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:#040406}
 .reader img{width:100%;display:block;background:#08080d;min-height:120px}
 
-/* ===== DOCK 2 BARIS ===== */
-.dock{display:flex;flex-direction:column;gap:.4rem}
-.dock-row{display:flex;gap:.35rem}
-.dock-primary button{flex:1;justify-content:center;padding:.62rem .4rem;font-size:.72rem;font-weight:600}
-.dock-tools button{flex:1;justify-content:center;padding:.4rem .2rem;font-size:.6rem;opacity:.8}
-.dock-primary button.on{background:linear-gradient(135deg,var(--a1),var(--a2));color:#08080d;border-color:transparent;box-shadow:0 6px 18px -8px var(--a1)}
-.dock-tools button.on{opacity:1}
+/* ===== BOTTOM FLOATING DOCK BAR ===== */
+.dock {
+  position: fixed !important;
+  bottom: 1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 900;
+  width: min(92vw, 480px);
+  margin: 0;
+  padding: .45rem;
+  border: 1px solid var(--a1-soft);
+  border-radius: 22px;
+  background: rgba(8, 8, 14, 0.92);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85), 0 0 25px var(--g1);
+}
+
+/* Beri space di bawah body agar konten teratas tidak tertutup dock floating */
+body {
+  padding-bottom: 100px;
+}
 
 /* ===== BERANDA KONTEN ===== */
 .sec{margin-top:1.1rem}
@@ -3837,12 +3852,35 @@ function mgReset(){ mgHome(); }
 const AN = { cur: null, host: '' };
 const anEsc = mgEsc;
 
+/* ================= LAB: ANIME WITH AUTO FALLBACK ================= */
 async function anApi(step, extra){
-  const r = await fetch('/api/lab?action=anime', { method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify(Object.assign({ step, source: $('#anSrc').value }, extra || {})) });
-  const d = await r.json().catch(()=>({}));
-  if(!r.ok || d.status !== 'success') throw new Error(d.message || 'HTTP ' + r.status);
-  return d;
+  let src = $('#anSrc') ? $('#anSrc').value : 'otakudesu';
+  try {
+    const r = await fetch('/api/lab?action=anime', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(Object.assign({ step, source: src }, extra || {}))
+    });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok || d.status !== 'success') {
+      throw new Error(d.message || ('HTTP ' + r.status));
+    }
+    return d;
+  } catch (err) {
+    // Jika provider (misal Anoboy) HTTP 500, otomatis ganti ke Otakudesu
+    if (src !== 'otakudesu') {
+      toast(`Server ${src} error (500). Mengalihkan ke Otakudesu...`, 'wn');
+      if ($('#anSrc')) $('#anSrc').value = 'otakudesu';
+      const rFallback = await fetch('/api/lab?action=anime', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.assign({ step, source: 'otakudesu' }, extra || {}))
+      });
+      const dFallback = await rFallback.json().catch(() => ({}));
+      if (rFallback.ok && dFallback.status === 'success') return dFallback;
+    }
+    throw err;
+  }
 }
 function anList(items){
   return '<div class="an-list">' + items.map((a,i)=>`
