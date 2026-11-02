@@ -686,6 +686,32 @@ body[data-view="shell"] #labView,body[data-view="dl"] #labView,body[data-view="m
 .srv-row{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.6rem}
 .reader{max-height:75vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:#040406}
 .reader img{width:100%;display:block;background:#08080d;min-height:120px}
+
+/* ===== DOCK 2 BARIS ===== */
+.dock{display:flex;flex-direction:column;gap:.4rem}
+.dock-row{display:flex;gap:.35rem}
+.dock-primary button{flex:1;justify-content:center;padding:.62rem .4rem;font-size:.72rem;font-weight:600}
+.dock-tools button{flex:1;justify-content:center;padding:.4rem .2rem;font-size:.6rem;opacity:.8}
+.dock-primary button.on{background:linear-gradient(135deg,var(--a1),var(--a2));color:#08080d;border-color:transparent;box-shadow:0 6px 18px -8px var(--a1)}
+.dock-tools button.on{opacity:1}
+
+/* ===== BERANDA KONTEN ===== */
+.sec{margin-top:1.1rem}
+.sec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.55rem}
+.sec-head b{font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--a2)}
+.sec-head span{font-size:.6rem;color:var(--dimmer)}
+.chips{display:flex;flex-wrap:wrap;gap:.32rem}
+.chip{font-size:.62rem;font-family:var(--mono);padding:.34rem .6rem;border-radius:99px;border:1px solid var(--line);background:#06060a;color:var(--dim);cursor:pointer;transition:.2s}
+.chip:hover,.chip.on{color:#08080d;background:var(--a2);border-color:var(--a2)}
+.an-list{display:flex;flex-direction:column;gap:.4rem}
+.an-card{display:flex;gap:.6rem;align-items:center;padding:.45rem;border:1px solid var(--line);border-radius:9px;background:#06060a;cursor:pointer;transition:.25s}
+.an-card:hover{border-color:var(--a2);transform:translateX(4px)}
+.an-card img{width:46px;height:62px;object-fit:cover;border-radius:6px;flex:none;background:#0b0b12}
+.an-card .tx{flex:1;min-width:0;font-size:.74rem;color:var(--txt);line-height:1.35}
+.an-card .ep{font-family:var(--mono);font-size:.56rem;color:var(--dimmer)}
+.rd-head{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.5rem;font-family:var(--mono);font-size:.66rem;color:var(--a2)}
+.reader img{width:100%;display:block;background:#0b0b12;min-height:80px}
+#mgNextBtn{margin-top:.7rem}
 </style>
 </head>
 <body data-view="home">
@@ -786,15 +812,18 @@ body[data-view="shell"] #labView,body[data-view="dl"] #labView,body[data-view="m
     </div>
 
     <div class="dock" id="dock" role="tablist" aria-label="Workspace">
-      <button data-view="home" class="on" role="tab"><i class="fa-solid fa-house"></i> Beranda</button>
-      <button data-view="shell" role="tab"><i class="fa-solid fa-terminal"></i> Shell</button>
-      <button data-view="dl" role="tab"><i class="fa-solid fa-download"></i> Downloader</button>
-      <button data-view="mail" role="tab"><i class="fa-solid fa-envelope"></i> Temp Mail</button>
-      <button data-view="manga" role="tab"><i class="fa-solid fa-book-open"></i> Manga</button>
-      <button data-view="anime" role="tab"><i class="fa-solid fa-tv"></i> Anime</button>
-      <button data-view="akun" role="tab"><i class="fa-solid fa-user-gear"></i> Akun</button>
-    </div>
-
+      <div class="dock-row dock-primary">
+        <button data-view="home" class="on" role="tab"><i class="fa-solid fa-house"></i> Beranda</button>
+        <button data-view="manga" role="tab"><i class="fa-solid fa-book-open"></i> Manga</button>
+        <button data-view="anime" role="tab"><i class="fa-solid fa-tv"></i> Anime</button>
+      </div>
+      <div class="dock-row dock-tools">
+        <button data-view="shell" role="tab"><i class="fa-solid fa-terminal"></i> Shell</button>
+        <button data-view="dl" role="tab"><i class="fa-solid fa-download"></i> Downloader</button>
+        <button data-view="mail" role="tab"><i class="fa-solid fa-envelope"></i> Temp Mail</button>
+        <button data-view="akun" role="tab"><i class="fa-solid fa-user-gear"></i> Akun</button>
+      </div>
+	</div>
     <div class="mobile-menu" id="mobileMenu">
       <a href="#fitur"><i class="fa-solid fa-layer-group"></i> Fitur</a>
       <a href="#tutorial"><i class="fa-solid fa-circle-play"></i> Tutorial Video</a>
@@ -1553,26 +1582,20 @@ curl -X GET "https://www.juikoprem.my.id/api/auth/me" \
       </div>
       <div class="panel-body">
         <div class="field">
-          <label class="label" for="mgSrc">Sumber</label>
-          <select class="inp" id="mgSrc" onchange="mgReset()">
-            <option value="mangadex">MangaDex (paling lengkap)</option>
-            <option value="comick">Comick</option>
-          </select>
-        </div>
-        <div class="field">
-          <label class="label" for="mgQ">Cari judul</label>
+          <label class="label" for="mgQ">Cari manga</label>
           <div class="input-wrap">
             <span class="pre"><i class="fa-solid fa-magnifying-glass"></i></span>
-            <input class="inp has-pre" id="mgQ" placeholder="one piece, solo leveling, ..." spellcheck="false">
+            <input class="inp has-pre" id="mgQ" placeholder="one piece, solo leveling, ..." spellcheck="false" onkeydown="if(event.key==='Enter')mgSearch()">
+            <button class="tool-btn" onclick="mgSearch()"><i class="fa-solid fa-arrow-right"></i></button>
           </div>
         </div>
-        <button class="btn btn-primary btn-bounce btn-block" onclick="mgSearch()"><i class="fa-solid fa-magnifying-glass"></i> Cari</button>
-        <div id="mgBody" style="margin-top:1rem"></div>
+        <div id="mgBody"></div>
+        <div id="mgSentinel" style="height:2px"></div>
       </div>
     </div>
   </div>
 
-  <!-- ANIME -->
+<!-- ANIME -->
   <div class="pane" data-pane="anime">
     <div class="panel">
       <div class="panel-bar">
@@ -1583,7 +1606,7 @@ curl -X GET "https://www.juikoprem.my.id/api/auth/me" \
       <div class="panel-body">
         <div class="field">
           <label class="label" for="anSrc">Sumber</label>
-          <select class="inp" id="anSrc" onchange="anReset()">
+          <select class="inp" id="anSrc" onchange="anHome()">
             <option value="otakudesu">Otakudesu</option>
             <option value="samehadaku">Samehadaku</option>
             <option value="anoboy">Anoboy</option>
@@ -1593,11 +1616,11 @@ curl -X GET "https://www.juikoprem.my.id/api/auth/me" \
           <label class="label" for="anQ">Cari anime</label>
           <div class="input-wrap">
             <span class="pre"><i class="fa-solid fa-magnifying-glass"></i></span>
-            <input class="inp has-pre" id="anQ" placeholder="judul anime..." spellcheck="false">
+            <input class="inp has-pre" id="anQ" placeholder="judul anime..." spellcheck="false" onkeydown="if(event.key==='Enter')anSearch()">
+            <button class="tool-btn" onclick="anSearch()"><i class="fa-solid fa-arrow-right"></i></button>
           </div>
         </div>
-        <button class="btn btn-primary btn-bounce btn-block" onclick="anSearch()"><i class="fa-solid fa-magnifying-glass"></i> Cari</button>
-        <div id="anBody" style="margin-top:1rem"></div>
+        <div id="anBody"></div>
       </div>
     </div>
   </div>
@@ -3319,8 +3342,8 @@ function gotoView(v){
   if(v === 'shell') setTimeout(()=>$('#shInput') && $('#shInput').focus(), 160);
   if(v === 'mail') mailBoot();
   if(v === 'dl') renderDlHist();
-  if(v === 'manga') mgReset();
-  if(v === 'anime') anReset();
+  if(v === 'manga') mgHome();
+  if(v === 'anime') anHome();
 }
 $$('#dock button').forEach(b=>b.onclick = ()=>gotoView(b.dataset.view));
 
@@ -3819,68 +3842,248 @@ async function anSearch(){
     const d = await anApi('search', { q });
     $('#anBody').innerHTML = d.items.map((a,i)=>`<div class="an-row" data-i="${i}"><i class="fa-solid fa-play" style="color:var(--a2)"></i><span class="tx">${a.title}</span></div>`).join('');
     $$('#anBody .an-row').forEach(r => r.onclick = ()=> anOpen(d.items[+r.dataset.i]));
-  }catch(e){ $('#anBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${e.message}</div>`; }
+
+	  /* ================= LAB: MANGA ================= */
+const MG = { ch: [], idx: 0, title: '', cur: null, busy: false };
+const mgEsc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+async function mgApi(step, extra){
+  const r = await fetch('/api/lab?action=manga', { method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(Object.assign({ step, source: $('#mgSrc') ? $('#mgSrc').value : 'mangadex' }, extra || {})) });
+  const d = await r.json().catch(()=>({}));
+  if(!r.ok || d.status !== 'success') throw new Error(d.message || 'HTTP ' + r.status);
+  return d;
+}
+function mgGrid(items){
+  return '<div class="mg-grid">' + items.map((m,i)=>`
+    <div class="mg-card" data-i="${i}">
+      ${m.cover ? `<img src="${m.cover}" alt="" loading="lazy" onload="this.classList.add('rdy')">` : '<div class="sk"></div>'}
+      <b>${mgEsc(m.title)}</b>
+    </div>`).join('') + '</div>';
+}
+function mgBind(items){
+  $$('#mgBody .mg-card').forEach(c => c.onclick = ()=> mgOpen(items[+c.dataset.i]));
+}
+function mgSection(title, items){
+  if(!items.length) return '';
+  return `<div class="sec"><div class="sec-head"><b>${title}</b><span>${items.length}</span></div>${mgGrid(items)}</div>`;
+}
+async function mgHome(){
+  $('#mgBody').innerHTML = '<div class="q-empty">memuat beranda...</div>';
+  try{
+    const h = await mgApi('home');
+    const g = await mgApi('genres');
+    let html = mgSection('Trending', h.trending) + mgSection('Baru diupload', h.latest);
+    if(g.items.length){
+      html += `<div class="sec"><div class="sec-head"><b>Genre</b><span>${g.items.length}</span></div>
+        <div class="chips">${g.items.map(x=>`<button class="chip" data-id="${x.id}" data-n="${mgEsc(x.name)}">${mgEsc(x.name)}</button>`).join('')}</div></div>`;
+    }
+    $('#mgBody').innerHTML = html || '<div class="q-empty">Tidak ada data.</div>';
+    $$('#mgBody .mg-card').forEach(c => {
+      const all = h.trending.concat(h.latest);
+      c.onclick = ()=> mgOpen(all[+c.dataset.i]);
+    });
+    $$('#mgBody .chip').forEach(c => c.onclick = ()=> mgGenre(c.dataset.id, c.dataset.n));
+  }catch(e){ $('#mgBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${mgEsc(e.message)}</div>`; }
+}
+async function mgGenre(id, name){
+  $$('#mgBody .chip').forEach(c => c.classList.toggle('on', c.dataset.id === id));
+  $('#mgBody').innerHTML = '<div class="q-empty">memuat genre...</div>';
+  try{
+    const d = await mgApi('bygenre', { tag: id });
+    $('#mgBody').innerHTML = `<div class="sec"><div class="sec-head"><b>${mgEsc(name)}</b><button class="linkish" onclick="mgHome()">beranda</button></div>${mgGrid(d.items)}</div>`;
+    mgBind(d.items);
+  }catch(e){ $('#mgBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${mgEsc(e.message)}</div>`; }
+}
+async function mgSearch(){
+  const q = $('#mgQ').value.trim();
+  if(q.length < 2) return toast('Kata kunci minimal 2 huruf.', 'er');
+  $('#mgBody').innerHTML = '<div class="q-empty">mencari...</div>';
+  try{
+    const d = await mgApi('search', { q });
+    if(!d.items.length) return $('#mgBody').innerHTML = '<div class="q-empty">Tidak ada hasil.</div>';
+    $('#mgBody').innerHTML = mgGrid(d.items);
+    mgBind(d.items);
+  }catch(e){ $('#mgBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${mgEsc(e.message)}</div>`; }
+}
+async function mgOpen(m){
+  MG.title = m.title; MG.cur = m;
+  $('#mgBody').innerHTML = '<div class="q-empty">memuat chapter...</div>';
+  try{
+    const d = await mgApi('chapters', { id: m.id });
+    if(!d.items.length) return $('#mgBody').innerHTML = '<div class="q-empty">Belum ada chapter bahasa Inggris.</div>';
+    MG.ch = d.items;
+    $('#mgBody').innerHTML = `
+      <div class="rd-head"><span>${mgEsc(m.title)}</span><button class="linkish" onclick="mgHome()">beranda</button></div>
+      <div class="ep-grid">${d.items.map((c,i)=>`<button data-i="${i}">Ch. ${c.num}</button>`).join('')}</div>`;
+    $$('#mgBody .ep-grid button').forEach(b => b.onclick = ()=> mgRead(+b.dataset.i));
+  }catch(e){ $('#mgBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${mgEsc(e.message)}</div>`; }
+}
+async function mgRead(i){
+  const c = MG.ch[i];
+  if(!c) return;
+  MG.idx = i;
+  $('#mgBody').innerHTML = '<div class="q-empty">memuat halaman...</div>';
+  try{
+    const d = await mgApi('pages', { id: c.id });
+    $('#mgBody').innerHTML = `
+      <div class="rd-head"><span>${mgEsc(MG.title)} · Ch. ${c.num}</span><button class="linkish" onclick="mgOpen(MG.cur)">daftar chapter</button></div>
+      <div class="reader">${d.pages.map(p=>`<img src="${p}" loading="lazy" alt="">`).join('')}</div>
+      <button class="btn btn-primary btn-block btn-bounce" id="mgNextBtn" onclick="mgNext()">
+        ${i + 1 < MG.ch.length ? 'Chapter selanjutnya' : 'Chapter terakhir'} <i class="fa-solid fa-arrow-down"></i>
+      </button>`;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    mgWatch();
+  }catch(e){ $('#mgBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${mgEsc(e.message)}</div>`; }
+}
+function mgNext(){
+  if(MG.busy) return;
+  if(MG.idx + 1 >= MG.ch.length) return toast('Udah chapter terakhir.', 'ok');
+  MG.busy = true;
+  mgRead(MG.idx + 1).finally(()=>{ setTimeout(()=> MG.busy = false, 900); });
+}
+let mgIO = null;
+function mgWatch(){
+  const s = $('#mgSentinel');
+  if(!s || !('IntersectionObserver' in window)) return;
+  if(!mgIO) mgIO = new IntersectionObserver(es => { if(es[0].isIntersecting) mgNext(); }, { rootMargin: '300px' });
+  mgIO.disconnect();
+  mgIO.observe(s);
+}
+function mgReset(){ mgHome(); }
+
+/* ================= LAB: ANIME ================= */
+const AN = { cur: null, host: '' };
+const anEsc = mgEsc;
+
+async function anApi(step, extra){
+  const r = await fetch('/api/lab?action=anime', { method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(Object.assign({ step, source: $('#anSrc').value }, extra || {})) });
+  const d = await r.json().catch(()=>({}));
+  if(!r.ok || d.status !== 'success') throw new Error(d.message || 'HTTP ' + r.status);
+  return d;
+}
+function anList(items){
+  return '<div class="an-list">' + items.map((a,i)=>`
+    <div class="an-card" data-i="${i}">
+      ${a.cover ? `<img src="${a.cover}" alt="" loading="lazy">` : '<img alt="">'}
+      <div class="tx">${anEsc(a.title)}</div>
+      <i class="fa-solid fa-chevron-right" style="color:var(--dimmer);font-size:.6rem"></i>
+    </div>`).join('') + '</div>';
+}
+function anBind(items){
+  $$('#anBody .an-card').forEach(c => c.onclick = ()=> anOpen(items[+c.dataset.i]));
+}
+function anSec(title, items){
+  if(!items.length) return '';
+  return `<div class="sec"><div class="sec-head"><b>${title}</b><span>${items.length}</span></div>${anList(items)}</div>`;
+}
+async function anHome(){
+  $('#anBody').innerHTML = '<div class="q-empty">memuat beranda...</div>';
+  try{
+    const h = await anApi('home');
+    AN.host = h.host;
+    let html = anSec('Trending', h.trending) + anSec('Episode terbaru', h.latest) + anSec('Top rated', h.rated);
+    const g = await anApi('genres').catch(()=> ({ items: [] }));
+    if(g.items.length){
+      html += `<div class="sec"><div class="sec-head"><b>Genre</b><span>${g.items.length}</span></div>
+        <div class="chips">${g.items.slice(0, 40).map(x=>`<button class="chip" data-u="${x.url}">${anEsc(x.name)}</button>`).join('')}</div></div>`;
+    }
+    html += '<div class="sec"><div class="sec-head"><b>Jadwal rilis</b><button class="linkish" onclick="anSchedule()">lihat</button></div></div>';
+    $('#anBody').innerHTML = html;
+    $$('#anBody .an-card').forEach(c => {
+      const all = h.trending.concat(h.latest, h.rated);
+      c.onclick = ()=> anOpen(all[+c.dataset.i]);
+    });
+    $$('#anBody .chip').forEach(c => c.onclick = ()=> anByGenre(c.dataset.u));
+  }catch(e){ $('#anBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${anEsc(e.message)}</div>`; }
+}
+async function anByGenre(url){
+  $('#anBody').innerHTML = '<div class="q-empty">memuat genre...</div>';
+  try{
+    const d = await anApi('bygenre', { url });
+    $('#anBody').innerHTML = `<div class="sec"><div class="sec-head"><b>Genre</b><button class="linkish" onclick="anHome()">beranda</button></div>${anList(d.items)}</div>`;
+    anBind(d.items);
+  }catch(e){ $('#anBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${anEsc(e.message)}</div>`; }
+}
+async function anSchedule(){
+  $('#anBody').innerHTML = '<div class="q-empty">memuat jadwal...</div>';
+  try{
+    const d = await anApi('schedule');
+    $('#anBody').innerHTML = `<div class="sec"><div class="sec-head"><b>Jadwal</b><button class="linkish" onclick="anHome()">beranda</button></div></div>` +
+      d.sections.map(s => `<div class="sec"><div class="sec-head"><b>${anEsc(s.day)}</b><span>${s.items.length}</span></div>${anList(s.items)}</div>`).join('');
+    d.sections.forEach(s => {
+      const rows = $$('#anBody .an-card');
+      s.items.forEach((a, i) => {
+        const el = rows.find(r => !r.dataset.b);
+        if(el){ el.dataset.b = '1'; el.onclick = ()=> anOpen(a); }
+      });
+    });
+  }catch(e){ $('#anBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${anEsc(e.message)}</div>`; }
+}
+async function anSearch(){
+  const q = $('#anQ').value.trim();
+  if(q.length < 2) return toast('Kata kunci minimal 2 huruf.', 'er');
+  $('#anBody').innerHTML = '<div class="q-empty">mencari...</div>';
+  try{
+    const d = await anApi('search', { q });
+    if(!d.items.length) return $('#anBody').innerHTML = '<div class="q-empty">Tidak ada hasil.</div>';
+    $('#anBody').innerHTML = anList(d.items);
+    anBind(d.items);
+  }catch(e){ $('#anBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${anEsc(e.message)}</div>`; }
 }
 async function anOpen(a){
+  AN.cur = a;
   $('#anBody').innerHTML = '<div class="q-empty">memuat episode...</div>';
   try{
     const d = await anApi('detail', { url: a.url });
-    if(!d.episodes.length) return $('#anBody').innerHTML = '<div class="q-empty">Belum ada episode.</div>';
     $('#anBody').innerHTML = `
-      <div style="display:flex;gap:.6rem;margin-bottom:.8rem">
-        ${d.poster ? `<img src="${d.poster}" alt="" style="width:64px;border-radius:8px">` : ''}
-        <div><b style="color:#fff;font-size:.85rem">${d.title || a.title}</b>
-        <div style="font-size:.66rem;color:var(--dimmer)">${d.episodes.length} episode</div></div>
-      </div>
-      <div class="ep-grid">${d.episodes.map((e,i)=>`<button data-i="${i}">Ep ${i+1}</button>`).join('')}</div>`;
-    $$('#anBody .ep-grid button').forEach(b => b.onclick = ()=> anWatch(d.episodes[+b.dataset.i]));
-  }catch(e){ $('#anBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${e.message}</div>`; }
+      <div class="rd-head"><span>${anEsc(a.title)}</span><button class="linkish" onclick="anHome()">beranda</button></div>
+      ${d.synopsis ? `<p style="font-size:.68rem;color:var(--dim);margin-bottom:.6rem">${anEsc(d.synopsis)}</p>` : ''}
+      <div class="ep-grid">${d.items.map((e,i)=>`<button data-i="${i}">${anEsc((e.title || 'EP').slice(0, 14))}</button>`).join('')}</div>`;
+    $$('#anBody .ep-grid button').forEach(b => b.onclick = ()=> anPlay(d.items[+b.dataset.i].url));
+  }catch(e){ $('#anBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${anEsc(e.message)}</div>`; }
 }
-async function anWatch(e){
-  $('#anBody').innerHTML = '<div class="q-empty">menyiapkan player...</div>';
+async function anPlay(epUrl){
+  $('#anBody').innerHTML = '<div class="q-empty">nyari server...</div>';
   try{
-    const d = await anApi('watch', { url: e.url });
+    const d = await anApi('episode', { url: epUrl });
     $('#anBody').innerHTML = `
-      <div class="player">
-        <iframe id="anFrame" src="about:blank" allowfullscreen referrerpolicy="no-referrer"></iframe>
-        <video id="anVideo" controls playsinline style="display:none"></video>
-      </div>
-      <div class="srv-row">${d.servers.map((s,i)=>`<button class="tool-btn" data-u="${s.url}">${s.label}</button>`).join('')}
-        <button class="tool-btn" data-raw="1"><i class="fa-solid fa-code"></i> Mode asli</button>
-      </div>
-      <div style="display:flex;gap:.4rem">
-        <a class="tool-btn" href="${d.page}" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> Sumber asli</a>
-        <button class="tool-btn" onclick="anSearch()"><i class="fa-solid fa-rotate-left"></i> Kembali</button>
-      </div>`;
-    $$('.srv-row .tool-btn').forEach(b => b.onclick = ()=> anPlay(b.dataset.u || d.servers[0].url, b.dataset.raw === '1'));
-    anPlay(d.servers[0].url);
-  }catch(err){ $('#anBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${err.message}</div>`; }
+      <div class="rd-head"><span>${anEsc(AN.cur ? AN.cur.title : '')}</span><button class="linkish" onclick="anOpen(AN.cur)">episode</button></div>
+      <div id="anStage"></div>
+      <div class="chips" style="margin-top:.6rem">${d.servers.map((s,i)=>`<button class="chip${i?'':' on'}" data-i="${i}">${anEsc(s.host || 'server ' + (i+1))}</button>`).join('')}</div>
+      <button class="btn btn-bounce btn-block" style="margin-top:.6rem" id="anRaw" onclick="anRaw()"><i class="fa-solid fa-shield-halved"></i> Mode asli</button>`;
+    $$('#anBody .chip').forEach(c => c.onclick = ()=>{
+      $$('#anBody .chip').forEach(x=>x.classList.remove('on'));
+      c.classList.add('on');
+      anFrame(d.servers[+c.dataset.i]);
+    });
+    anFrame(d.servers[0]);
+  }catch(e){ $('#anBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${anEsc(e.message)}</div>`; }
 }
-async function anPlay(url, raw){
-  const f = $('#anFrame'), v = $('#anVideo');
-  if(!f || !v) return;
-  if(/\.m3u8(\?|$)/i.test(url)){
-    f.style.display = 'none'; v.style.display = 'block';
-    const src = '/api/lab?action=proxy&url=' + encodeURIComponent(url);
-    try{
-      await loadHls();
-      if(window.Hls && Hls.isSupported()){
-        if(hls) hls.destroy();
-        hls = new Hls({ maxBufferLength: 30 });
-        hls.loadSource(src);
-        hls.attachMedia(v);
-      } else {
-        v.src = src;
-      }
-      v.play().catch(()=>{});
-    }catch(e){ v.src = src; v.play().catch(()=>{}); }
-  } else {
-    if(hls){ hls.destroy(); hls = null; }
-    v.style.display = 'none'; v.pause();
-    f.style.display = 'block';
-    f.src = '/api/lab?action=proxy' + (raw ? '&raw=1' : '') + '&url=' + encodeURIComponent(url);
+let anCur = null;
+function anFrame(s){
+  anCur = s;
+  const st = $('#anStage');
+  if(!st || !s) return;
+  if(s.m3u8){
+    st.innerHTML = '<div class="player"><video id="anVid" controls playsinline style="width:100%;height:100%"></video></div>';
+    const src = '/api/lab?action=proxy&url=' + encodeURIComponent(s.url);
+    const v = $('#anVid');
+    if(window.Hls && Hls.isSupported()){ window.anHls && anHls.destroy(); anHls = new Hls(); anHls.loadSource(src); anHls.attachMedia(v); }
+    else v.src = src;
+    v.play().catch(()=>{});
+    return;
   }
+  st.innerHTML = `<div class="player"><iframe src="/api/lab?action=proxy&url=${encodeURIComponent(s.url)}&ref=${encodeURIComponent(s.url)}" allowfullscreen allow="autoplay; fullscreen; encrypted-media"></iframe></div>`;
 }
+function anRaw(){
+  if(!anCur) return;
+  const st = $('#anStage');
+  if(!st) return;
+  st.innerHTML = `<div class="player"><iframe src="${anCur.url}" allowfullscreen allow="autoplay; fullscreen"></iframe></div>`;
+}
+function anReset(){ anHome(); }
 
 /* ================= LAB: PENGATURAN ================= */
 function localKeys(){ return Object.keys(localStorage).filter(k=>k.startsWith('zukai-') || k.startsWith('am-')); }
