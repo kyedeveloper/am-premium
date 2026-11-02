@@ -1239,8 +1239,21 @@ curl -X GET "https://www.juikoprem.my.id/api/auth/me" \
     <div class="panel glow-card reveal" style="padding: 1.5rem;">
       <div class="changelog-node">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.4rem">
-          <h3 style="color:#fff;font-size:0.95rem;font-weight:700">v1.5.0 — Player Proxy &amp; Mode Asli</h3>
+          <h3 style="color:#fff;font-size:0.95rem;font-weight:700">v1.6.0 — Multi Sumber &amp; Anti-500</h3>
           <span style="font-family:var(--mono);font-size:0.6rem;color:var(--a2);background:rgba(0,245,212,0.1);padding:0.1rem 0.5rem;border-radius:4px;border:1px solid rgba(0,245,212,0.3)">2 NOVEMBER 2026</span>
+        </div>
+        <ul style="font-size:0.8rem;color:var(--dim);list-style:disc;padding-left:1.2rem;display:flex;flex-direction:column;gap:0.3rem">
+          <li>Endpoint khusus <code>/api/anime</code> dan <code>/api/manga</code> dengan deadline keras 8,5 detik.</li>
+          <li>Sumber anime baru: Oploverz, Kuramanime, Anichin. Sumber manga baru: Shinigami.</li>
+          <li>Probe domain paralel + cache 10 menit, plus tombol <strong>Cek server</strong>.</li>
+          <li>Semua kegagalan kini balas pesan yang kebaca, bukan HTTP 500 mentah.</li>
+        </ul>
+      </div>
+
+      <div class="changelog-node">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.4rem">
+          <h3 style="color:#fff;font-size:0.95rem;font-weight:700">v1.5.0 — Player Proxy &amp; Mode Asli</h3>
+          <span style="font-family:var(--mono);font-size:0.6rem;color:var(--dimmer);background:rgba(255,255,255,0.05);padding:0.1rem 0.5rem;border-radius:4px;border:1px solid var(--line)">2 NOVEMBER 2026</span>
         </div>
         <ul style="font-size:0.8rem;color:var(--dim);list-style:disc;padding-left:1.2rem;display:flex;flex-direction:column;gap:0.3rem">
           <li>Proxy pembersih untuk player: skrip iklan, <code>ins</code>, dan iframe ad-network dibuang.</li>
@@ -1569,12 +1582,24 @@ curl -X GET "https://www.juikoprem.my.id/api/auth/me" \
       </div>
       <div class="panel-body">
         <div class="field">
+          <label class="label" for="mgSrc">Sumber</label>
+          <select class="inp" id="mgSrc" onchange="mgHome()">
+            <option value="mangadex">MangaDex (Inggris)</option>
+            <option value="comick">Comick (Inggris)</option>
+            <option value="shinigami">Shinigami (Indonesia)</option>
+          </select>
+        </div>
+        <div class="field">
           <label class="label" for="mgQ">Cari manga</label>
           <div class="input-wrap">
             <span class="pre"><i class="fa-solid fa-magnifying-glass"></i></span>
             <input class="inp has-pre" id="mgQ" placeholder="one piece, solo leveling, ..." spellcheck="false" onkeydown="if(event.key==='Enter')mgSearch()">
             <button class="tool-btn" onclick="mgSearch()"><i class="fa-solid fa-arrow-right"></i></button>
           </div>
+        </div>
+        <div class="panel-tools" style="margin-bottom:.9rem">
+          <button class="tool-btn" onclick="labDiag('manga')"><i class="fa-solid fa-tower-broadcast"></i> Cek server</button>
+          <button class="tool-btn" onclick="mgHome()"><i class="fa-solid fa-house"></i> Beranda</button>
         </div>
         <div id="mgBody"></div>
         <div id="mgSentinel" style="height:2px"></div>
@@ -1597,6 +1622,9 @@ curl -X GET "https://www.juikoprem.my.id/api/auth/me" \
             <option value="otakudesu">Otakudesu</option>
             <option value="samehadaku">Samehadaku</option>
             <option value="anoboy">Anoboy</option>
+            <option value="oploverz">Oploverz</option>
+            <option value="kuramanime">Kuramanime</option>
+            <option value="anichin">Anichin (donghua)</option>
           </select>
         </div>
         <div class="field">
@@ -1606,6 +1634,10 @@ curl -X GET "https://www.juikoprem.my.id/api/auth/me" \
             <input class="inp has-pre" id="anQ" placeholder="judul anime..." spellcheck="false" onkeydown="if(event.key==='Enter')anSearch()">
             <button class="tool-btn" onclick="anSearch()"><i class="fa-solid fa-arrow-right"></i></button>
           </div>
+        </div>
+        <div class="panel-tools" style="margin-bottom:.9rem">
+          <button class="tool-btn" onclick="labDiag('anime')"><i class="fa-solid fa-tower-broadcast"></i> Cek server</button>
+          <button class="tool-btn" onclick="anHome()"><i class="fa-solid fa-house"></i> Beranda</button>
         </div>
         <div id="anBody"></div>
       </div>
@@ -2161,7 +2193,7 @@ const ACTIONS = [
   {t:'Akun & pengaturan', s:'lab', i:'fa-user-gear', f:()=>{closePalette();gotoView('akun');}},
   {t:'Video tutorial inject', s:'bantuan', i:'fa-circle-play', f:()=>{closePalette();gotoView('home');document.getElementById('tutorial').scrollIntoView({behavior:'smooth'});}},
   {t:'Panduan langkah', s:'bantuan', i:'fa-book', f:()=>{closePalette();openSheet('guideSheet');}},
-  {t:'Changelog Update v1.5.0', s:'info', i:'fa-list-check', f:()=>{closePalette();gotoView('home');document.getElementById('changelog').scrollIntoView({behavior:'smooth'});}},
+  {t:'Changelog Update v1.6.0', s:'info', i:'fa-list-check', f:()=>{closePalette();gotoView('home');document.getElementById('changelog').scrollIntoView({behavior:'smooth'});}},
   {t:'Akun gue', s:'akun', i:'fa-user', f:()=>{closePalette();accClick();}},
   {t:'Upgrade premium', s:'akun', i:'fa-crown', f:()=>{closePalette();openSheet('upgradeSheet');}},
   {t:'Antrian massal', s:'fitur', i:'fa-layer-group', f:()=>{closePalette();openSheet('queueSheet');}},
@@ -3316,8 +3348,8 @@ const LAB_META = {
   shell: ['Workspace', 'Shell sandbox', 'Virtual filesystem persisten di browser, eksekusi nyata lewat sandbox. Ketik help buat daftar perintah.'],
   dl: ['Workspace', 'Downloader', 'TikTok, YouTube, Instagram, Facebook, X. Pilih MP3 atau MP4, sistem cari sumber yang hidup.'],
   mail: ['Workspace', 'Temp mail', 'Bikin alamat sekali pakai dari domain mana pun yang tersedia, nama bebas.'],
-  manga: ['Workspace', 'Baca manga', 'Pustaka dari MangaDex dan Comick. Pilih judul, pilih chapter, baca vertikal.'],
-  anime: ['Workspace', 'Nonton anime', 'Cari dari Otakudesu, Samehadaku, atau Anoboy, lalu pilih server.'],
+  manga: ['Workspace', 'Baca manga', 'MangaDex, Comick, atau Shinigami. Pilih judul, pilih chapter, baca vertikal.'],
+  anime: ['Workspace', 'Nonton anime', 'Enam sumber: Otakudesu, Samehadaku, Anoboy, Oploverz, Kuramanime, Anichin.'],
   akun: ['Workspace', 'Akun & pengaturan', 'Profil, kuota, API key, tema, dan cache — semua di satu tempat.']
 };
 function gotoView(v){
@@ -3754,11 +3786,11 @@ function mailDrop(){
 }
 
 /* ================= LAB: FETCH HELPER ================= */
-async function labFetch(action, body){
+async function labFetch(path, body){
   const ctrl = new AbortController();
-  const to = setTimeout(()=>ctrl.abort(), 14000);
+  const to = setTimeout(()=>ctrl.abort(), 13000);
   try{
-    const r = await fetch('/api/lab?action=' + action, {
+    const r = await fetch(path, {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify(body || {}), signal: ctrl.signal
     });
@@ -3767,7 +3799,7 @@ async function labFetch(action, body){
     try{ d = JSON.parse(raw); }catch(e){}
     if(!r.ok || d.status !== 'success'){
       const msg = d.message || ((r.status >= 500)
-        ? 'Server lambat balas (HTTP ' + r.status + '). Coba sumber lain atau ulangi.'
+        ? 'Server tidak bisa dijangkau (HTTP ' + r.status + '). Coba sumber lain.'
         : 'HTTP ' + r.status);
       const err = new Error(msg); err.code = r.status; throw err;
     }
@@ -3778,10 +3810,25 @@ async function labFetch(action, body){
   }finally{ clearTimeout(to); }
 }
 
+async function labDiag(kind){
+  try{
+    const r = await fetch('/api/' + kind + '?action=diag', { cache:'no-store' });
+    const d = await r.json();
+    const rows = (d.sources || []).filter(s => s.live);
+    toast(rows.length ? 'Hidup: ' + rows.map(s => s.label).join(', ') : 'Semua sumber sedang down.', rows.length ? 'ok' : 'er');
+  }catch(e){ toast('Diagnosa gagal dijalankan.', 'er'); }
+}
+
 /* ================= LAB: MANGA ================= */
 const MG = { ch: [], idx: 0, title: '', cur: null, busy: false };
 const mgEsc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
-const mgApi = (step, extra) => labFetch('manga', Object.assign({ step, source:'mangadex' }, extra || {}));
+const MG_SOURCES = ['mangadex', 'comick', 'shinigami'];
+function mgSource(){
+  const el = $('#mgSrc');
+  const cur = el ? el.value : 'mangadex';
+  return MG_SOURCES.includes(cur) ? cur : 'mangadex';
+}
+const mgApi = (step, extra) => labFetch('/api/manga', Object.assign({ step, source: mgSource() }, extra || {}));
 
 function mgGrid(items){
   return '<div class="mg-grid">' + items.map((m,i)=>`
@@ -3794,8 +3841,11 @@ function mgBind(items){
   $$('#mgBody .mg-card').forEach(c => c.onclick = ()=> mgOpen(items[+c.dataset.i]));
 }
 function mgSection(title, items){
-  if(!items.length) return '';
+  if(!items || !items.length) return '';
   return `<div class="sec"><div class="sec-head"><b>${title}</b><span>${items.length}</span></div>${mgGrid(items)}</div>`;
+}
+function mgErr(e){
+  $('#mgBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${mgEsc(e.message)}</div>`;
 }
 async function mgHome(){
   $('#mgBody').innerHTML = '<div class="q-empty">memuat beranda...</div>';
@@ -3803,15 +3853,15 @@ async function mgHome(){
     const h = await mgApi('home');
     const g = await mgApi('genres').catch(()=> ({ items: [] }));
     let html = mgSection('Trending', h.trending) + mgSection('Baru diupload', h.latest);
-    if(g.items.length){
+    if(g.items && g.items.length){
       html += `<div class="sec"><div class="sec-head"><b>Genre</b><span>${g.items.length}</span></div>
         <div class="chips">${g.items.map(x=>`<button class="chip" data-id="${x.id}" data-n="${mgEsc(x.name)}">${mgEsc(x.name)}</button>`).join('')}</div></div>`;
     }
     $('#mgBody').innerHTML = html || '<div class="q-empty">Tidak ada data.</div>';
-    const all = h.trending.concat(h.latest);
+    const all = (h.trending || []).concat(h.latest || []);
     $$('#mgBody .mg-card').forEach(c => c.onclick = ()=> mgOpen(all[+c.dataset.i]));
     $$('#mgBody .chip').forEach(c => c.onclick = ()=> mgGenre(c.dataset.id, c.dataset.n));
-  }catch(e){ $('#mgBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${mgEsc(e.message)}</div>`; }
+  }catch(e){ mgErr(e); }
 }
 async function mgGenre(id, name){
   $$('#mgBody .chip').forEach(c => c.classList.toggle('on', c.dataset.id === id));
@@ -3820,7 +3870,7 @@ async function mgGenre(id, name){
     const d = await mgApi('bygenre', { tag: id });
     $('#mgBody').innerHTML = `<div class="sec"><div class="sec-head"><b>${mgEsc(name)}</b><button class="linkish" onclick="mgHome()">beranda</button></div>${mgGrid(d.items)}</div>`;
     mgBind(d.items);
-  }catch(e){ $('#mgBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${mgEsc(e.message)}</div>`; }
+  }catch(e){ mgErr(e); }
 }
 async function mgSearch(){
   const q = $('#mgQ').value.trim();
@@ -3831,20 +3881,20 @@ async function mgSearch(){
     if(!d.items.length) return $('#mgBody').innerHTML = '<div class="q-empty">Tidak ada hasil.</div>';
     $('#mgBody').innerHTML = mgGrid(d.items);
     mgBind(d.items);
-  }catch(e){ $('#mgBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${mgEsc(e.message)}</div>`; }
+  }catch(e){ mgErr(e); }
 }
 async function mgOpen(m){
   MG.title = m.title; MG.cur = m;
   $('#mgBody').innerHTML = '<div class="q-empty">memuat chapter...</div>';
   try{
-    const d = await mgApi('chapters', { id: m.id });
+    const d = await mgApi('chapters', { id: m.id, url: m.url });
     if(!d.items.length) return $('#mgBody').innerHTML = '<div class="q-empty">Belum ada chapter bahasa Inggris.</div>';
     MG.ch = d.items;
     $('#mgBody').innerHTML = `
       <div class="rd-head"><span>${mgEsc(m.title)}</span><button class="linkish" onclick="mgHome()">beranda</button></div>
-      <div class="ep-grid">${d.items.map((c,i)=>`<button data-i="${i}">Ch. ${c.num}</button>`).join('')}</div>`;
+      <div class="ep-grid">${d.items.map((c,i)=>`<button data-i="${i}">Ch. ${mgEsc(c.num)}</button>`).join('')}</div>`;
     $$('#mgBody .ep-grid button').forEach(b => b.onclick = ()=> mgRead(+b.dataset.i));
-  }catch(e){ $('#mgBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${mgEsc(e.message)}</div>`; }
+  }catch(e){ mgErr(e); }
 }
 async function mgRead(i){
   const c = MG.ch[i];
@@ -3854,14 +3904,14 @@ async function mgRead(i){
   try{
     const d = await mgApi('pages', { id: c.id });
     $('#mgBody').innerHTML = `
-      <div class="rd-head"><span>${mgEsc(MG.title)} · Ch. ${c.num}</span><button class="linkish" onclick="mgOpen(MG.cur)">daftar chapter</button></div>
+      <div class="rd-head"><span>${mgEsc(MG.title)} · Ch. ${mgEsc(c.num)}</span><button class="linkish" onclick="mgOpen(MG.cur)">daftar chapter</button></div>
       <div class="reader">${d.pages.map(p=>`<img src="${p}" loading="lazy" alt="">`).join('')}</div>
       <button class="btn btn-primary btn-block btn-bounce" id="mgNextBtn" onclick="mgNext()">
         ${i + 1 < MG.ch.length ? 'Chapter selanjutnya' : 'Chapter terakhir'} <i class="fa-solid fa-arrow-down"></i>
       </button>`;
     window.scrollTo({ top: 0, behavior: 'smooth' });
     mgWatch();
-  }catch(e){ $('#mgBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${mgEsc(e.message)}</div>`; }
+  }catch(e){ mgErr(e); }
 }
 function mgNext(){
   if(MG.busy) return;
@@ -3881,7 +3931,7 @@ function mgReset(){ mgHome(); }
 
 /* ================= LAB: ANIME ================= */
 const AN = { cur: null, host: '' };
-const AN_SOURCES = ['otakudesu', 'samehadaku', 'anoboy'];
+const AN_SOURCES = ['otakudesu', 'samehadaku', 'anoboy', 'oploverz', 'kuramanime', 'anichin'];
 const anEsc = mgEsc;
 let anCur = null, anHls = null;
 
@@ -3900,17 +3950,17 @@ function anSource(){
   const cur = el ? el.value : 'otakudesu';
   return AN_SOURCES.includes(cur) ? cur : 'otakudesu';
 }
-function anNeedsUrl(step){ return step === 'detail' || step === 'episode' || step === 'bygenre' || step === 'list'; }
+function anNeedsUrl(step){ return step === 'detail' || step === 'episode'; }
 
 async function anApi(step, extra){
   const src = anSource();
-  if(anNeedsUrl(step)) return labFetch('anime', Object.assign({ step, source: src }, extra || {}));
+  if(anNeedsUrl(step)) return labFetch('/api/anime', Object.assign({ step, source: src }, extra || {}));
 
   const order = [src, ...AN_SOURCES.filter(s => s !== src)];
   let last = null;
   for(const s of order){
     try{
-      const d = await labFetch('anime', Object.assign({ step, source: s }, extra || {}));
+      const d = await labFetch('/api/anime', Object.assign({ step, source: s }, extra || {}));
       if(s !== src){
         if($('#anSrc')) $('#anSrc').value = s;
         toast('Sumber ' + src + ' gagal, dialihkan ke ' + s + '.', 'sy');
@@ -3936,48 +3986,22 @@ function anBind(items){
   $$('#anBody .an-card').forEach(c => c.onclick = ()=> anOpen(items[+c.dataset.i]));
 }
 function anSec(title, items){
-  if(!items.length) return '';
+  if(!items || !items.length) return '';
   return `<div class="sec"><div class="sec-head"><b>${title}</b><span>${items.length}</span></div>${anList(items)}</div>`;
+}
+function anErr(e){
+  $('#anBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${anEsc(e.message)}</div>`;
 }
 async function anHome(){
   $('#anBody').innerHTML = '<div class="q-empty">memuat beranda...</div>';
   try{
     const h = await anApi('home');
     AN.host = h.host;
-    let html = anSec('Trending', h.trending) + anSec('Episode terbaru', h.latest) + anSec('Top rated', h.rated);
-    const g = await anApi('genres').catch(()=> ({ items: [] }));
-    if(g.items.length){
-      html += `<div class="sec"><div class="sec-head"><b>Genre</b><span>${g.items.length}</span></div>
-        <div class="chips">${g.items.slice(0, 40).map(x=>`<button class="chip" data-u="${x.url}">${anEsc(x.name)}</button>`).join('')}</div></div>`;
-    }
-    html += '<div class="sec"><div class="sec-head"><b>Jadwal rilis</b><button class="linkish" onclick="anSchedule()">lihat</button></div></div>';
-    $('#anBody').innerHTML = html;
-    const all = h.trending.concat(h.latest, h.rated);
+    let html = anSec('Trending', h.trending) + anSec('Episode terbaru', h.latest);
+    $('#anBody').innerHTML = html || '<div class="q-empty">Tidak ada data.</div>';
+    const all = (h.trending || []).concat(h.latest || []);
     $$('#anBody .an-card').forEach(c => c.onclick = ()=> anOpen(all[+c.dataset.i]));
-    $$('#anBody .chip').forEach(c => c.onclick = ()=> anByGenre(c.dataset.u));
-  }catch(e){ $('#anBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${anEsc(e.message)}</div>`; }
-}
-async function anByGenre(url){
-  $('#anBody').innerHTML = '<div class="q-empty">memuat genre...</div>';
-  try{
-    const d = await anApi('bygenre', { url });
-    $('#anBody').innerHTML = `<div class="sec"><div class="sec-head"><b>Genre</b><button class="linkish" onclick="anHome()">beranda</button></div>${anList(d.items)}</div>`;
-    anBind(d.items);
-  }catch(e){ $('#anBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${anEsc(e.message)}</div>`; }
-}
-async function anSchedule(){
-  $('#anBody').innerHTML = '<div class="q-empty">memuat jadwal...</div>';
-  try{
-    const d = await anApi('schedule');
-    $('#anBody').innerHTML = `<div class="sec"><div class="sec-head"><b>Jadwal</b><button class="linkish" onclick="anHome()">beranda</button></div></div>` +
-      d.sections.map(s => `<div class="sec"><div class="sec-head"><b>${anEsc(s.day)}</b><span>${s.items.length}</span></div>${anList(s.items)}</div>`).join('');
-    const rows = $$('#anBody .an-card');
-    let k = 0;
-    d.sections.forEach(s => s.items.forEach(a => {
-      const el = rows[k++];
-      if(el) el.onclick = ()=> anOpen(a);
-    }));
-  }catch(e){ $('#anBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${anEsc(e.message)}</div>`; }
+  }catch(e){ anErr(e); }
 }
 async function anSearch(){
   const q = $('#anQ').value.trim();
@@ -3988,7 +4012,7 @@ async function anSearch(){
     if(!d.items.length) return $('#anBody').innerHTML = '<div class="q-empty">Tidak ada hasil.</div>';
     $('#anBody').innerHTML = anList(d.items);
     anBind(d.items);
-  }catch(e){ $('#anBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${anEsc(e.message)}</div>`; }
+  }catch(e){ anErr(e); }
 }
 async function anOpen(a){
   AN.cur = a;
@@ -3998,9 +4022,9 @@ async function anOpen(a){
     $('#anBody').innerHTML = `
       <div class="rd-head"><span>${anEsc(a.title)}</span><button class="linkish" onclick="anHome()">beranda</button></div>
       ${d.synopsis ? `<p style="font-size:.68rem;color:var(--dim);margin-bottom:.6rem">${anEsc(d.synopsis)}</p>` : ''}
-      <div class="ep-grid">${d.items.map((e,i)=>`<button data-i="${i}">${anEsc((e.title || 'EP').slice(0, 14))}</button>`).join('')}</div>`;
+      <div class="ep-grid">${d.items.map((e,i)=>`<button data-i="${i}">${anEsc((e.title || 'EP').slice(0, 16))}</button>`).join('')}</div>`;
     $$('#anBody .ep-grid button').forEach(b => b.onclick = ()=> anPlay(d.items[+b.dataset.i].url));
-  }catch(e){ $('#anBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${anEsc(e.message)}</div>`; }
+  }catch(e){ anErr(e); }
 }
 async function anPlay(epUrl){
   $('#anBody').innerHTML = '<div class="q-empty">nyari server...</div>';
@@ -4017,7 +4041,7 @@ async function anPlay(epUrl){
       anFrame(d.servers[+c.dataset.i]);
     });
     anFrame(d.servers[0]);
-  }catch(e){ $('#anBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${anEsc(e.message)}</div>`; }
+  }catch(e){ anErr(e); }
 }
 function anFrame(s){
   anCur = s;
@@ -4311,4 +4335,4 @@ $('#anQ').addEventListener('keydown', e=>{ if(e.key === 'Enter') anSearch(); });
 setStep(1);
 </script>
 </body>
-			</html>
+	</html>
