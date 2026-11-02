@@ -598,10 +598,9 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
 .dock button{flex:0 0 auto;display:inline-flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.42rem .75rem;border-radius:99px;border:1px solid transparent;background:none;color:var(--dim);cursor:pointer;transition:.25s;white-space:nowrap}
 .dock button:hover{color:#fff;background:rgba(255,255,255,.05)}
 .dock button.on{color:#fff;background:linear-gradient(120deg,var(--a1),#6a1fb0);border-color:var(--a1-soft);box-shadow:0 0 18px var(--g1)}
-.dock button .nw{font-size:.42rem;background:var(--a2);color:#04120d;border-radius:99px;padding:0 .25rem;font-weight:700}
 #labView{position:relative;z-index:2;display:none;padding:1.4rem 0 3rem}
 body:not([data-view="home"]) #top{display:none}
-body[data-view="shell"] #labView,body[data-view="dl"] #labView,body[data-view="mail"] #labView,body[data-view="akun"] #labView{display:block}
+body[data-view="shell"] #labView,body[data-view="dl"] #labView,body[data-view="mail"] #labView,body[data-view="manga"] #labView,body[data-view="anime"] #labView,body[data-view="akun"] #labView{display:block}
 .pane{display:none;animation:paneIn .4s var(--ease) both}
 .pane.on{display:block}
 
@@ -640,9 +639,70 @@ body[data-view="shell"] #labView,body[data-view="dl"] #labView,body[data-view="m
 .set-row .sl small{display:block;font-size:.68rem;color:var(--dimmer)}
 .set-row .sr{flex:none;display:flex;gap:.35rem;align-items:center}
 @media(max-width:700px){.dock{margin-top:.3rem}.sh{height:52vh}}
+
+/* ===== INTRO TYPOGRAPHY ===== */
+#intro{position:fixed;inset:0;z-index:10001;background:#040406;display:grid;place-items:center;overflow:hidden;transition:opacity .7s var(--ease),transform .9s var(--ease),filter .7s}
+#intro.out{opacity:0;transform:scale(1.05);filter:blur(10px);pointer-events:none}
+#intro .in-scan{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,245,212,.05) 0 1px,transparent 1px 4px);opacity:.5}
+#intro .in-glow{position:absolute;width:70vmin;height:70vmin;border-radius:50%;background:radial-gradient(circle,var(--g1),transparent 65%);filter:blur(50px);opacity:.45;animation:inPulse 3s ease-in-out infinite}
+@keyframes inPulse{50%{transform:scale(1.15);opacity:.75}}
+.in-wrap{position:relative;text-align:center;padding:1rem}
+.in-kicker{font-family:var(--mono);font-size:.56rem;letter-spacing:.42em;text-transform:uppercase;color:var(--a2);opacity:0;animation:inFade .8s .15s var(--ease) forwards}
+.in-title{font-size:clamp(2.6rem,12vw,5.4rem);line-height:.92;font-weight:800;letter-spacing:-.03em;color:#fff;margin:.5rem 0;display:flex;gap:.28em;justify-content:center;flex-wrap:wrap}
+.in-word{display:inline-block;overflow:hidden}
+.in-word i{display:inline-block;font-style:normal;transform:translateY(105%);animation:inRise .85s var(--ease) forwards}
+.in-word:first-child i{animation-delay:.28s}
+.in-word:last-child i{animation-delay:.42s;background:linear-gradient(100deg,var(--a1-soft),var(--a2));-webkit-background-clip:text;background-clip:text;color:transparent}
+@keyframes inRise{to{transform:none}}
+@keyframes inFade{to{opacity:1}}
+.in-sub{font-family:var(--mono);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);opacity:0;animation:inFade .8s .85s var(--ease) forwards}
+.in-sub b{color:var(--a1-soft)}
+.in-bar{width:min(220px,60vw);height:2px;background:#15151f;border-radius:9px;overflow:hidden;margin:1.1rem auto 0}
+.in-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--a1),var(--a2));animation:inBar 1.9s .2s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes inBar{to{width:100%}}
+
+/* ===== SMOOTH PASS ===== */
+#labView{animation:viewIn .45s var(--ease) both}
+@keyframes viewIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.dock button{transition:transform .22s var(--ease),background .25s,color .2s,border-color .2s}
+.dock button:active{transform:scale(.94)}
+.m-row,.dl-item,.an-row,.mg-card{transition:transform .3s var(--ease),border-color .25s,box-shadow .3s}
+.m-row:hover,.dl-item:hover,.an-row:hover{transform:translateX(4px);box-shadow:-3px 0 0 var(--a2)}
+.mg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.6rem}
+.mg-card{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#06060a;cursor:pointer}
+.mg-card:hover{transform:translateY(-4px);border-color:var(--a2)}
+.mg-card img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;opacity:0;transition:opacity .5s}
+.mg-card img.rdy{opacity:1}
+.mg-card b{display:block;font-size:.68rem;padding:.4rem .5rem;color:var(--txt);font-weight:500;line-height:1.3}
+.sk{aspect-ratio:3/4;border-radius:10px;background:linear-gradient(100deg,#0b0b12,#15151f,#0b0b12);background-size:200% 100%;animation:shim 1.3s linear infinite}
+@keyframes shim{to{background-position:-200% 0}}
+.an-row{display:flex;gap:.6rem;align-items:center;padding:.6rem .7rem;border:1px solid var(--line);border-radius:9px;margin-bottom:.4rem;background:#06060a;cursor:pointer}
+.an-row .tx{flex:1;min-width:0;font-size:.76rem;color:var(--txt)}
+.ep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:.4rem;margin-top:.8rem}
+.ep-grid button{font-family:var(--mono);font-size:.64rem;padding:.45rem;border-radius:8px;border:1px solid var(--line);background:#06060a;color:var(--dim);cursor:pointer}
+.ep-grid button:hover{color:var(--a2);border-color:var(--a2)}
+.player{position:relative;width:100%;aspect-ratio:16/9;background:#000;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:.6rem}
+.player iframe,.player video{width:100%;height:100%;border:0;display:block}
+.srv-row{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.6rem}
+.reader{max-height:75vh;overflow:auto;border:1px solid var(--line);border-radius:10px;background:#040406}
+.reader img{width:100%;display:block;background:#08080d;min-height:120px}
 </style>
 </head>
 <body data-view="home">
+
+<div id="intro" aria-hidden="true">
+  <div class="in-scan"></div>
+  <div class="in-glow"></div>
+  <div class="in-wrap">
+    <div class="in-kicker">Zukai Developer Presents</div>
+    <h1 class="in-title">
+      <span class="in-word"><i>AM</i></span>
+      <span class="in-word"><i>PREMIUM</i></span>
+    </h1>
+    <div class="in-sub">built by <b>kyedeveloper</b> · zukai dev</div>
+    <div class="in-bar"><i></i></div>
+  </div>
+</div>
 
 <div id="boot" aria-hidden="true">
   <div class="boot-bg"></div>
@@ -730,6 +790,8 @@ body[data-view="shell"] #labView,body[data-view="dl"] #labView,body[data-view="m
       <button data-view="shell" role="tab"><i class="fa-solid fa-terminal"></i> Shell</button>
       <button data-view="dl" role="tab"><i class="fa-solid fa-download"></i> Downloader</button>
       <button data-view="mail" role="tab"><i class="fa-solid fa-envelope"></i> Temp Mail</button>
+      <button data-view="manga" role="tab"><i class="fa-solid fa-book-open"></i> Manga</button>
+      <button data-view="anime" role="tab"><i class="fa-solid fa-tv"></i> Anime</button>
       <button data-view="akun" role="tab"><i class="fa-solid fa-user-gear"></i> Akun</button>
     </div>
 
@@ -1161,8 +1223,33 @@ curl -X GET "https://www.juikoprem.my.id/api/auth/me" \
     <div class="panel glow-card reveal" style="padding: 1.5rem;">
       <div class="changelog-node">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.4rem">
+          <h3 style="color:#fff;font-size:0.95rem;font-weight:700">v1.5.0 — Player Proxy &amp; Mode Asli</h3>
+          <span style="font-family:var(--mono);font-size:0.6rem;color:var(--a2);background:rgba(0,245,212,0.1);padding:0.1rem 0.5rem;border-radius:4px;border:1px solid rgba(0,245,212,0.3)">2 NOVEMBER 2026</span>
+        </div>
+        <ul style="font-size:0.8rem;color:var(--dim);list-style:disc;padding-left:1.2rem;display:flex;flex-direction:column;gap:0.3rem">
+          <li>Proxy pembersih untuk player: skrip iklan, <code>ins</code>, dan iframe ad-network dibuang.</li>
+          <li>Iframe player diturunkan lewat proxy berlapis supaya bebas popup.</li>
+          <li>Tombol <strong>Mode asli</strong> buat bypass kalau player butuh skrip penuh.</li>
+        </ul>
+      </div>
+
+      <div class="changelog-node">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.4rem">
+          <h3 style="color:#fff;font-size:0.95rem;font-weight:700">v1.4.0 — Manga, Anime &amp; Proxy HLS</h3>
+          <span style="font-family:var(--mono);font-size:0.6rem;color:var(--dimmer);background:rgba(255,255,255,0.05);padding:0.1rem 0.5rem;border-radius:4px;border:1px solid var(--line)">2 NOVEMBER 2026</span>
+        </div>
+        <ul style="font-size:0.8rem;color:var(--dim);list-style:disc;padding-left:1.2rem;display:flex;flex-direction:column;gap:0.3rem">
+          <li>Tab <strong>Manga</strong> dengan sumber MangaDex dan Comick, lengkap dengan reader vertikal.</li>
+          <li>Tab <strong>Anime</strong> dari Otakudesu, Samehadaku, dan Anoboy plus pemilih server.</li>
+          <li>Proxy HLS di gateway yang sama supaya player mulus tanpa iklan iframe.</li>
+          <li>Intro tipografi dan perbaikan transisi antar tab.</li>
+        </ul>
+      </div>
+
+      <div class="changelog-node">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.4rem">
           <h3 style="color:#fff;font-size:0.95rem;font-weight:700">v1.3.0 — Workspace Lab: Shell, Downloader, Temp Mail</h3>
-          <span style="font-family:var(--mono);font-size:0.6rem;color:var(--a2);background:rgba(0,245,212,0.1);padding:0.1rem 0.5rem;border-radius:4px;border:1px solid rgba(0,245,212,0.3)">1 NOVEMBER 2026</span>
+          <span style="font-family:var(--mono);font-size:0.6rem;color:var(--dimmer);background:rgba(255,255,255,0.05);padding:0.1rem 0.5rem;border-radius:4px;border:1px solid var(--line)">1 NOVEMBER 2026</span>
         </div>
         <ul style="font-size:0.8rem;color:var(--dim);list-style:disc;padding-left:1.2rem;display:flex;flex-direction:column;gap:0.3rem">
           <li>Workspace tab baru: <strong>Shell</strong>, <strong>Downloader</strong>, <strong>Temp Mail</strong>, dan <strong>Akun</strong>.</li>
@@ -1402,7 +1489,7 @@ curl -X GET "https://www.juikoprem.my.id/api/auth/me" \
           <button class="tool-btn" onclick="clearDlHist()"><i class="fa-solid fa-trash"></i> Hapus riwayat</button>
         </div>
         <div id="dlHist"></div>
-        <p style="font-size:.66rem;color:var(--dimmer);margin-top:.9rem">Provider: cobalt, tikwm, oceansaver. Kalau satu gagal, sistem coba berikutnya otomatis. Link hasil berupa file sementara — segera unduh.</p>
+        <p style="font-size:.66rem;color:var(--dimmer);margin-top:.9rem">Sumber dicoba berurutan: khusus TikTok, X, dan Instagram pakai jalur sendiri; sisanya lewat cobalt dan oceansaver. Link hasil berupa file sementara — segera unduh.</p>
       </div>
     </div>
   </div>
@@ -1415,7 +1502,8 @@ curl -X GET "https://www.juikoprem.my.id/api/auth/me" \
         <span class="path">~/lab/tempmail</span>
         <span class="tag">INBOX</span>
       </div>
-      <div class="field">
+      <div class="panel-body">
+        <div class="field">
           <label class="label" for="mProv">Provider <span class="hint">auto pindah kalau satu mati</span></label>
           <select class="inp" id="mProv" onchange="setMailProv(this.value)">
             <option value="auto">Otomatis (pilih yang hidup)</option>
@@ -1426,7 +1514,7 @@ curl -X GET "https://www.juikoprem.my.id/api/auth/me" \
             <option value="maildrop">maildrop.cc</option>
             <option value="onesec">1secmail</option>
           </select>
-	  </div>
+        </div>
         <div class="field">
           <label class="label">Alamat baru</label>
           <div style="display:flex;gap:.4rem;flex-wrap:wrap">
@@ -1451,6 +1539,65 @@ curl -X GET "https://www.juikoprem.my.id/api/auth/me" \
           <div class="m-read" id="mRead"></div>
         </div>
         <p style="font-size:.66rem;color:var(--dimmer);margin-top:.9rem">Mailbox publik — jangan pakai buat hal sensitif. Simpan alamat ini di localStorage browser kamu saja.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MANGA -->
+  <div class="pane" data-pane="manga">
+    <div class="panel">
+      <div class="panel-bar">
+        <span class="tl r"></span><span class="tl y"></span><span class="tl g"></span>
+        <span class="path">~/lab/manga</span>
+        <span class="tag">READER</span>
+      </div>
+      <div class="panel-body">
+        <div class="field">
+          <label class="label" for="mgSrc">Sumber</label>
+          <select class="inp" id="mgSrc" onchange="mgReset()">
+            <option value="mangadex">MangaDex (paling lengkap)</option>
+            <option value="comick">Comick</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="label" for="mgQ">Cari judul</label>
+          <div class="input-wrap">
+            <span class="pre"><i class="fa-solid fa-magnifying-glass"></i></span>
+            <input class="inp has-pre" id="mgQ" placeholder="one piece, solo leveling, ..." spellcheck="false">
+          </div>
+        </div>
+        <button class="btn btn-primary btn-bounce btn-block" onclick="mgSearch()"><i class="fa-solid fa-magnifying-glass"></i> Cari</button>
+        <div id="mgBody" style="margin-top:1rem"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANIME -->
+  <div class="pane" data-pane="anime">
+    <div class="panel">
+      <div class="panel-bar">
+        <span class="tl r"></span><span class="tl y"></span><span class="tl g"></span>
+        <span class="path">~/lab/anime</span>
+        <span class="tag">STREAM</span>
+      </div>
+      <div class="panel-body">
+        <div class="field">
+          <label class="label" for="anSrc">Sumber</label>
+          <select class="inp" id="anSrc" onchange="anReset()">
+            <option value="otakudesu">Otakudesu</option>
+            <option value="samehadaku">Samehadaku</option>
+            <option value="anoboy">Anoboy</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="label" for="anQ">Cari anime</label>
+          <div class="input-wrap">
+            <span class="pre"><i class="fa-solid fa-magnifying-glass"></i></span>
+            <input class="inp has-pre" id="anQ" placeholder="judul anime..." spellcheck="false">
+          </div>
+        </div>
+        <button class="btn btn-primary btn-bounce btn-block" onclick="anSearch()"><i class="fa-solid fa-magnifying-glass"></i> Cari</button>
+        <div id="anBody" style="margin-top:1rem"></div>
       </div>
     </div>
   </div>
@@ -1556,10 +1703,6 @@ curl -X GET "https://www.juikoprem.my.id/api/auth/me" \
             <div class="sr"><button class="btn btn-plain btn-bounce btn-sm" id="setSound" onclick="$('#soundBtn').click()">Toggle</button></div>
           </div>
           <div class="set-row">
-            <div class="sl">Mode terminal<small>Auto-jalan saat perintah diketik</small></div>
-            <div class="sr"><span style="font-family:var(--mono);font-size:.6rem;color:var(--ok)">AKTIF</span></div>
-          </div>
-          <div class="set-row">
             <div class="sl">Ukuran cache lokal<small>FS shell + riwayat downloader + mailbox</small></div>
             <div class="sr"><b style="font-family:var(--mono);font-size:.68rem;color:var(--a2)" id="cacheSize">—</b></div>
           </div>
@@ -1582,7 +1725,7 @@ curl -X GET "https://www.juikoprem.my.id/api/auth/me" \
 <!-- ============ PALETTE ============ -->
 <div id="palette" role="dialog" aria-modal="true" aria-label="Aksi cepat">
   <div class="pal">
-    <div class="pal-in"><i class="fa-solid fa-magnifying-glass"></i><input id="palInput" placeholder="Cari aksi... (shell, downloader, temp mail, akun)" autocomplete="off"></div>
+    <div class="pal-in"><i class="fa-solid fa-magnifying-glass"></i><input id="palInput" placeholder="Cari aksi... (shell, downloader, manga, anime, akun)" autocomplete="off"></div>
     <div class="pal-list" id="palList"></div>
     <div class="pal-foot"><span>↑↓ navigasi</span><span>↵ jalankan</span><span>esc tutup</span></div>
   </div>
@@ -1642,7 +1785,7 @@ curl -X GET "https://www.juikoprem.my.id/api/auth/me" \
         <div class="kv"><span>Arsitektur</span><b>Serverless v5.2</b></div>
         <div class="kv"><span>Node</span><b>ASIA-SE-01</b></div>
         <div class="kv"><span>Enkripsi</span><b>AES-256</b></div>
-        <div class="kv"><span>Build</span><b>2026.11.01</b></div>
+        <div class="kv"><span>Build</span><b>2026.11.02</b></div>
       </div>
       <p style="margin:0">Terminal berjalan penuh di atas fungsi serverless. Frontend hanya mengirim JSON; kredensial Google dan Alight dibaca dari environment variable di sisi server.</p>
     </div>
@@ -1996,10 +2139,12 @@ const ACTIONS = [
   {t:'Shell lab', s:'lab', i:'fa-code', f:()=>{closePalette();gotoView('shell');}},
   {t:'Downloader media', s:'lab', i:'fa-download', f:()=>{closePalette();gotoView('dl');}},
   {t:'Temp mail', s:'lab', i:'fa-envelope', f:()=>{closePalette();gotoView('mail');}},
+  {t:'Baca manga', s:'lab', i:'fa-book-open', f:()=>{closePalette();gotoView('manga');}},
+  {t:'Nonton anime', s:'lab', i:'fa-tv', f:()=>{closePalette();gotoView('anime');}},
   {t:'Akun & pengaturan', s:'lab', i:'fa-user-gear', f:()=>{closePalette();gotoView('akun');}},
   {t:'Video tutorial inject', s:'bantuan', i:'fa-circle-play', f:()=>{closePalette();gotoView('home');document.getElementById('tutorial').scrollIntoView({behavior:'smooth'});}},
   {t:'Panduan langkah', s:'bantuan', i:'fa-book', f:()=>{closePalette();openSheet('guideSheet');}},
-  {t:'Changelog Update v1.3.0', s:'info', i:'fa-list-check', f:()=>{closePalette();gotoView('home');document.getElementById('changelog').scrollIntoView({behavior:'smooth'});}},
+  {t:'Changelog Update v1.5.0', s:'info', i:'fa-list-check', f:()=>{closePalette();gotoView('home');document.getElementById('changelog').scrollIntoView({behavior:'smooth'});}},
   {t:'Akun gue', s:'akun', i:'fa-user', f:()=>{closePalette();accClick();}},
   {t:'Upgrade premium', s:'akun', i:'fa-crown', f:()=>{closePalette();openSheet('upgradeSheet');}},
   {t:'Antrian massal', s:'fitur', i:'fa-layer-group', f:()=>{closePalette();openSheet('queueSheet');}},
@@ -3149,11 +3294,13 @@ const initTime = setInterval(()=>{
 }, 1000);
 
 /* ================= LAB: VIEW ROUTER ================= */
-const VIEWS = ['home','shell','dl','mail','akun'];
+const VIEWS = ['home','shell','dl','mail','manga','anime','akun'];
 const LAB_META = {
   shell: ['Workspace', 'Shell sandbox', 'Virtual filesystem persisten di browser, eksekusi nyata lewat sandbox. Ketik help buat daftar perintah.'],
-  dl: ['Workspace', 'Downloader', 'TikTok, YouTube, Instagram, Facebook, X. Pilih MP3 atau MP4, sistem cari provider yang hidup.'],
+  dl: ['Workspace', 'Downloader', 'TikTok, YouTube, Instagram, Facebook, X. Pilih MP3 atau MP4, sistem cari sumber yang hidup.'],
   mail: ['Workspace', 'Temp mail', 'Bikin alamat sekali pakai dari domain mana pun yang tersedia, nama bebas.'],
+  manga: ['Workspace', 'Baca manga', 'Pustaka dari MangaDex dan Comick. Pilih judul, pilih chapter, baca vertikal.'],
+  anime: ['Workspace', 'Nonton anime', 'Cari dari Otakudesu, Samehadaku, atau Anoboy, lalu pilih server.'],
   akun: ['Workspace', 'Akun & pengaturan', 'Profil, kuota, API key, tema, dan cache — semua di satu tempat.']
 };
 function gotoView(v){
@@ -3172,6 +3319,8 @@ function gotoView(v){
   if(v === 'shell') setTimeout(()=>$('#shInput') && $('#shInput').focus(), 160);
   if(v === 'mail') mailBoot();
   if(v === 'dl') renderDlHist();
+  if(v === 'manga') mgReset();
+  if(v === 'anime') anReset();
 }
 $$('#dock button').forEach(b=>b.onclick = ()=>gotoView(b.dataset.view));
 
@@ -3466,7 +3615,6 @@ let mailProv = localStorage.getItem('zukai-mprov') || 'auto';
 let mailSess = null, mailTimer = null;
 const MAIL_KEY = 'zukai-mail';
 const AUTO_ORDER = ['plus', 'guerrilla', 'mailgw', 'mailtm', 'maildrop', 'onesec'];
-const PROV_LABEL = { plus: 'tempmail.plus', guerrilla: 'guerrillamail', mailtm: 'mail.tm', mailgw: 'mail.gw', maildrop: 'maildrop.cc', onesec: '1secmail' };
 
 function setMailProv(p){
   mailProv = p;
@@ -3586,7 +3734,153 @@ function mailDrop(){
   paintMail(); $('#mList').innerHTML = '<div class="q-empty">Belum ada pesan.</div>';
   $('#mRead').classList.remove('open');
   toast('Mailbox dihapus.', 'sy');
-	}
+}
+
+/* ================= LAB: MANGA ================= */
+async function mgApi(step, extra){
+  const r = await fetch('/api/lab?action=manga', { method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(Object.assign({ step, source: $('#mgSrc').value }, extra || {})) });
+  const d = await r.json().catch(()=>({}));
+  if(!r.ok || d.status !== 'success') throw new Error(d.message || 'HTTP ' + r.status);
+  return d;
+}
+function mgReset(){ $('#mgBody').innerHTML = ''; $('#mgQ').value = ''; }
+function mgSkeleton(n){
+  $('#mgBody').innerHTML = '<div class="mg-grid">' + Array.from({length:n}, ()=>'<div class="sk"></div>').join('') + '</div>';
+}
+async function mgSearch(){
+  const q = $('#mgQ').value.trim();
+  if(q.length < 2) return toast('Kata kunci minimal 2 huruf.', 'er');
+  mgSkeleton(8);
+  try{
+    const d = await mgApi('search', { q });
+    if(!d.items.length) return $('#mgBody').innerHTML = '<div class="q-empty">Tidak ada hasil.</div>';
+    $('#mgBody').innerHTML = '<div class="mg-grid">' + d.items.map((m,i)=>`
+      <div class="mg-card" data-i="${i}">
+        ${m.cover ? `<img src="${m.cover}" alt="" loading="lazy" onload="this.classList.add('rdy')">` : '<div class="sk"></div>'}
+        <b>${m.title}</b>
+      </div>`).join('') + '</div>';
+    $$('.mg-card').forEach(c => c.onclick = ()=> mgOpen(d.items[+c.dataset.i]));
+  }catch(e){ $('#mgBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${e.message}</div>`; }
+}
+async function mgOpen(m){
+  $('#mgBody').innerHTML = '<div class="q-empty">memuat chapter...</div>';
+  try{
+    const d = await mgApi('chapters', { id: m.id });
+    if(!d.items.length) return $('#mgBody').innerHTML = '<div class="q-empty">Belum ada chapter bahasa Inggris.</div>';
+    $('#mgBody').innerHTML = `
+      <div style="display:flex;gap:.6rem;margin-bottom:.8rem">
+        ${m.cover ? `<img src="${m.cover}" alt="" style="width:64px;border-radius:8px">` : ''}
+        <div><b style="color:#fff;font-size:.85rem">${m.title}</b>
+        <div style="font-size:.66rem;color:var(--dimmer)">${d.items.length} chapter</div></div>
+      </div>
+      <div class="ep-grid">${d.items.map((c,i)=>`<button data-i="${i}">Ch. ${c.num}</button>`).join('')}</div>`;
+    $$('#mgBody .ep-grid button').forEach(b => b.onclick = ()=> mgRead(d.items[+b.dataset.i]));
+  }catch(e){ $('#mgBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${e.message}</div>`; }
+}
+async function mgRead(c){
+  $('#mgBody').innerHTML = '<div class="q-empty">memuat halaman...</div>';
+  try{
+    const d = await mgApi('pages', { id: c.id });
+    $('#mgBody').innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+        <span style="font-family:var(--mono);font-size:.7rem;color:var(--a2)">Chapter ${c.num}</span>
+        <button class="linkish" onclick="mgSearch()">kembali</button>
+      </div>
+      <div class="reader" id="mgReader">${d.pages.map(p=>`<img src="${p}" loading="lazy" alt="">`).join('')}</div>`;
+  }catch(e){ $('#mgBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${e.message}</div>`; }
+}
+
+/* ================= LAB: ANIME ================= */
+let hls = null;
+function loadHls(){
+  return new Promise((res, rej)=>{
+    if(window.Hls) return res();
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js';
+    s.onload = ()=>res();
+    s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
+async function anApi(step, extra){
+  const r = await fetch('/api/lab?action=anime', { method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(Object.assign({ step, source: $('#anSrc').value }, extra || {})) });
+  const d = await r.json().catch(()=>({}));
+  if(!r.ok || d.status !== 'success') throw new Error(d.message || 'HTTP ' + r.status);
+  return d;
+}
+function anReset(){ $('#anBody').innerHTML = ''; $('#anQ').value = ''; }
+async function anSearch(){
+  const q = $('#anQ').value.trim();
+  if(q.length < 2) return toast('Kata kunci minimal 2 huruf.', 'er');
+  $('#anBody').innerHTML = '<div class="q-empty">mencari di ' + $('#anSrc').value + '...</div>';
+  try{
+    const d = await anApi('search', { q });
+    $('#anBody').innerHTML = d.items.map((a,i)=>`<div class="an-row" data-i="${i}"><i class="fa-solid fa-play" style="color:var(--a2)"></i><span class="tx">${a.title}</span></div>`).join('');
+    $$('#anBody .an-row').forEach(r => r.onclick = ()=> anOpen(d.items[+r.dataset.i]));
+  }catch(e){ $('#anBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${e.message}</div>`; }
+}
+async function anOpen(a){
+  $('#anBody').innerHTML = '<div class="q-empty">memuat episode...</div>';
+  try{
+    const d = await anApi('detail', { url: a.url });
+    if(!d.episodes.length) return $('#anBody').innerHTML = '<div class="q-empty">Belum ada episode.</div>';
+    $('#anBody').innerHTML = `
+      <div style="display:flex;gap:.6rem;margin-bottom:.8rem">
+        ${d.poster ? `<img src="${d.poster}" alt="" style="width:64px;border-radius:8px">` : ''}
+        <div><b style="color:#fff;font-size:.85rem">${d.title || a.title}</b>
+        <div style="font-size:.66rem;color:var(--dimmer)">${d.episodes.length} episode</div></div>
+      </div>
+      <div class="ep-grid">${d.episodes.map((e,i)=>`<button data-i="${i}">Ep ${i+1}</button>`).join('')}</div>`;
+    $$('#anBody .ep-grid button').forEach(b => b.onclick = ()=> anWatch(d.episodes[+b.dataset.i]));
+  }catch(e){ $('#anBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${e.message}</div>`; }
+}
+async function anWatch(e){
+  $('#anBody').innerHTML = '<div class="q-empty">menyiapkan player...</div>';
+  try{
+    const d = await anApi('watch', { url: e.url });
+    $('#anBody').innerHTML = `
+      <div class="player">
+        <iframe id="anFrame" src="about:blank" allowfullscreen referrerpolicy="no-referrer"></iframe>
+        <video id="anVideo" controls playsinline style="display:none"></video>
+      </div>
+      <div class="srv-row">${d.servers.map((s,i)=>`<button class="tool-btn" data-u="${s.url}">${s.label}</button>`).join('')}
+        <button class="tool-btn" data-raw="1"><i class="fa-solid fa-code"></i> Mode asli</button>
+      </div>
+      <div style="display:flex;gap:.4rem">
+        <a class="tool-btn" href="${d.page}" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> Sumber asli</a>
+        <button class="tool-btn" onclick="anSearch()"><i class="fa-solid fa-rotate-left"></i> Kembali</button>
+      </div>`;
+    $$('.srv-row .tool-btn').forEach(b => b.onclick = ()=> anPlay(b.dataset.u || d.servers[0].url, b.dataset.raw === '1'));
+    anPlay(d.servers[0].url);
+  }catch(err){ $('#anBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${err.message}</div>`; }
+}
+async function anPlay(url, raw){
+  const f = $('#anFrame'), v = $('#anVideo');
+  if(!f || !v) return;
+  if(/\.m3u8(\?|$)/i.test(url)){
+    f.style.display = 'none'; v.style.display = 'block';
+    const src = '/api/lab?action=proxy&url=' + encodeURIComponent(url);
+    try{
+      await loadHls();
+      if(window.Hls && Hls.isSupported()){
+        if(hls) hls.destroy();
+        hls = new Hls({ maxBufferLength: 30 });
+        hls.loadSource(src);
+        hls.attachMedia(v);
+      } else {
+        v.src = src;
+      }
+      v.play().catch(()=>{});
+    }catch(e){ v.src = src; v.play().catch(()=>{}); }
+  } else {
+    if(hls){ hls.destroy(); hls = null; }
+    v.style.display = 'none'; v.pause();
+    f.style.display = 'block';
+    f.src = '/api/lab?action=proxy' + (raw ? '&raw=1' : '') + '&url=' + encodeURIComponent(url);
+  }
+}
 
 /* ================= LAB: PENGATURAN ================= */
 function localKeys(){ return Object.keys(localStorage).filter(k=>k.startsWith('zukai-') || k.startsWith('am-')); }
@@ -3610,6 +3904,21 @@ function exportLocal(){
   saveFile('zukai-data.json', JSON.stringify(data, null, 2), 'application/json');
   toast('Data lokal diekspor.', 'ok');
 }
+
+/* ================= INTRO ================= */
+(function(){
+  const el = $('#intro');
+  if(!el) return;
+  const skip = sessionStorage.getItem('zukai-intro') === '1' || reduce;
+  if(skip){ el.remove(); return; }
+  document.body.classList.add('locked');
+  setTimeout(()=>{
+    el.classList.add('out');
+    sessionStorage.setItem('zukai-intro', '1');
+    document.body.classList.remove('locked');
+    setTimeout(()=>el.remove(), 900);
+  }, 2400);
+})();
 
 /* ================= BOOT SEQUENCE (REAL HEALTH PROBE) ================= */
 (function(){
@@ -3843,7 +4152,9 @@ $('#orderIdInput').addEventListener('keydown', e=>{ if(e.key === 'Enter') $('#em
 $('#authPass').addEventListener('keydown', e=>{ if(e.key === 'Enter') authSubmit(); });
 $('#dlUrl').addEventListener('keydown', e=>{ if(e.key === 'Enter') runDl(); });
 $('#mName').addEventListener('keydown', e=>{ if(e.key === 'Enter') mailCreate(); });
+$('#mgQ').addEventListener('keydown', e=>{ if(e.key === 'Enter') mgSearch(); });
+$('#anQ').addEventListener('keydown', e=>{ if(e.key === 'Enter') anSearch(); });
 setStep(1);
 </script>
 </body>
-  </html>
+	</html>
