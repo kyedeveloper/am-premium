@@ -640,27 +640,6 @@ body[data-view="shell"] #labView,body[data-view="dl"] #labView,body[data-view="m
 .set-row .sr{flex:none;display:flex;gap:.35rem;align-items:center}
 @media(max-width:700px){.dock{margin-top:.3rem}.sh{height:52vh}}
 
-/* ===== INTRO TYPOGRAPHY ===== */
-#intro{position:fixed;inset:0;z-index:10001;background:#040406;display:grid;place-items:center;overflow:hidden;transition:opacity .7s var(--ease),transform .9s var(--ease),filter .7s}
-#intro.out{opacity:0;transform:scale(1.05);filter:blur(10px);pointer-events:none}
-#intro .in-scan{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,245,212,.05) 0 1px,transparent 1px 4px);opacity:.5}
-#intro .in-glow{position:absolute;width:70vmin;height:70vmin;border-radius:50%;background:radial-gradient(circle,var(--g1),transparent 65%);filter:blur(50px);opacity:.45;animation:inPulse 3s ease-in-out infinite}
-@keyframes inPulse{50%{transform:scale(1.15);opacity:.75}}
-.in-wrap{position:relative;text-align:center;padding:1rem}
-.in-kicker{font-family:var(--mono);font-size:.56rem;letter-spacing:.42em;text-transform:uppercase;color:var(--a2);opacity:0;animation:inFade .8s .15s var(--ease) forwards}
-.in-title{font-size:clamp(2.6rem,12vw,5.4rem);line-height:.92;font-weight:800;letter-spacing:-.03em;color:#fff;margin:.5rem 0;display:flex;gap:.28em;justify-content:center;flex-wrap:wrap}
-.in-word{display:inline-block;overflow:hidden}
-.in-word i{display:inline-block;font-style:normal;transform:translateY(105%);animation:inRise .85s var(--ease) forwards}
-.in-word:first-child i{animation-delay:.28s}
-.in-word:last-child i{animation-delay:.42s;background:linear-gradient(100deg,var(--a1-soft),var(--a2));-webkit-background-clip:text;background-clip:text;color:transparent}
-@keyframes inRise{to{transform:none}}
-@keyframes inFade{to{opacity:1}}
-.in-sub{font-family:var(--mono);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);opacity:0;animation:inFade .8s .85s var(--ease) forwards}
-.in-sub b{color:var(--a1-soft)}
-.in-bar{width:min(220px,60vw);height:2px;background:#15151f;border-radius:9px;overflow:hidden;margin:1.1rem auto 0}
-.in-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--a1),var(--a2));animation:inBar 1.9s .2s cubic-bezier(.4,0,.2,1) forwards}
-@keyframes inBar{to{width:100%}}
-
 /* ===== SMOOTH PASS ===== */
 #labView{animation:viewIn .45s var(--ease) both}
 @keyframes viewIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
@@ -715,20 +694,6 @@ body[data-view="shell"] #labView,body[data-view="dl"] #labView,body[data-view="m
 </style>
 </head>
 <body data-view="home">
-
-<div id="intro" aria-hidden="true">
-  <div class="in-scan"></div>
-  <div class="in-glow"></div>
-  <div class="in-wrap">
-    <div class="in-kicker">Zukai Developer Presents</div>
-    <h1 class="in-title">
-      <span class="in-word"><i>AM</i></span>
-      <span class="in-word"><i>PREMIUM</i></span>
-    </h1>
-    <div class="in-sub">built by <b>kyedeveloper</b> · zukai dev</div>
-    <div class="in-bar"><i></i></div>
-  </div>
-</div>
 
 <div id="boot" aria-hidden="true">
   <div class="boot-bg"></div>
@@ -2041,7 +2006,7 @@ curl -X GET "https://www.juikoprem.my.id/api/auth/me" \
 
 <div id="toasts" aria-live="polite"></div>
 <canvas id="confetti" style="position:fixed;inset:0;z-index:700;pointer-events:none" aria-hidden="true"></canvas>
-
+	
 <script>
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -4107,21 +4072,6 @@ function exportLocal(){
   saveFile('zukai-data.json', JSON.stringify(data, null, 2), 'application/json');
   toast('Data lokal diekspor.', 'ok');
 }
-
-/* ================= INTRO ================= */
-(function(){
-  const el = $('#intro');
-  if(!el) return;
-  const skip = sessionStorage.getItem('zukai-intro') === '1' || reduce;
-  if(skip){ el.remove(); return; }
-  document.body.classList.add('locked');
-  setTimeout(()=>{
-    el.classList.add('out');
-    sessionStorage.setItem('zukai-intro', '1');
-    document.body.classList.remove('locked');
-    setTimeout(()=>el.remove(), 900);
-  }, 2400);
-})();
 
 /* ================= BOOT SEQUENCE (REAL HEALTH PROBE) ================= */
 (function(){
