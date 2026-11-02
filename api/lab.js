@@ -297,65 +297,7 @@ async function doNet(req, res) {
 }
 
 /* ---------- MANGA ---------- */
-const MD = 'https://api.mangadex.org';
-const mdImg = u => '/api/lab?action=img&url=' + encodeURIComponent(u);
-
-async function mdJson(path) {
-  const r = await tf(MD + path, { headers: { 'User-Agent': 'zukai-lab/1.0' } }, 11000);
-  if (!r.ok) throw new Error('mangadex ' + r.status);
-  return r.json();
-}
-
-async function doManga(req, res) {
-  const b = req.body || {};
-  const step = String(b.step || req.query.step || '');
-  const src = String(b.source || 'mangadex').toLowerCase();
-
-  if (step === 'search') {
-    const q = String(b.q || '').trim();
-    if (q.length < 2) return out(res, 400, { status: 'error', message: 'Kata kunci terlalu pendek.' });
-
-    if (src === 'comick') {
-      const r = await tf('https://api.comick.fun/v1.0/search?q=' + encodeURIComponent(q) + '&limit=24', { headers: { 'User-Agent': UA } }, 11000);
-      if (!r.ok) return out(res, 502, { status: 'error', message: 'comick ' + r.status });
-      const d = await r.json().catch(() => []);
-      const items = (Array.isArray(d) ? d : []).map(m => ({
-        id: m.hid || m.slug, title: m.title, cover: m.md_covers && m.md_covers[0] ? mdImg('https://meo.comick.pictures/' + m.md_covers[0].b2key) : '', year: m.year || '', source: 'comick'
-      }));
-      return out(res, 200, { status: 'success', items });
-    }
-
-    const d = await mdJson('/manga?title=' + encodeURIComponent(q) + '&limit=24&includes[]=cover_art&order[relevance]=desc&contentRating[]=safe&contentRating[]=suggestive');
-    const items = (d.data || []).map(m => {
-      const rel = (m.relationships || []).find(r => r.type === 'cover_art');
-      const file = rel && rel.attributes && rel.attributes.fileName;
-      return {
-        id: m.id,
-        title: (m.attributes.title && (m.attributes.title.en || Object.values(m.attributes.title)[0])) || 'Tanpa judul',
-        cover: file ? mdImg('https://uploads.mangadex.org/covers/' + m.id + '/' + file + '.512.jpg') : '',
-        year: m.attributes.year || '', source: 'mangadex'
-      };
-    });
-    return out(res, 200, { status: 'success', items });
-  }
-
-  if (step === 'chapters') {
-    const id = String(b.id || '');
-    if (src === 'comick') {
-      const r = await tf('https://api.comick.fun/manga/' + encodeURIComponent(id) + '/chapters?lang=en&limit=300', { headers: { 'User-Agent': UA } }, 12000);
-      const d = await r.json().catch(() => ({}));
-      const items = (d.chapters || []).map(c => ({ id: c.hid, num: c.chap || '?', title: c.title || '', at: c.created_at || '' }));
-      return out(res, 200, { status: 'success', items });
-    }
-    const d = await mdJson('/manga/' + encodeURIComponent(id) + '/feed?limit=300&translatedLanguage[]=en&order[chapter]=asc&includes[]=scanlation_group');
-    const items = (d.data || []).map(c => ({
-      id: c.id, num: c.attributes.chapter || '?', title: c.attributes.title || '', at: c.attributes.publishAt || ''
-    }));
-    return out(res, 200, { status: 'success', items });
-  }
-
-  if (step === 'pages') {
-    const id = String(b.id || '');
+(b.id || '');
     if (src === 'comick') {
       const r = await tf('https://api.comick.fun/chapter/' + encodeURIComponent(id) + '?tachiyomi=true', { headers: { 'User-Agent': UA } }, 12000);
       const d = await r.json().catch(() => ({}));
@@ -426,50 +368,258 @@ async function doAnime(req, res) {
     const host = new URL(url).hostname;
     const r = await getHtml(url, 'https://' + host);
     if (!r.ok) return out(res, 502, { status: 'error', message: 'Gagal membuka halaman.' });
+/* ---------- MANGA ---------- */
+const MD = 'https://api.mangadex.org';
+const mdImg = u => '/api/lab?action=img&url=' + encodeURIComponent(u);
 
-    const poster = (r.text.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i) || [])[1] || '';
-    const title = strip((r.text.match(/<meta[^>]+property="og:title"[^>]+content="([^"]+)"/i) || [])[1] || '');
-    const seen = new Set(), eps = [];
-    const re = /href="([^"]*\/(?:episode|eps|ep)\/[^"'#?]+)"[^>]*>([\s\S]{0,80}?)<\/a>/gi;
-    let m;
-    while ((m = re.exec(r.text)) && eps.length < 200) {
-      const u = abs(url, m[1]);
-      if (seen.has(u)) continue;
-      seen.add(u);
-      eps.push({ url: u, title: strip(m[2]) || 'Episode' });
-    }
-    return out(res, 200, { status: 'success', title, poster, episodes: eps });
+async function mdJson(path) {
+  const r = await tf(MD + path, { headers: { 'User-Agent': 'zukai-lab/1.0' } }, 9000);
+  if (!r.ok) throw new Error('mangadex ' + r.status);
+  return r.json();
+}
+
+const MD_Q = 'includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive&hasAvailableChapters=true&limit=18';
+const mdTitle = m => {
+  const t = m.attributes && m.attributes.title;
+  if (!t) return 'Tanpa judul';
+  return t.en || t.id || Object.values(t)[0] || 'Tanpa judul';
+};
+function mdCover(m) {
+  const rel = (m.relationships || []).find(r => r.type === 'cover_art');
+  const f = rel && rel.attributes && rel.attributes.fileName;
+  return f ? mdImg('https://uploads.mangadex.org/covers/' + m.id + '/' + f + '.256.jpg') : '';
+}
+const mdMap = list => (list || []).map(m => ({ id: m.id, title: mdTitle(m), cover: mdCover(m), source: 'mangadex' }));
+
+async function doManga(req, res) {
+  const b = req.body || {};
+  const step = String(b.step || req.query.step || '');
+  const src = String(b.source || 'mangadex').toLowerCase();
+
+  if (step === 'home') {
+    const [a, c] = await Promise.allSettled([
+      mdJson('/manga?order[followedCount]=desc&' + MD_Q),
+      mdJson('/manga?order[latestUploadedChapter]=desc&' + MD_Q)
+    ]);
+    const trending = a.status === 'fulfilled' ? mdMap(a.value.data) : [];
+    const latest = c.status === 'fulfilled' ? mdMap(c.value.data) : [];
+    if (!trending.length && !latest.length) return out(res, 502, { status: 'error', message: 'MangaDex tidak merespons.' });
+    return out(res, 200, { status: 'success', trending, latest });
   }
 
-  if (step === 'watch') {
-    const url = String(b.url || '');
-    if (!/^https?:\/\//i.test(url)) return out(res, 400, { status: 'error', message: 'URL tidak valid.' });
-    const host = new URL(url).hostname;
-    const r = await getHtml(url, 'https://' + host);
-    if (!r.ok) return out(res, 502, { status: 'error', message: 'Gagal membuka episode.' });
+  if (step === 'genres') {
+    const d = await mdJson('/manga/tag');
+    const items = (d.data || [])
+      .filter(t => t.attributes && t.attributes.group === 'genre')
+      .map(t => ({ id: t.id, name: (t.attributes.name && (t.attributes.name.en || Object.values(t.attributes.name)[0])) || t.id }))
+      .sort((x, y) => x.name.localeCompare(y.name));
+    return out(res, 200, { status: 'success', items });
+  }
 
-    const servers = [];
-    const ifr = /<iframe[^>]+src="([^"]+)"/gi;
-    let m;
-    while ((m = ifr.exec(r.text)) && servers.length < 8) {
-      const u = abs(url, m[1]);
-      if (u.includes('doubleclick') || u.includes('googletagmanager')) continue;
-      servers.push({ label: 'Server ' + (servers.length + 1), url: u });
+  if (step === 'bygenre') {
+    const tag = String(b.tag || '').trim();
+    if (!tag) return out(res, 400, { status: 'error', message: 'Genre kosong.' });
+    const d = await mdJson('/manga?includedTags[]=' + encodeURIComponent(tag) + '&order[followedCount]=desc&' + MD_Q);
+    return out(res, 200, { status: 'success', items: mdMap(d.data) });
+  }
+
+  if (step === 'search') {
+    const q = String(b.q || '').trim();
+    if (q.length < 2) return out(res, 400, { status: 'error', message: 'Kata kunci terlalu pendek.' });
+
+    if (src === 'comick') {
+      const r = await tf('https://api.comick.fun/v1.0/search?q=' + encodeURIComponent(q) + '&limit=24', { headers: { 'User-Agent': UA } }, 9000);
+      if (!r.ok) return out(res, 502, { status: 'error', message: 'comick ' + r.status });
+      const d = await r.json().catch(() => []);
+      const items = (Array.isArray(d) ? d : []).map(m => ({
+        id: m.hid || m.slug, title: m.title,
+        cover: m.md_covers && m.md_covers[0] ? mdImg('https://meo.comick.pictures/' + m.md_covers[0].b2key) : '',
+        source: 'comick'
+      }));
+      return out(res, 200, { status: 'success', items });
     }
-    const mir = /data-content="([^"]+)"/gi;
-    while ((m = mir.exec(r.text)) && servers.length < 12) {
-      const u = abs(url, m[1].replace(/&amp;/g, '&'));
-      if (!/^https?:/i.test(u)) continue;
-      if (servers.some(s => s.url === u)) continue;
-      servers.push({ label: 'Mirror ' + (servers.length + 1), url: u });
-    }
-    if (!servers.length) return out(res, 404, { status: 'error', message: 'Tidak ada server video di halaman ini.' });
-    return out(res, 200, { status: 'success', servers, page: url });
+
+    const d = await mdJson('/manga?title=' + encodeURIComponent(q) + '&limit=24&includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive');
+    return out(res, 200, { status: 'success', items: mdMap(d.data) });
+  }
+
+  if (step === 'chapters') {
+    const id = String(b.id || '').trim();
+    if (!id) return out(res, 400, { status: 'error', message: 'ID kosong.' });
+    const d = await mdJson('/manga/' + id + '/feed?translatedLanguage[]=en&order[chapter]=asc&limit=200&includeFutureUpdates=1');
+    const items = (d.data || [])
+      .map(c => ({ id: c.id, num: (c.attributes && c.attributes.chapter) || '?' }))
+      .filter(c => c.num !== '?');
+    return out(res, 200, { status: 'success', items });
+  }
+
+  if (step === 'pages') {
+    const id = String(b.id || '').trim();
+    if (!id) return out(res, 400, { status: 'error', message: 'ID kosong.' });
+    const d = await mdJson('/at-home/server/' + id);
+    const base = d.baseUrl, hash = d.chapter.hash;
+    const files = (d.chapter.data && d.chapter.data.length) ? d.chapter.data : d.chapter.dataSaver;
+    return out(res, 200, { status: 'success', pages: files.map(f => mdImg(base + '/data/' + hash + '/' + f)) });
   }
 
   return out(res, 400, { status: 'error', message: 'step tidak dikenal.' });
 }
 
+/* ---------- ANIME ---------- */
+const ANIME_SRC = {
+  otakudesu: { doms: ['otakudesu.blog', 'otakudesu.io', 'otakudesu.cloud'], search: q => '/?s=' + encodeURIComponent(q) + '&post_type=anime', lists: ['/ongoing-anime/', '/anime-terbaru/'], rated: '/complete-anime/', schedule: '/jadwal-rilis/', genres: '/genre-list/' },
+  samehadaku: { doms: ['samehadaku.li', 'samehadaku.care', 'samehadaku.email'], search: q => '/?s=' + encodeURIComponent(q), lists: ['/anime-terbaru/', '/ongoing-anime/'], rated: '/daftar-anime/', schedule: '/jadwal-rilis/', genres: '/genre/' },
+  anoboy: { doms: ['anoboy.be', 'anoboy.biz', 'anoboy.ch', 'anoboy.li'], search: q => '/?s=' + encodeURIComponent(q), lists: ['/', '/anime-terbaru/'], rated: '/', schedule: '/', genres: '/' }
+};
+
+async function pickHost(src) {
+  const cfg = ANIME_SRC[src];
+  if (!cfg) throw new Error('sumber tidak dikenal');
+  for (const d of cfg.doms) {
+    try {
+      const r = await tf('https://' + d + '/', { headers: { 'User-Agent': UA } }, 7000);
+      if (r.ok) return d;
+    } catch (e) {}
+  }
+  throw new Error('semua domain ' + src + ' tidak merespons');
+}
+
+const AN_RE = /<a[^>]+href="(https?:\/\/[^"]+?\/(?:anime|tv|movie|anime-terbaru)\/[^"'#?]+)"[^>]*>([\s\S]{0,200}?)<\/a>/gi;
+const AN_EP = /<a[^>]+href="(https?:\/\/[^"]+?(?:\/episode\/|episode-\d|ep-\d)[^"'#?]*)"[^>]*>([\s\S]{0,160}?)<\/a>/gi;
+
+function anItems(text, host, limit) {
+  const seen = new Set(), items = [];
+  let m;
+  AN_RE.lastIndex = 0;
+  while ((m = AN_RE.exec(text)) && items.length < limit) {
+    const url = m[1];
+    if (seen.has(url)) continue;
+    const title = strip(m[2]);
+    if (title.length < 3) continue;
+    const win = text.slice(m.index, m.index + 800);
+    const im = /<img[^>]+(?:data-src|src)="([^"]+)"/i.exec(win);
+    seen.add(url);
+    items.push({ url, title, cover: im ? im[1] : '', host });
+  }
+  return items;
+}
+
+async function doAnime(req, res) {
+  const b = req.body || {};
+  const step = String(b.step || req.query.step || '');
+  const src = String(b.source || 'otakudesu').toLowerCase();
+  const cfg = ANIME_SRC[src];
+  if (!cfg) return out(res, 400, { status: 'error', message: 'sumber tidak dikenal' });
+
+  const dom = await pickHost(src);
+  const base = 'https://' + dom;
+
+  if (step === 'home') {
+    const [a, c] = await Promise.allSettled([
+      getHtml(base + cfg.lists[0], base),
+      getHtml(base + cfg.lists[1], base)
+    ]);
+    const trending = a.status === 'fulfilled' && a.value.ok ? anItems(a.value.text, dom, 14) : [];
+    const latest = c.status === 'fulfilled' && c.value.ok ? anItems(c.value.text, dom, 14) : [];
+    let rated = [];
+    if (cfg.rated && cfg.rated !== cfg.lists[0]) {
+      const r = await getHtml(base + cfg.rated, base).catch(() => null);
+      if (r && r.ok) rated = anItems(r.text, dom, 14);
+    }
+    if (!trending.length && !latest.length && !rated.length) return out(res, 502, { status: 'error', message: 'Sumber tidak bisa dibaca.' });
+    return out(res, 200, { status: 'success', trending, latest, rated, host: dom });
+  }
+
+  if (step === 'schedule') {
+    const r = await getHtml(base + cfg.schedule, base);
+    if (!r.ok) return out(res, 502, { status: 'error', message: 'Jadwal gagal (' + r.code + ').' });
+    const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+    const chunks = r.text.split(/Senin|Selasa|Rabu|Kamis|Jumat|Sabtu|Minggu/i);
+    const sections = [];
+    for (let i = 1; i < chunks.length; i++) {
+      const items = anItems(chunks[i], dom, 20);
+      if (items.length) sections.push({ day: days[i - 1] || 'Lainnya', items });
+    }
+    if (!sections.length) sections.push({ day: 'Semua', items: anItems(r.text, dom, 24) });
+    return out(res, 200, { status: 'success', sections, host: dom });
+  }
+
+  if (step === 'genres') {
+    const r = await getHtml(base + cfg.genres, base);
+    if (!r.ok) return out(res, 502, { status: 'error', message: 'Genre gagal (' + r.code + ').' });
+    const seen = new Set(), items = [];
+    const re = /<a[^>]+href="(https?:\/\/[^"]+?\/genre\/[^"'#]+)"[^>]*>([\s\S]{0,80}?)<\/a>/gi;
+    let m;
+    while ((m = re.exec(r.text)) && items.length < 40) {
+      const name = strip(m[2]);
+      if (!name || seen.has(m[1])) continue;
+      seen.add(m[1]);
+      items.push({ url: m[1], name, host: dom });
+    }
+    return out(res, 200, { status: 'success', items, host: dom });
+  }
+
+  if (step === 'bygenre' || step === 'list') {
+    const url = String(b.url || '').trim();
+    if (!/^https?:\/\//i.test(url)) return out(res, 400, { status: 'error', message: 'URL tidak valid.' });
+    const r = await getHtml(url, base);
+    if (!r.ok) return out(res, 502, { status: 'error', message: 'Gagal membuka genre (' + r.code + ').' });
+    return out(res, 200, { status: 'success', items: anItems(r.text, dom, 30), host: dom });
+  }
+
+  if (step === 'search') {
+    const q = String(b.q || '').trim();
+    if (q.length < 2) return out(res, 400, { status: 'error', message: 'Kata kunci terlalu pendek.' });
+    const r = await getHtml(base + cfg.search(q), base);
+    if (!r.ok) return out(res, 502, { status: 'error', message: 'Pencarian gagal (' + r.code + ').' });
+    return out(res, 200, { status: 'success', items: anItems(r.text, dom, 24), host: dom });
+  }
+
+  if (step === 'detail') {
+    const url = String(b.url || '').trim();
+    if (!/^https?:\/\//i.test(url)) return out(res, 400, { status: 'error', message: 'URL tidak valid.' });
+    const r = await getHtml(url, base);
+    if (!r.ok) return out(res, 502, { status: 'error', message: 'Detail gagal (' + r.code + ').' });
+    const seen = new Set(), items = [];
+    let m;
+    AN_EP.lastIndex = 0;
+    while ((m = AN_EP.exec(r.text)) && items.length < 400) {
+      if (seen.has(m[1])) continue;
+      seen.add(m[1]);
+      items.push({ url: m[1], title: strip(m[2]) || 'Episode' });
+    }
+    items.reverse();
+    const syn = /<div[^>]+class="[^"]*(?:sinopsis|desc|entry-content)[^"]*"[^>]*>([\s\S]{0,900}?)<\/div>/i.exec(r.text);
+    return out(res, 200, { status: 'success', items, synopsis: syn ? strip(syn[1]).slice(0, 500) : '', host: dom });
+  }
+
+  if (step === 'episode') {
+    const url = String(b.url || '').trim();
+    if (!/^https?:\/\//i.test(url)) return out(res, 400, { status: 'error', message: 'URL tidak valid.' });
+    const r = await getHtml(url, base);
+    if (!r.ok) return out(res, 502, { status: 'error', message: 'Episode gagal (' + r.code + ').' });
+    const out2 = [], seen = new Set();
+    const re = /<(?:iframe|source)[^>]+(?:data-src|src)="([^"]+)"/gi;
+    let m;
+    while ((m = re.exec(r.text))) {
+      let u = m[1];
+      if (!/^https?:\/\//i.test(u)) continue;
+      if (seen.has(u)) continue;
+      seen.add(u);
+      out2.push({ url: u, m3u8: /\.m3u8/i.test(u), host: (u.match(/^https?:\/\/([^\/]+)/) || [])[1] || '' });
+    }
+    const mp = /https?:\\?\/\\?\/[^"'\s]+?\.m3u8[^"'\s]*/gi;
+    const raw = r.text.replace(/\\\//g, '/');
+    while ((m = mp.exec(raw))) {
+      if (!seen.has(m[0])) { seen.add(m[0]); out2.unshift({ url: m[0], m3u8: true, host: 'm3u8' }); }
+    }
+    if (!out2.length) return out(res, 502, { status: 'error', message: 'Tidak ada server di episode ini.' });
+    return out(res, 200, { status: 'success', servers: out2.slice(0, 12), host: dom });
+  }
+
+  return out(res, 400, { status: 'error', message: 'step tidak dikenal.' });
+                                    }
+    
 /* ---------- temp mail ---------- */
 async function mt(prov, path, opt = {}, token) {
   const h = { 'Accept': 'application/json', 'Content-Type': 'application/json' };
