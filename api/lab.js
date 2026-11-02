@@ -322,17 +322,28 @@ const ANIME_SRC = {
   anoboy: { doms: ['anoboy.be', 'anoboy.biz', 'anoboy.ch', 'anoboy.li'], path: q => '/?s=' + encodeURIComponent(q) }
 };
 
+const HOST_CACHE = new Map();
+
 async function pickHost(src) {
   const cfg = ANIME_SRC[src];
   if (!cfg) throw new Error('sumber tidak dikenal');
-  for (const d of cfg.doms) {
+
+  const cached = HOST_CACHE.get(src);
+  if (cached && Date.now() - cached.at < 600000) return cached.host;
+
+  const hasil = await Promise.all(cfg.doms.map(async d => {
     try {
-      const r = await tf('https://' + d + '/', { headers: { 'User-Agent': UA } }, 7000);
-      if (r.ok) return d;
-    } catch (e) {}
-  }
-  throw new Error('semua domain ' + src + ' tidak merespons');
-}
+      const r = await tf('https://' + d + '/', { headers: { 'User-Agent': UA } }, 2500);
+      return r.ok ? d : null;
+    } catch (e) { return null; }
+  }));
+
+  const host = hasil.find(Boolean);
+  if (!host) throw new Error('semua domain ' + src + ' tidak merespons');
+
+  HOST_CACHE.set(src, { host, at: Date.now() });
+  return host;
+    }
 
 async function doAnime(req, res) {
   const b = req.body || {};
@@ -472,16 +483,27 @@ const ANIME_SRC = {
   anoboy: { doms: ['anoboy.be', 'anoboy.biz', 'anoboy.ch', 'anoboy.li'], search: q => '/?s=' + encodeURIComponent(q), lists: ['/', '/anime-terbaru/'], rated: '/', schedule: '/', genres: '/' }
 };
 
+const HOST_CACHE = new Map();
+
 async function pickHost(src) {
   const cfg = ANIME_SRC[src];
   if (!cfg) throw new Error('sumber tidak dikenal');
-  for (const d of cfg.doms) {
+
+  const cached = HOST_CACHE.get(src);
+  if (cached && Date.now() - cached.at < 600000) return cached.host;
+
+  const hasil = await Promise.all(cfg.doms.map(async d => {
     try {
-      const r = await tf('https://' + d + '/', { headers: { 'User-Agent': UA } }, 7000);
-      if (r.ok) return d;
-    } catch (e) {}
-  }
-  throw new Error('semua domain ' + src + ' tidak merespons');
+      const r = await tf('https://' + d + '/', { headers: { 'User-Agent': UA } }, 2500);
+      return r.ok ? d : null;
+    } catch (e) { return null; }
+  }));
+
+  const host = hasil.find(Boolean);
+  if (!host) throw new Error('semua domain ' + src + ' tidak merespons');
+
+  HOST_CACHE.set(src, { host, at: Date.now() });
+  return host;
 }
 
 const AN_RE = /<a[^>]+href="(https?:\/\/[^"]+?\/(?:anime|tv|movie|anime-terbaru)\/[^"'#?]+)"[^>]*>([\s\S]{0,200}?)<\/a>/gi;
