@@ -470,7 +470,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
 .gstep h4{font-size:.83rem;color:#fff;margin-bottom:.15rem}
 .gstep p{font-size:.78rem;color:var(--dim);margin:0}
 
-#toasts{position:fixed;bottom:1rem;right:1rem;z-index:800;display:flex;flex-direction:column;gap:.5rem;max-width:330px}
+#toasts{position:fixed;bottom:calc(92px + env(safe-area-inset-bottom));right:1rem;z-index:800;display:flex;flex-direction:column;gap:.5rem;max-width:330px}
 .toast{display:flex;gap:.6rem;align-items:flex-start;padding:.7rem .85rem;border-radius:11px;border:1px solid var(--line);background:#0d0d14;box-shadow:0 18px 40px rgba(0,0,0,.6);font-size:.78rem;color:var(--txt);animation:toastIn .4s var(--ease) both}
 .toast.out{animation:toastOut .35s forwards}
 .toast i{flex:none;margin-top:.15rem}
@@ -480,7 +480,7 @@ footer{border-top:1px solid var(--line);padding:1.6rem 0 3rem;margin-top:1rem}
 @keyframes toastIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
 @keyframes toastOut{to{opacity:0;transform:translateX(30px)}}
 
-.fab{position:fixed;bottom:1rem;left:1rem;z-index:400;width:46px;height:46px;border-radius:50%;border:1px solid var(--a1-soft);background:#0d0d14;color:var(--a1-soft);cursor:pointer;box-shadow:0 0 24px var(--g1);transition:.3s;font-size:1rem}
+.fab{position:fixed;bottom:calc(88px + env(safe-area-inset-bottom));left:1rem;z-index:400;width:46px;height:46px;border-radius:50%;border:1px solid var(--a1-soft);background:#0d0d14;color:var(--a1-soft);cursor:pointer;box-shadow:0 0 24px var(--g1);transition:.3s;font-size:1rem}
 .fab:hover{transform:scale(1.08) rotate(8deg);background:var(--a1);color:#fff}
 
 /* ==== MOBILE FIXES ==== */
@@ -674,6 +674,33 @@ body[data-view="shell"] #labView,body[data-view="dl"] #labView,body[data-view="m
 .dock-primary button.on{background:linear-gradient(135deg,var(--a1),var(--a2));color:#08080d;border-color:transparent;box-shadow:0 6px 18px -8px var(--a1)}
 .dock-tools button.on{opacity:1}
 
+/* ===== FLOATING PRIMARY NAV ===== */
+body{padding-bottom:104px}
+.dock-row{overflow-x:auto;scrollbar-width:none}
+.dock-row::-webkit-scrollbar{display:none}
+.float-nav{
+  position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));
+  transform:translateX(-50%);z-index:450;display:flex;gap:.35rem;padding:.42rem;
+  border:1px solid var(--line);border-radius:99px;background:rgba(8,8,12,.86);
+  -webkit-backdrop-filter:blur(20px) saturate(1.5);backdrop-filter:blur(20px) saturate(1.5);
+  box-shadow:0 20px 44px -14px #000,0 0 40px -16px var(--g1),inset 0 1px 0 rgba(255,255,255,.05);
+  animation:floatIn .5s var(--ease) both;
+}
+@keyframes floatIn{from{opacity:0;transform:translate(-50%,26px)}to{opacity:1;transform:translate(-50%,0)}}
+.float-nav button{
+  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.2rem;
+  min-width:80px;padding:.52rem .85rem .46rem;border:1px solid transparent;border-radius:99px;background:none;
+  color:var(--dim);font-family:var(--mono);font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;
+  cursor:pointer;transition:color .22s,background .25s,transform .16s var(--ease),box-shadow .25s;
+}
+.float-nav button i{font-size:.92rem;transition:transform .22s var(--ease)}
+.float-nav button:hover{color:#fff}
+.float-nav button:hover i{transform:translateY(-2px)}
+.float-nav button:active{transform:scale(.93)}
+.float-nav button.on{color:#08080d;background:linear-gradient(135deg,var(--a1),var(--a2));box-shadow:0 10px 24px -10px var(--a1)}
+@media(max-width:380px){.float-nav button{min-width:0;padding:.5rem .7rem}.float-nav button span{font-size:.5rem}}
+@media(prefers-reduced-motion:reduce){.float-nav{animation:none}}
+
 /* ===== BERANDA KONTEN ===== */
 .sec{margin-top:1.1rem}
 .sec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.55rem}
@@ -777,11 +804,6 @@ body[data-view="shell"] #labView,body[data-view="dl"] #labView,body[data-view="m
     </div>
 
     <div class="dock" id="dock" role="tablist" aria-label="Workspace">
-      <div class="dock-row dock-primary">
-        <button data-view="home" class="on" role="tab"><i class="fa-solid fa-house"></i> Beranda</button>
-        <button data-view="manga" role="tab"><i class="fa-solid fa-book-open"></i> Manga</button>
-        <button data-view="anime" role="tab"><i class="fa-solid fa-tv"></i> Anime</button>
-      </div>
       <div class="dock-row dock-tools">
         <button data-view="shell" role="tab"><i class="fa-solid fa-terminal"></i> Shell</button>
         <button data-view="dl" role="tab"><i class="fa-solid fa-download"></i> Downloader</button>
@@ -1707,6 +1729,13 @@ curl -X GET "https://www.juikoprem.my.id/api/auth/me" \
     </div>
   </div>
 </div>
+
+<!-- FLOATING PRIMARY NAV -->
+<nav class="float-nav" id="floatNav" role="tablist" aria-label="Navigasi utama">
+  <button data-view="home" class="on" role="tab"><i class="fa-solid fa-house"></i><span>Beranda</span></button>
+  <button data-view="manga" role="tab"><i class="fa-solid fa-book-open"></i><span>Manga</span></button>
+  <button data-view="anime" role="tab"><i class="fa-solid fa-tv"></i><span>Anime</span></button>
+</nav>
 
 <button class="fab btn-bounce" onclick="openPalette()" aria-label="Aksi cepat"><i class="fa-solid fa-bolt"></i></button>
 
@@ -3295,7 +3324,7 @@ function gotoView(v){
   if(!VIEWS.includes(v)) v = 'home';
   document.body.dataset.view = v;
   $$('.pane').forEach(p=>p.classList.toggle('on', p.dataset.pane === v));
-  $$('#dock button').forEach(b=>b.classList.toggle('on', b.dataset.view === v));
+  $$('#dock button, #floatNav button').forEach(b=>b.classList.toggle('on', b.dataset.view === v));
   if(v === 'home'){
     window.scrollTo({top:0, behavior: reduce ? 'auto' : 'smooth'});
     return;
@@ -3310,7 +3339,7 @@ function gotoView(v){
   if(v === 'manga') mgHome();
   if(v === 'anime') anHome();
 }
-$$('#dock button').forEach(b=>b.onclick = ()=>gotoView(b.dataset.view));
+$$('#dock button, #floatNav button').forEach(b=>b.onclick = ()=>gotoView(b.dataset.view));
 
 /* ================= LAB: SHELL ================= */
 const VFS_KEY = 'zukai-vfs';
@@ -3724,101 +3753,36 @@ function mailDrop(){
   toast('Mailbox dihapus.', 'sy');
 }
 
+/* ================= LAB: FETCH HELPER ================= */
+async function labFetch(action, body){
+  const ctrl = new AbortController();
+  const to = setTimeout(()=>ctrl.abort(), 14000);
+  try{
+    const r = await fetch('/api/lab?action=' + action, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body || {}), signal: ctrl.signal
+    });
+    const raw = await r.text();
+    let d = {};
+    try{ d = JSON.parse(raw); }catch(e){}
+    if(!r.ok || d.status !== 'success'){
+      const msg = d.message || ((r.status >= 500)
+        ? 'Server lambat balas (HTTP ' + r.status + '). Coba sumber lain atau ulangi.'
+        : 'HTTP ' + r.status);
+      const err = new Error(msg); err.code = r.status; throw err;
+    }
+    return d;
+  }catch(e){
+    if(e.name === 'AbortError') throw new Error('Server kelamaan diem. Coba sumber lain.');
+    throw e;
+  }finally{ clearTimeout(to); }
+}
+
 /* ================= LAB: MANGA ================= */
-async function mgApi(step, extra){
-  const r = await fetch('/api/lab?action=manga', { method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify(Object.assign({ step, source: $('#mgSrc').value }, extra || {})) });
-  const d = await r.json().catch(()=>({}));
-  if(!r.ok || d.status !== 'success') throw new Error(d.message || 'HTTP ' + r.status);
-  return d;
-}
-function mgReset(){ $('#mgBody').innerHTML = ''; $('#mgQ').value = ''; }
-function mgSkeleton(n){
-  $('#mgBody').innerHTML = '<div class="mg-grid">' + Array.from({length:n}, ()=>'<div class="sk"></div>').join('') + '</div>';
-}
-async function mgSearch(){
-  const q = $('#mgQ').value.trim();
-  if(q.length < 2) return toast('Kata kunci minimal 2 huruf.', 'er');
-  mgSkeleton(8);
-  try{
-    const d = await mgApi('search', { q });
-    if(!d.items.length) return $('#mgBody').innerHTML = '<div class="q-empty">Tidak ada hasil.</div>';
-    $('#mgBody').innerHTML = '<div class="mg-grid">' + d.items.map((m,i)=>`
-      <div class="mg-card" data-i="${i}">
-        ${m.cover ? `<img src="${m.cover}" alt="" loading="lazy" onload="this.classList.add('rdy')">` : '<div class="sk"></div>'}
-        <b>${m.title}</b>
-      </div>`).join('') + '</div>';
-    $$('.mg-card').forEach(c => c.onclick = ()=> mgOpen(d.items[+c.dataset.i]));
-  }catch(e){ $('#mgBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${e.message}</div>`; }
-}
-async function mgOpen(m){
-  $('#mgBody').innerHTML = '<div class="q-empty">memuat chapter...</div>';
-  try{
-    const d = await mgApi('chapters', { id: m.id });
-    if(!d.items.length) return $('#mgBody').innerHTML = '<div class="q-empty">Belum ada chapter bahasa Inggris.</div>';
-    $('#mgBody').innerHTML = `
-      <div style="display:flex;gap:.6rem;margin-bottom:.8rem">
-        ${m.cover ? `<img src="${m.cover}" alt="" style="width:64px;border-radius:8px">` : ''}
-        <div><b style="color:#fff;font-size:.85rem">${m.title}</b>
-        <div style="font-size:.66rem;color:var(--dimmer)">${d.items.length} chapter</div></div>
-      </div>
-      <div class="ep-grid">${d.items.map((c,i)=>`<button data-i="${i}">Ch. ${c.num}</button>`).join('')}</div>`;
-    $$('#mgBody .ep-grid button').forEach(b => b.onclick = ()=> mgRead(d.items[+b.dataset.i]));
-  }catch(e){ $('#mgBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${e.message}</div>`; }
-}
-async function mgRead(c){
-  $('#mgBody').innerHTML = '<div class="q-empty">memuat halaman...</div>';
-  try{
-    const d = await mgApi('pages', { id: c.id });
-    $('#mgBody').innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
-        <span style="font-family:var(--mono);font-size:.7rem;color:var(--a2)">Chapter ${c.num}</span>
-        <button class="linkish" onclick="mgSearch()">kembali</button>
-      </div>
-      <div class="reader" id="mgReader">${d.pages.map(p=>`<img src="${p}" loading="lazy" alt="">`).join('')}</div>`;
-  }catch(e){ $('#mgBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${e.message}</div>`; }
-}
-
-/* ================= LAB: ANIME ================= */
-let hls = null;
-function loadHls(){
-  return new Promise((res, rej)=>{
-    if(window.Hls) return res();
-    const s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js';
-    s.onload = ()=>res();
-    s.onerror = rej;
-    document.head.appendChild(s);
-  });
-}
-async function anApi(step, extra){
-  const r = await fetch('/api/lab?action=anime', { method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify(Object.assign({ step, source: $('#anSrc').value }, extra || {})) });
-  const d = await r.json().catch(()=>({}));
-  if(!r.ok || d.status !== 'success') throw new Error(d.message || 'HTTP ' + r.status);
-  return d;
-}
-function anReset(){ $('#anBody').innerHTML = ''; $('#anQ').value = ''; }
-async function anSearch(){
-  const q = $('#anQ').value.trim();
-  if(q.length < 2) return toast('Kata kunci minimal 2 huruf.', 'er');
-  $('#anBody').innerHTML = '<div class="q-empty">mencari di ' + $('#anSrc').value + '...</div>';
-  try{
-    const d = await anApi('search', { q });
-    $('#anBody').innerHTML = d.items.map((a,i)=>`<div class="an-row" data-i="${i}"><i class="fa-solid fa-play" style="color:var(--a2)"></i><span class="tx">${a.title}</span></div>`).join('');
-    $$('#anBody .an-row').forEach(r => r.onclick = ()=> anOpen(d.items[+r.dataset.i]));
-
-	  /* ================= LAB: MANGA ================= */
 const MG = { ch: [], idx: 0, title: '', cur: null, busy: false };
-const mgEsc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const mgEsc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+const mgApi = (step, extra) => labFetch('manga', Object.assign({ step, source:'mangadex' }, extra || {}));
 
-async function mgApi(step, extra){
-  const r = await fetch('/api/lab?action=manga', { method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify(Object.assign({ step, source: $('#mgSrc') ? $('#mgSrc').value : 'mangadex' }, extra || {})) });
-  const d = await r.json().catch(()=>({}));
-  if(!r.ok || d.status !== 'success') throw new Error(d.message || 'HTTP ' + r.status);
-  return d;
-}
 function mgGrid(items){
   return '<div class="mg-grid">' + items.map((m,i)=>`
     <div class="mg-card" data-i="${i}">
@@ -3837,17 +3801,15 @@ async function mgHome(){
   $('#mgBody').innerHTML = '<div class="q-empty">memuat beranda...</div>';
   try{
     const h = await mgApi('home');
-    const g = await mgApi('genres');
+    const g = await mgApi('genres').catch(()=> ({ items: [] }));
     let html = mgSection('Trending', h.trending) + mgSection('Baru diupload', h.latest);
     if(g.items.length){
       html += `<div class="sec"><div class="sec-head"><b>Genre</b><span>${g.items.length}</span></div>
         <div class="chips">${g.items.map(x=>`<button class="chip" data-id="${x.id}" data-n="${mgEsc(x.name)}">${mgEsc(x.name)}</button>`).join('')}</div></div>`;
     }
     $('#mgBody').innerHTML = html || '<div class="q-empty">Tidak ada data.</div>';
-    $$('#mgBody .mg-card').forEach(c => {
-      const all = h.trending.concat(h.latest);
-      c.onclick = ()=> mgOpen(all[+c.dataset.i]);
-    });
+    const all = h.trending.concat(h.latest);
+    $$('#mgBody .mg-card').forEach(c => c.onclick = ()=> mgOpen(all[+c.dataset.i]));
     $$('#mgBody .chip').forEach(c => c.onclick = ()=> mgGenre(c.dataset.id, c.dataset.n));
   }catch(e){ $('#mgBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${mgEsc(e.message)}</div>`; }
 }
@@ -3919,15 +3881,49 @@ function mgReset(){ mgHome(); }
 
 /* ================= LAB: ANIME ================= */
 const AN = { cur: null, host: '' };
+const AN_SOURCES = ['otakudesu', 'samehadaku', 'anoboy'];
 const anEsc = mgEsc;
+let anCur = null, anHls = null;
+
+function loadHls(){
+  return new Promise((res, rej)=>{
+    if(window.Hls) return res();
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js';
+    s.onload = ()=>res();
+    s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
+function anSource(){
+  const el = $('#anSrc');
+  const cur = el ? el.value : 'otakudesu';
+  return AN_SOURCES.includes(cur) ? cur : 'otakudesu';
+}
+function anNeedsUrl(step){ return step === 'detail' || step === 'episode' || step === 'bygenre' || step === 'list'; }
 
 async function anApi(step, extra){
-  const r = await fetch('/api/lab?action=anime', { method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify(Object.assign({ step, source: $('#anSrc').value }, extra || {})) });
-  const d = await r.json().catch(()=>({}));
-  if(!r.ok || d.status !== 'success') throw new Error(d.message || 'HTTP ' + r.status);
-  return d;
+  const src = anSource();
+  if(anNeedsUrl(step)) return labFetch('anime', Object.assign({ step, source: src }, extra || {}));
+
+  const order = [src, ...AN_SOURCES.filter(s => s !== src)];
+  let last = null;
+  for(const s of order){
+    try{
+      const d = await labFetch('anime', Object.assign({ step, source: s }, extra || {}));
+      if(s !== src){
+        if($('#anSrc')) $('#anSrc').value = s;
+        toast('Sumber ' + src + ' gagal, dialihkan ke ' + s + '.', 'sy');
+      }
+      return d;
+    }catch(e){
+      last = e;
+      if(e.code === 400 || e.code === 429) throw e;
+    }
+  }
+  throw last || new Error('Semua sumber tidak merespons.');
 }
+
 function anList(items){
   return '<div class="an-list">' + items.map((a,i)=>`
     <div class="an-card" data-i="${i}">
@@ -3956,10 +3952,8 @@ async function anHome(){
     }
     html += '<div class="sec"><div class="sec-head"><b>Jadwal rilis</b><button class="linkish" onclick="anSchedule()">lihat</button></div></div>';
     $('#anBody').innerHTML = html;
-    $$('#anBody .an-card').forEach(c => {
-      const all = h.trending.concat(h.latest, h.rated);
-      c.onclick = ()=> anOpen(all[+c.dataset.i]);
-    });
+    const all = h.trending.concat(h.latest, h.rated);
+    $$('#anBody .an-card').forEach(c => c.onclick = ()=> anOpen(all[+c.dataset.i]));
     $$('#anBody .chip').forEach(c => c.onclick = ()=> anByGenre(c.dataset.u));
   }catch(e){ $('#anBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${anEsc(e.message)}</div>`; }
 }
@@ -3977,13 +3971,12 @@ async function anSchedule(){
     const d = await anApi('schedule');
     $('#anBody').innerHTML = `<div class="sec"><div class="sec-head"><b>Jadwal</b><button class="linkish" onclick="anHome()">beranda</button></div></div>` +
       d.sections.map(s => `<div class="sec"><div class="sec-head"><b>${anEsc(s.day)}</b><span>${s.items.length}</span></div>${anList(s.items)}</div>`).join('');
-    d.sections.forEach(s => {
-      const rows = $$('#anBody .an-card');
-      s.items.forEach((a, i) => {
-        const el = rows.find(r => !r.dataset.b);
-        if(el){ el.dataset.b = '1'; el.onclick = ()=> anOpen(a); }
-      });
-    });
+    const rows = $$('#anBody .an-card');
+    let k = 0;
+    d.sections.forEach(s => s.items.forEach(a => {
+      const el = rows[k++];
+      if(el) el.onclick = ()=> anOpen(a);
+    }));
   }catch(e){ $('#anBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${anEsc(e.message)}</div>`; }
 }
 async function anSearch(){
@@ -4026,21 +4019,29 @@ async function anPlay(epUrl){
     anFrame(d.servers[0]);
   }catch(e){ $('#anBody').innerHTML = `<div class="q-empty" style="color:var(--bad)">${anEsc(e.message)}</div>`; }
 }
-let anCur = null;
 function anFrame(s){
   anCur = s;
   const st = $('#anStage');
   if(!st || !s) return;
+  const ref = AN.cur ? AN.cur.url : s.url;
+  const proxied = '/api/lab?action=proxy&url=' + encodeURIComponent(s.url) + '&ref=' + encodeURIComponent(ref);
+
   if(s.m3u8){
     st.innerHTML = '<div class="player"><video id="anVid" controls playsinline style="width:100%;height:100%"></video></div>';
-    const src = '/api/lab?action=proxy&url=' + encodeURIComponent(s.url);
     const v = $('#anVid');
-    if(window.Hls && Hls.isSupported()){ window.anHls && anHls.destroy(); anHls = new Hls(); anHls.loadSource(src); anHls.attachMedia(v); }
-    else v.src = src;
-    v.play().catch(()=>{});
+    const boot = ()=>{
+      if(window.Hls && Hls.isSupported()){
+        if(anHls) anHls.destroy();
+        anHls = new Hls();
+        anHls.loadSource(proxied);
+        anHls.attachMedia(v);
+      } else v.src = proxied;
+      v.play().catch(()=>{});
+    };
+    if(window.Hls) boot(); else loadHls().then(boot).catch(()=>{ v.src = proxied; });
     return;
   }
-  st.innerHTML = `<div class="player"><iframe src="/api/lab?action=proxy&url=${encodeURIComponent(s.url)}&ref=${encodeURIComponent(s.url)}" allowfullscreen allow="autoplay; fullscreen; encrypted-media"></iframe></div>`;
+  st.innerHTML = `<div class="player"><iframe src="${proxied}" allowfullscreen allow="autoplay; fullscreen; encrypted-media"></iframe></div>`;
 }
 function anRaw(){
   if(!anCur) return;
@@ -4310,4 +4311,4 @@ $('#anQ').addEventListener('keydown', e=>{ if(e.key === 'Enter') anSearch(); });
 setStep(1);
 </script>
 </body>
-	</html>
+			</html>
