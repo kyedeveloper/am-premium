@@ -4106,7 +4106,7 @@ async function anPlay(url){
     st.innerHTML = `<div class="anw-srv">${d.servers.map((s,i)=>`<button class="${i?'':'on'}" data-i="${i}">${esc(s.host)}</button>`).join('')}</div><div id="anPlayer"></div>`;
     const play = (s)=>{
       const box = $('#anPlayer');
-      const src = '/api/lab?action=proxy&url=' + encodeURIComponent(s.url) + '&ref=' + encodeURIComponent(url);
+      const src = '/api/anime?action=proxy&url=' + encodeURIComponent(s.url) + '&ref=' + encodeURIComponent(url);
       if(s.m3u8){
         box.innerHTML = '<div class="player"><video id="anVid" controls playsinline style="width:100%;height:100%"></video></div>';
         const v = $('#anVid');
