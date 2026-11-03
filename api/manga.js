@@ -2,7 +2,7 @@
 
 const UA = 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Mobile Safari/537.36';
 const HARD_MS = 8000;
-const SHINI = 'https://shinigamitoon.com';
+const SHINI = 'https://11.shinigami.asia';
 const MD = 'https://api.mangadex.org';
 const COMICK = 'https://api.comick.io';
 
