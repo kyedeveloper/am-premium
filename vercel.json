@@ -1,9 +1,5 @@
 {
-  "version": 2,
   "functions": {
-    "api/**/*.js": {
-      "includeFiles": "lib/**",
-      "maxDuration": 10
-    }
+    "api/**/*.js": { "includeFiles": "node_modules/@coflyn/**" }
   }
 }
