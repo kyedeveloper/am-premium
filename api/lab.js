@@ -634,6 +634,7 @@ async function pickHost(src) {
 }
 
 const AN_RE = /<a[^>]+href="(https?:\/\/[^"]+?\/(?:anime|tv|movie|anime-terbaru)\/[^"'#?]+)"[^>]*>([\s\S]{0,200}?)<\/a>/gi;
+const AN_EP = /<a[^>]+href="(https?:\/\/[^"]+?(?:\/episode\/|episode-\d|ep-\d)[^"'#?]*)"[^>]*>([\s\S]{0,160}?)<\/a>/gi;
 
 function anItems(text, host, limit) {
   const seen = new Set(), items = [];
@@ -794,6 +795,47 @@ async function doAnime(req, res) {
       if (!r.ok) throw new Error('Pencarian gagal (' + r.code + ').');
       return out(res, 200, { status: 'success', items: anItems(r.text, dom, 24), host: dom });
     }
+    
+    if (step === 'detail' || step === 'episodes') {
+      const url = String(b.url || b.id || '').trim();
+      if (!/^https?:\/\//i.test(url)) return out(res, 400, { status: 'error', message: 'URL anime tidak valid.' });
+      const r = await getHtml(url, base);
+      if (!r.ok) throw new Error('Detail gagal (' + r.code + ').');
+      const seen = new Set(), items = [];
+      let m;
+      AN_EP.lastIndex = 0;
+      while ((m = AN_EP.exec(r.text)) && items.length < 400) {
+        if (seen.has(m[1])) continue;
+        seen.add(m[1]);
+        items.push({ id: m[1], url: m[1], title: strip(m[2]) || 'Episode' });
+      }
+      items.reverse();
+      const syn = /<div[^>]+class="[^"]*(?:sinopsis|desc|entry-content)[^"]*"[^>]*>([\s\S]{0,900}?)<\/div>/i.exec(r.text);
+      return out(res, 200, { status: 'success', items, synopsis: syn ? strip(syn[1]).slice(0, 500) : '', host: dom });
+    }
+
+    if (step === 'episode' || step === 'stream') {
+      const url = String(b.url || b.id || '').trim();
+      if (!/^https?:\/\//i.test(url)) return out(res, 400, { status: 'error', message: 'URL episode tidak valid.' });
+      const r = await getHtml(url, base);
+      if (!r.ok) throw new Error('Episode gagal (' + r.code + ').');
+      const found = [], seen = new Set();
+      const re = /<(?:iframe|source)[^>]+(?:data-src|src)="([^"]+)"/gi;
+      let m;
+      while ((m = re.exec(r.text))) {
+        const u = m[1];
+        if (!/^https?:\/\//i.test(u) || seen.has(u)) continue;
+        seen.add(u);
+        found.push({ url: u, label: 'Server', type: 'link', m3u8: /\.m3u8/i.test(u), player: /\.m3u8/i.test(u) ? '/api/lab?action=proxy&url=' + encodeURIComponent(u) : null });
+      }
+      const raw = r.text.replace(/\\\//g, '/');
+      const mp = /https?:\/\/[^"'\s]+?\.m3u8[^"'\s]*/gi;
+      while ((m = mp.exec(raw))) {
+        if (!seen.has(m[0])) { seen.add(m[0]); found.unshift({ url: m[0], label: 'HLS', type: 'video', m3u8: true, player: '/api/lab?action=proxy&url=' + encodeURIComponent(m[0]) }); }
+      }
+      if (!found.length) throw new Error('Tidak ada server di episode ini.');
+      return out(res, 200, { status: 'success', servers: found.slice(0, 12), host: dom });
+                                 }
 
     return out(res, 400, { status: 'error', message: 'step tidak dikenal untuk sumber ini.' });
   } catch (e) {
