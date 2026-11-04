@@ -4387,6 +4387,236 @@ $('#mName').addEventListener('keydown', e=>{ if(e.key === 'Enter') mailCreate();
 $('#mgQ').addEventListener('keydown', e=>{ if(e.key === 'Enter') mgSearch(); });
 $('#anQ').addEventListener('keydown', e=>{ if(e.key === 'Enter') anSearch(); });
 setStep(1);
+<script>
+(() => {
+  const API = '/api/lab';
+  const css = `
+  .v6-wrap{margin-top:14px;border-top:1px dashed #333;padding-top:12px}
+  .v6-h{font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.55;margin:0 0 8px}
+  .v6-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+  .v6-chip{font:inherit;font-size:11px;padding:5px 10px;border:1px solid #2c2c2c;background:#111;color:#bbb;border-radius:999px;cursor:pointer}
+  .v6-chip[aria-pressed="true"]{border-color:var(--acc,#8b5cf6);color:#fff;background:#1c1530}
+  .v6-row{display:flex;gap:6px;margin-bottom:10px}
+  .v6-in{flex:1;min-width:0;font:inherit;font-size:12px;padding:8px 10px;background:#0d0d0d;border:1px solid #262626;border-radius:8px;color:#eee}
+  .v6-btn{font:inherit;font-size:11px;padding:8px 12px;border:1px solid #2c2c2c;background:#161616;color:#ddd;border-radius:8px;cursor:pointer}
+  .v6-btn:hover{border-color:var(--acc,#8b5cf6);color:#fff}
+  .v6-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+  .v6-card{background:#101010;border:1px solid #232323;border-radius:8px;overflow:hidden;cursor:pointer}
+  .v6-card img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;background:#151515}
+  .v6-card span{display:block;font-size:10px;padding:5px 6px;color:#c9c9c9;line-height:1.3;max-height:44px;overflow:hidden}
+  .v6-list{display:flex;flex-direction:column;gap:4px}
+  .v6-item{font:inherit;font-size:11px;text-align:left;padding:7px 9px;background:#101010;border:1px solid #232323;border-radius:6px;color:#cfcfcf;cursor:pointer;display:block}
+  .v6-item:hover{border-color:var(--acc,#8b5cf6)}
+  .v6-msg{font-size:11px;opacity:.6;padding:6px 0}
+  .v6-ov{position:fixed;inset:0;z-index:9999;background:#080808;overflow:auto;padding:16px}
+  .v6-ov-bar{position:sticky;top:0;display:flex;gap:8px;align-items:center;padding:8px 0 12px;background:#080808;z-index:2}
+  .v6-ov-bar b{font-size:12px;flex:1;font-weight:500;opacity:.8}
+  .v6-ov img{width:100%;max-width:760px;display:block;margin:0 auto 8px;border-radius:4px}
+  .v6-frame{width:100%;max-width:900px;height:78vh;margin:0 auto;display:block;border:0;border-radius:8px;background:#000}
+  `;
+
+  const el = (t, c, x) => { const n = document.createElement(t); if (c) n.className = c; if (x != null) n.textContent = x; return n; };
+  const find = re => [...document.querySelectorAll('body *')].find(n => n.children.length < 3 && re.test(n.textContent || ''));
+  const panel = re => {
+    const l = find(re); if (!l) return null;
+    let p = l;
+    while (p && p !== document.body && !p.querySelector('input,button,select')) p = p.parentElement;
+    return p && p !== document.body ? p : null;
+  };
+
+  async function call(a, b) {
+    const r = await fetch(API + '?action=' + a, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) });
+    return r.json().catch(() => ({ status: 'error', message: 'Respon tidak valid.' }));
+  }
+  const say = (b, t) => { b.textContent = ''; b.appendChild(el('div', 'v6-msg', t)); };
+
+  let ov = null;
+  function openOv(t) {
+    closeOv(); ov = el('div', 'v6-ov');
+    const bar = el('div', 'v6-ov-bar');
+    const x = el('button', 'v6-btn', 'Tutup');
+    x.onclick = closeOv;
+    bar.append(el('b', null, t || ''), x);
+    ov.append(bar); document.body.append(ov);
+    document.body.style.overflow = 'hidden';
+  }
+  function closeOv() { if (ov) ov.remove(); ov = null; document.body.style.overflow = ''; }
+  addEventListener('keydown', e => { if (e.key === 'Escape') closeOv(); });
+
+  async function manga(host) {
+    const box = el('div', 'v6-wrap'); box.dataset.v6 = 'manga';
+    box.append(el('p', 'v6-h', 'Sumber manga'));
+    const meta = await call('manga', { step: 'sources' });
+    const chips = el('div', 'v6-chips');
+    let src = (meta.items || [])[0]?.id || 'komikindo';
+    (meta.items || []).forEach(s => {
+      const b = el('button', 'v6-chip', s.label);
+      b.setAttribute('aria-pressed', String(s.id === src));
+      b.onclick = () => { src = s.id; chips.querySelectorAll('.v6-chip').forEach(c => c.setAttribute('aria-pressed', 'false')); b.setAttribute('aria-pressed', 'true'); out.textContent = ''; };
+      chips.append(b);
+    });
+    const row = el('div', 'v6-row'), q = el('input', 'v6-in'), go = el('button', 'v6-btn', 'Cari');
+    q.placeholder = 'Judul manga…'; row.append(q, go);
+    const out = el('div'); box.append(chips, row, out); host.append(box);
+
+    const run = async () => {
+      const v = q.value.trim(); if (v.length < 2) return say(out, 'Minimal 2 karakter.');
+      say(out, 'Mencari…');
+      const r = await call('manga', { step: 'search', source: src, q: v });
+      if (r.status !== 'success') return say(out, r.message || 'Gagal.');
+      if (!r.items?.length) return say(out, 'Tidak ada hasil.');
+      out.textContent = '';
+      const g = el('div', 'v6-grid');
+      r.items.forEach(it => {
+        const c = el('div', 'v6-card'), im = el('img');
+        im.loading = 'lazy'; im.src = it.cover || ''; im.alt = it.title;
+        c.append(im, el('span', null, it.title));
+        c.onclick = async () => {
+          openOv(it.title); const body = el('div'); ov.append(body); say(body, 'Memuat chapter…');
+          const x = await call('manga', { step: 'chapters', source: src, id: it.id });
+          if (x.status !== 'success') return say(body, x.message || 'Gagal.');
+          if (!x.items?.length) return say(body, 'Chapter tidak tersedia.');
+          body.textContent = ''; const list = el('div', 'v6-list');
+          x.items.forEach(ch => {
+            const b = el('button', 'v6-item', 'Chapter ' + ch.num);
+            b.onclick = async () => {
+              openOv('Chapter ' + ch.num); const p2 = el('div'); ov.append(p2); say(p2, 'Memuat halaman…');
+              const y = await call('manga', { step: 'pages', source: src, id: ch.id });
+              if (y.status !== 'success') return say(p2, y.message || 'Gagal.');
+              p2.textContent = '';
+              y.pages.forEach(u => { const i2 = el('img'); i2.loading = 'lazy'; i2.src = u; p2.append(i2); });
+            };
+            list.append(b);
+          });
+          body.append(list);
+        };
+        g.append(c);
+      });
+      out.append(g);
+    };
+    go.onclick = run; q.onkeydown = e => { if (e.key === 'Enter') run(); };
+  }
+
+  async function anime(host) {
+    const box = el('div', 'v6-wrap'); box.dataset.v6 = 'anime';
+    box.append(el('p', 'v6-h', 'Sumber anime'));
+    const meta = await call('anime', { step: 'sources' });
+    const chips = el('div', 'v6-chips');
+    let src = (meta.items || [])[0]?.id || 'otakudesu';
+    (meta.items || []).forEach(s => {
+      const b = el('button', 'v6-chip', s.label);
+      b.setAttribute('aria-pressed', String(s.id === src));
+      b.onclick = () => { src = s.id; chips.querySelectorAll('.v6-chip').forEach(c => c.setAttribute('aria-pressed', 'false')); b.setAttribute('aria-pressed', 'true'); out.textContent = ''; };
+      chips.append(b);
+    });
+    const row = el('div', 'v6-row'), q = el('input', 'v6-in'), go = el('button', 'v6-btn', 'Cari');
+    q.placeholder = 'Judul anime…'; row.append(q, go);
+    const out = el('div'); box.append(chips, row, out); host.append(box);
+
+    const run = async () => {
+      const v = q.value.trim(); if (v.length < 2) return say(out, 'Minimal 2 karakter.');
+      say(out, 'Mencari…');
+      const r = await call('anime', { step: 'search', source: src, q: v });
+      if (r.status !== 'success') return say(out, r.message || 'Gagal.');
+      if (!r.items?.length) return say(out, 'Tidak ada hasil.');
+      out.textContent = '';
+      const g = el('div', 'v6-grid');
+      r.items.forEach(it => {
+        const c = el('div', 'v6-card'), im = el('img');
+        im.loading = 'lazy'; im.src = it.cover || ''; im.alt = it.title;
+        c.append(im, el('span', null, it.title));
+        c.onclick = async () => {
+          openOv(it.title); const body = el('div'); ov.append(body); say(body, 'Memuat episode…');
+          const x = await call('anime', { step: 'detail', source: src, url: it.url });
+          if (x.status !== 'success') return say(body, x.message || 'Gagal.');
+          if (!x.items?.length) return say(body, 'Episode tidak tersedia.');
+          body.textContent = ''; const list = el('div', 'v6-list');
+          x.items.forEach(e2 => {
+            const b = el('button', 'v6-item', e2.title);
+            b.onclick = async () => {
+              openOv(e2.title); const p2 = el('div'); ov.append(p2); say(p2, 'Memuat server…');
+              const y = await call('anime', { step: 'episode', source: src, url: e2.url });
+              if (y.status !== 'success') return say(p2, y.message || 'Gagal.');
+              p2.textContent = ''; const l2 = el('div', 'v6-list');
+              y.servers.forEach(s => {
+                const bb = el('button', 'v6-item', (s.m3u8 ? '▶ ' : '↗ ') + s.label);
+                bb.onclick = () => {
+                  const f = el('iframe', 'v6-frame');
+                  f.src = s.player || s.url;
+                  f.allow = 'fullscreen; autoplay; encrypted-media';
+                  f.setAttribute('allowfullscreen', '');
+                  p2.prepend(f);
+                };
+                l2.append(bb);
+              });
+              p2.append(l2);
+            };
+            list.append(b);
+          });
+          body.append(list);
+        };
+        g.append(c);
+      });
+      out.append(g);
+    };
+    go.onclick = run; q.onkeydown = e => { if (e.key === 'Enter') run(); };
+  }
+
+  async function mail(host) {
+    const sel = host.querySelector('select');
+    if (!sel || sel.dataset.v6) return;
+    sel.dataset.v6 = '1';
+    const meta = await call('mail', { step: 'sources' });
+    const keep = sel.value;
+    sel.textContent = '';
+    sel.append(new Option('Otomatis (pilih yang hidup)', 'auto'));
+    (meta.items || []).forEach(p => sel.append(new Option(p.label, p.id)));
+    sel.value = [...sel.options].some(o => o.value === keep) ? keep : 'auto';
+  }
+
+  async function resolve(host) {
+    const box = el('div', 'v6-wrap'); box.dataset.v6 = 'resolve';
+    box.append(el('p', 'v6-h', 'Buka link file host / shortlink'));
+    const row = el('div', 'v6-row'), q = el('input', 'v6-in'), go = el('button', 'v6-btn', 'Buka');
+    q.placeholder = 'MediaFire · SFile · Pixeldrain · GDrive · Catbox · Safelinku · Rekonise…';
+    row.append(q, go);
+    const out = el('div'); box.append(row, out); host.append(box);
+    const run = async () => {
+      const v = q.value.trim(); if (!/^https?:\/\//i.test(v)) return say(out, 'URL tidak valid.');
+      say(out, 'Membuka…');
+      const r = await call('resolve', { url: v });
+      if (r.status !== 'success') return say(out, r.message + (r.detail ? ' · ' + r.detail : ''));
+      out.textContent = '';
+      const a = el('a', 'v6-item', (r.filename || 'File') + (r.size ? ' · ' + r.size : ''));
+      a.href = r.url; a.target = '_blank'; a.rel = 'noopener';
+      out.append(a);
+    };
+    go.onclick = run; q.onkeydown = e => { if (e.key === 'Enter') run(); };
+  }
+
+  let busy = false;
+  async function mount() {
+    if (busy || !document.body) return;
+    busy = true;
+    try {
+      const m = panel(/~\/lab\/manga/);
+      if (m && !m.querySelector('[data-v6="manga"]')) await manga(m);
+      const a = panel(/~\/lab\/anime/);
+      if (a && !a.querySelector('[data-v6="anime"]')) await anime(a);
+      const t = panel(/~\/lab\/tempmail/);
+      if (t) await mail(t);
+      const d = panel(/~\/lab\/downloader/);
+      if (d && !d.querySelector('[data-v6="resolve"]')) await resolve(d);
+    } catch (e) {} finally { busy = false; }
+  }
+
+  const st = el('style'); st.textContent = css; document.head.append(st);
+  let tm;
+  new MutationObserver(() => { clearTimeout(tm); tm = setTimeout(mount, 350); })
+    .observe(document.documentElement, { childList: true, subtree: true });
+  addEventListener('DOMContentLoaded', mount);
+  setTimeout(mount, 1200);
+})();
 </script>
 </body>
 	</html>
