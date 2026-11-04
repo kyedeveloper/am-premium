@@ -4416,9 +4416,16 @@ setStep(1);
   `;
 
   const el = (t, c, x) => { const n = document.createElement(t); if (c) n.className = c; if (x != null) n.textContent = x; return n; };
-  const find = re => [...document.querySelectorAll('body *')].find(n => n.children.length < 3 && re.test(n.textContent || ''));
-  const panel = re => {
-    const l = find(re); if (!l) return null;
+  const say = (b, t) => { b.textContent = ''; b.appendChild(el('div', 'v6-msg', t)); };
+
+  const labelOf = re => {
+    const all = document.querySelectorAll('span,div,p,b,small,label');
+    for (const n of all) if (n.children.length < 3 && re.test(n.textContent || '')) return n;
+    return null;
+  };
+  const panelOf = re => {
+    const l = labelOf(re);
+    if (!l) return null;
     let p = l;
     while (p && p !== document.body && !p.querySelector('input,button,select')) p = p.parentElement;
     return p && p !== document.body ? p : null;
@@ -4428,7 +4435,6 @@ setStep(1);
     const r = await fetch(API + '?action=' + a, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) });
     return r.json().catch(() => ({ status: 'error', message: 'Respon tidak valid.' }));
   }
-  const say = (b, t) => { b.textContent = ''; b.appendChild(el('div', 'v6-msg', t)); };
 
   let ov = null;
   function openOv(t) {
@@ -4594,28 +4600,36 @@ setStep(1);
     go.onclick = run; q.onkeydown = e => { if (e.key === 'Enter') run(); };
   }
 
-  let busy = false;
-  async function mount() {
-    if (busy || !document.body) return;
-    busy = true;
+  const done = { manga: false, anime: false, mail: false, resolve: false };
+
+  async function tick() {
     try {
-      const m = panel(/~\/lab\/manga/);
-      if (m && !m.querySelector('[data-v6="manga"]')) await manga(m);
-      const a = panel(/~\/lab\/anime/);
-      if (a && !a.querySelector('[data-v6="anime"]')) await anime(a);
-      const t = panel(/~\/lab\/tempmail/);
-      if (t) await mail(t);
-      const d = panel(/~\/lab\/downloader/);
-      if (d && !d.querySelector('[data-v6="resolve"]')) await resolve(d);
-    } catch (e) {} finally { busy = false; }
+      if (document.querySelector('[data-v6]') &&
+          done.manga && done.anime && done.mail && done.resolve) return;
+
+      if (!done.manga) {
+        const m = panelOf(/~\/lab\/manga/);
+        if (m && !m.querySelector('[data-v6="manga"]')) { done.manga = true; await manga(m); }
+      }
+      if (!done.anime) {
+        const a = panelOf(/~\/lab\/anime/);
+        if (a && !a.querySelector('[data-v6="anime"]')) { done.anime = true; await anime(a); }
+      }
+      if (!done.mail) {
+        const t = panelOf(/~\/lab\/tempmail/);
+        if (t) { done.mail = true; await mail(t); }
+      }
+      if (!done.resolve) {
+        const d = panelOf(/~\/lab\/downloader/);
+        if (d && !d.querySelector('[data-v6="resolve"]')) { done.resolve = true; await resolve(d); }
+      }
+    } catch (e) {}
   }
 
   const st = el('style'); st.textContent = css; document.head.append(st);
-  let tm;
-  new MutationObserver(() => { clearTimeout(tm); tm = setTimeout(mount, 350); })
-    .observe(document.documentElement, { childList: true, subtree: true });
-  addEventListener('DOMContentLoaded', mount);
-  setTimeout(mount, 1200);
+
+  setTimeout(tick, 2500);
+  setInterval(tick, 2000);
 })();
 </script>
 </body>
