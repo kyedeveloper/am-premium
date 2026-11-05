@@ -1,25 +1,23 @@
 /**
- * VESPERA · Lab API  v8.0.0
- * Runtime: Vercel Functions (node) — maxDuration 60
+ * VESPERA · Lab API  v8.1.0
  *
- * Perbaikan dari v6/v7:
- *  - scraper dimuat lewat dynamic import (ke-trace bundler, nggak 500 lagi)
- *  - seluruh router dibungkus: error selalu balik JSON, bukan halaman 500 Vercel
- *  - modul musik (chart + search + preview) ditambah
- *  - temp mail: step `bulk` ditambah
- *  - proxy/HLS: header & referer lebih toleran
+ * v8.1:
+ *  - anime: header browser lengkap, rotasi domain saat 403, ekstraksi server
+ *    dipakai bersama jalur scraper & jalur feed, semua server lewat proxy
+ *  - musik: track penuh via saavn (fallback iTunes), step `full`
  */
 
-export const config = { maxDuration: 60, memory: 1024 };
+export const config = { maxDuration: 60 };
 
 const PISTON = 'https://emkc.org/api/v2/piston/execute';
 const ONESEC = 'https://www.1secmail.com/api/v1/';
 const ITUNES = 'https://itunes.apple.com';
+const SAAVN = 'https://saavn.dev/api';
 const RL = new Map();
 
 const CAPS = {
   exec: 24, dl: 24, resolve: 60, net: 40, mail: 120,
-  img: 240, manga: 60, anime: 60, music: 90, proxy: 600, health: 120
+  img: 240, manga: 60, anime: 90, music: 120, proxy: 900, health: 120
 };
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
@@ -50,18 +48,35 @@ function hit(ip, act) {
   if (now - r.t > 60000) { r.n = 0; r.t = now; }
   r.n++;
   RL.set(k, r);
-  if (RL.size > 4000) RL.clear();
+  if (RL.size > 6000) RL.clear();
   return r.n <= (CAPS[act] || 40);
 }
 
 async function tf(url, opt = {}, ms = 9000) {
   const c = new AbortController();
   const t = setTimeout(() => c.abort(), ms);
-  try {
-    return await fetch(url, { ...opt, signal: c.signal });
-  } finally {
-    clearTimeout(t);
+  try { return await fetch(url, { ...opt, signal: c.signal }); }
+  finally { clearTimeout(t); }
+}
+
+function bh(ref) {
+  const h = {
+    'User-Agent': UA,
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+    'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+    'Upgrade-Insecure-Requests': '1',
+    'Sec-Fetch-Dest': 'document',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-Site': 'none',
+    'Sec-Fetch-User': '?1',
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache'
+  };
+  if (ref) {
+    h['Referer'] = ref;
+    h['Sec-Fetch-Site'] = 'same-origin';
   }
+  return h;
 }
 
 async function jj(method, url, body, headers, ms = 9000) {
@@ -73,14 +88,12 @@ async function jj(method, url, body, headers, ms = 9000) {
 }
 
 async function txt(url, headers, ms = 9000) {
-  const r = await tf(url, { headers: { 'User-Agent': UA, 'Accept': 'text/html,*/*;q=0.8', ...(headers || {}) } }, ms);
+  const r = await tf(url, { headers: { ...bh(), ...(headers || {}) } }, ms);
   return { ok: r.ok, code: r.status, t: await r.text() };
 }
 
 async function getHtml(url, ref) {
-  const h = { 'User-Agent': UA, 'Accept': 'text/html,application/json;q=0.9,*/*;q=0.8', 'Accept-Language': 'id,en;q=0.8' };
-  if (ref) h['Referer'] = ref;
-  const r = await tf(url, { headers: h }, 11000);
+  const r = await tf(url, { headers: bh(ref) }, 12000);
   return { ok: r.ok, code: r.status, text: await r.text() };
 }
 
@@ -88,8 +101,9 @@ const strip = s => String(s).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim(
 const abs = (base, u) => { try { return new URL(u, base).href; } catch { return u; } };
 const hostOf = u => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return ''; } };
 const imgProxy = (u, ref) => '/api/lab?action=img&url=' + encodeURIComponent(u) + (ref ? '&ref=' + encodeURIComponent(ref) : '');
+const pxUrl = (u, ref) => '/api/lab?action=proxy&url=' + encodeURIComponent(u) + (ref ? '&ref=' + encodeURIComponent(ref) : '');
 
-/* ================= scraper (lazy, aman) ================= */
+/* ================= scraper ================= */
 let SCR = null;
 let SCR_TRIED = false;
 
@@ -100,9 +114,7 @@ async function scraper() {
   try {
     const m = await import('@coflyn/scrapr');
     SCR = m.default && m.default.tiktok ? m.default : m;
-  } catch {
-    SCR = null;
-  }
+  } catch { SCR = null; }
   return SCR;
 }
 
@@ -166,7 +178,7 @@ async function doImg(req, res) {
 
 /* ================= proxy halaman / HLS ================= */
 const HIDE_CSS = `
-html,body{margin:0!important;padding:0!important;background:#0b0a0a!important;color:#eee!important;overflow-x:hidden!important}
+html,body{margin:0!important;padding:0!important;background:#000!important;color:#eee!important;overflow-x:hidden!important}
 video,iframe,img{max-width:100%!important}
 ins,.adsbygoogle,[id*="ad-"],[id*="ads"],[class*="ad-"],[class*="ads"],[class*="banner"],
 div[style*="text-align:center"]>a>img,
@@ -175,8 +187,6 @@ div[style*="text-align:center"]>a>img,
 `;
 
 const AD_HOST = /(doubleclick|googlesyndication|googleadservices|adsterra|popads|propellerads|highperformanceformat|profitableratecpm|adcash|mgid|revcontent|taboola|outbrain|histats|googletagmanager|google-analytics|cloudflareinsights|onesignal|pushcrew|cleverpush)/i;
-
-const pxify = (u, base, ref) => '/api/lab?action=proxy&url=' + encodeURIComponent(abs(base, u)) + '&ref=' + encodeURIComponent(ref);
 
 function cleanHtml(html, pageUrl) {
   const base = new URL(pageUrl);
@@ -187,7 +197,7 @@ function cleanHtml(html, pageUrl) {
   h = h.replace(/<ins\b[\s\S]*?<\/ins>/gi, '');
   h = h.replace(/<iframe\b[^>]*>[\s\S]*?<\/iframe>/gi, m => (AD_HOST.test(m) ? '' : m));
 
-  h = h.replace(/(<iframe\b[^>]*?src=["'])([^"']+)(["'])/gi, (m, a, u, b) => a + pxify(u, pageUrl, ref) + b);
+  h = h.replace(/(<iframe\b[^>]*?src=["'])([^"']+)(["'])/gi, (m, a, u, b) => a + pxUrl(abs(base.href, u), ref) + b);
   h = h.replace(/(<(?:video|source|img|track)\b[^>]*?(?:src|data-src)=["'])([^"']+)(["'])/gi, (m, a, u, b) => a + abs(base.href, u) + b);
   h = h.replace(/\s(on\w+)=["'][^"']*["']/gi, '');
 
@@ -205,7 +215,15 @@ async function doProxy(req, res) {
   let ref = String(req.query.ref || '');
   if (!ref) { try { ref = new URL(url).origin + '/'; } catch { ref = ''; } }
 
-  const r = await tf(url, { headers: { 'User-Agent': UA, 'Referer': ref, 'Accept': '*/*' } }, 15000);
+  const r = await tf(url, {
+    headers: {
+      ...bh(ref),
+      'Accept': '*/*',
+      'Sec-Fetch-Dest': 'iframe',
+      'Sec-Fetch-Mode': 'navigate'
+    }
+  }, 15000);
+
   if (!r.ok) return out(res, 502, { status: 'error', message: 'HTTP ' + r.status });
 
   const ct = r.headers.get('content-type') || '';
@@ -217,12 +235,11 @@ async function doProxy(req, res) {
   if (isList) {
     const text = await r.text();
     const base = new URL(url);
-    const px = u => pxify(u, base.href, base.origin + '/');
     const body = text.split('\n').map(line => {
       const t = line.trim();
       if (!t) return line;
-      if (t.startsWith('#')) return line.replace(/URI="([^"]+)"/g, (m, u) => 'URI="' + px(u) + '"');
-      return px(t);
+      if (t.startsWith('#')) return line.replace(/URI="([^"]+)"/g, (m, u) => 'URI="' + pxUrl(abs(base.href, u), base.origin + '/') + '"');
+      return pxUrl(abs(base.href, t), base.origin + '/');
     }).join('\n');
     res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
     res.setHeader('Cache-Control', 'public, max-age=10');
@@ -456,7 +473,7 @@ async function doResolve(req, res) {
 async function doNet(req, res) {
   const url = String(req.query.url || (req.body && req.body.url) || '').trim();
   if (!/^https?:\/\//i.test(url)) return out(res, 400, { status: 'error', message: 'URL tidak valid.' });
-  const r = await tf(url, { headers: { 'User-Agent': UA } }, 10000);
+  const r = await tf(url, { headers: bh() }, 10000);
   const t = (await r.text()).slice(0, 60000);
   return out(res, 200, { status: 'success', code: r.status, type: r.headers.get('content-type') || '', body: t });
 }
@@ -465,20 +482,14 @@ async function doNet(req, res) {
 const MD = 'https://api.mangadex.org';
 
 const COMIC_SOURCES = {
-  komikindo: 'Komikindo',
-  komiku: 'Komiku',
-  kiryuu: 'Kiryuu',
-  komikcast: 'KomikCast',
-  asurascans: 'Asura Scans',
-  bacakomik: 'BacaKomik',
-  manhwaindo: 'ManhwaIndo',
-  mangabats: 'MangaBats'
+  komikindo: 'Komikindo', komiku: 'Komiku', kiryuu: 'Kiryuu', komikcast: 'KomikCast',
+  asurascans: 'Asura Scans', bacakomik: 'BacaKomik', manhwaindo: 'ManhwaIndo', mangabats: 'MangaBats'
 };
 
 const MD_SOURCES = { mangadex: 'MangaDex', comick: 'Comick' };
 
 async function mdJson(path) {
-  const r = await tf(MD + path, { headers: { 'User-Agent': 'vespera-lab/8.0' } }, 9000);
+  const r = await tf(MD + path, { headers: { 'User-Agent': 'vespera-lab/8.1', 'Accept': 'application/json' } }, 9000);
   if (!r.ok) throw new Error('mangadex ' + r.status);
   return r.json();
 }
@@ -640,16 +651,11 @@ async function doManga(req, res) {
 }
 
 /* ================= ANIME ================= */
-const ANIME_SOURCES = {
-  otakudesu: 'OtakuDesu',
-  gogoanime: 'GogoAnime',
-  nimegami: 'Nimegami',
-  animetosho: 'AnimeTosho'
-};
+const ANIME_SOURCES = { otakudesu: 'OtakuDesu', gogoanime: 'GogoAnime', nimegami: 'Nimegami', animetosho: 'AnimeTosho' };
 
 const ANIME_FEED = {
-  otakudesu: { doms: ['otakudesu.blog', 'otakudesu.io', 'otakudesu.cloud'], lists: ['/ongoing-anime/', '/anime-terbaru/'], rated: '/complete-anime/', schedule: '/jadwal-rilis/', genres: '/genre-list/' },
-  samehadaku: { doms: ['samehadaku.li', 'samehadaku.care', 'samehadaku.email'], lists: ['/anime-terbaru/', '/ongoing-anime/'], rated: '/daftar-anime/', schedule: '/jadwal-rilis/', genres: '/genre/' },
+  otakudesu: { doms: ['otakudesu.blog', 'otakudesu.io', 'otakudesu.cloud', 'otakudesu.best'], lists: ['/ongoing-anime/', '/anime-terbaru/'], rated: '/complete-anime/', schedule: '/jadwal-rilis/', genres: '/genre-list/' },
+  samehadaku: { doms: ['samehadaku.li', 'samehadaku.care', 'samehadaku.email', 'samehadaku.vip'], lists: ['/anime-terbaru/', '/ongoing-anime/'], rated: '/daftar-anime/', schedule: '/jadwal-rilis/', genres: '/genre/' },
   anoboy: { doms: ['anoboy.be', 'anoboy.biz', 'anoboy.ch', 'anoboy.li'], lists: ['/', '/anime-terbaru/'], rated: '/', schedule: '/', genres: '/' }
 };
 
@@ -664,7 +670,7 @@ async function pickHost(src) {
 
   const hasil = await Promise.all(cfg.doms.map(async d => {
     try {
-      const r = await tf('https://' + d + '/', { headers: { 'User-Agent': UA } }, 3000);
+      const r = await tf('https://' + d + '/', { headers: bh() }, 3500);
       return r.ok ? d : null;
     } catch { return null; }
   }));
@@ -674,6 +680,16 @@ async function pickHost(src) {
 
   HOST_CACHE.set(src, { host, at: Date.now() });
   return host;
+}
+
+function altUrls(url) {
+  const list = [url];
+  const h = hostOf(url);
+  const cfg = Object.values(ANIME_FEED).find(c => c.doms.some(d => h === d || h.endsWith('.' + d)));
+  if (!cfg) return list;
+  const path = url.replace(/^https?:\/\/[^/]+/, '');
+  cfg.doms.forEach(d => { if (h !== d && !h.endsWith('.' + d)) list.push('https://' + d + path); });
+  return list;
 }
 
 const AN_RE = /<a[^>]+href="(https?:\/\/[^"]+?\/(?:anime|tv|movie|anime-terbaru)\/[^"'#?]+)"[^>]*>([\s\S]{0,200}?)<\/a>/gi;
@@ -695,6 +711,45 @@ function anItems(text, host, limit) {
     items.push({ id: url, url, title, cover: im ? imgProxy(im[1], 'https://' + host + '/') : '', host });
   }
   return items;
+}
+
+/* ekstraksi server dipakai jalur scraper maupun jalur feed */
+function extractServers(html, pageUrl) {
+  const raw = String(html || '').replace(/\\\//g, '/');
+  const found = [];
+  const seen = new Set();
+  const add = (u, label, m3u8) => {
+    if (!u || seen.has(u)) return;
+    if (!/^https?:\/\//i.test(u)) return;
+    if (AD_HOST.test(u)) return;
+    seen.add(u);
+    found.push({ url: u, label, type: m3u8 ? 'video' : 'link', m3u8, player: pxUrl(u, pageUrl) });
+  };
+
+  let m;
+  const mp = /https?:\/\/[^"'\s\\]+?\.m3u8[^"'\s\\]*/gi;
+  while ((m = mp.exec(raw))) add(m[0], 'HLS', true);
+
+  const ifr = /<(?:iframe|embed)\b[^>]+(?:data-src|data-lazy-src|src)="([^"]+)"/gi;
+  while ((m = ifr.exec(raw))) add(abs(pageUrl, m[1]), 'Server', /\.m3u8/i.test(m[1]));
+
+  const mp4 = /https?:\/\/[^"'\s\\]+?\.(?:mp4|m4v)(?:\?[^"'\s\\]*)?/gi;
+  while ((m = mp4.exec(raw))) add(m[0], 'MP4', false);
+
+  return found.slice(0, 12);
+}
+
+async function fetchAny(url) {
+  const errs = [];
+  for (const u of altUrls(url)) {
+    try {
+      const ref = 'https://' + hostOf(u) + '/';
+      const r = await getHtml(u, ref);
+      if (r.ok && r.text.length > 400) return { url: u, text: r.text };
+      errs.push(hostOf(u) + ' ' + r.code);
+    } catch (e) { errs.push(hostOf(u) + ' ' + e.message); }
+  }
+  throw new Error('semua host gagal (' + errs.join(', ') + ')');
 }
 
 async function doAnime(req, res) {
@@ -735,30 +790,59 @@ async function doAnime(req, res) {
       if (step === 'detail' || step === 'episodes') {
         const url = String(b.url || b.id || '').trim();
         if (!/^https?:\/\//i.test(url)) return out(res, 400, { status: 'error', message: 'URL anime tidak valid.' });
-        if (!mod.getEpisodes) throw new Error('sumber ini tidak punya daftar episode');
-        const r = await mod.getEpisodes(url);
-        if (!r.status) throw new Error(r.message || 'gagal');
-        return out(res, 200, {
-          status: 'success', source: src, synopsis: '',
-          items: (r.result || []).map((x, i) => ({ id: x.url, url: x.url, title: x.title || 'Episode ' + (i + 1) })).reverse()
-        });
+
+        if (mod.getEpisodes) {
+          try {
+            const r = await mod.getEpisodes(url);
+            if (r.status && (r.result || []).length) {
+              return out(res, 200, {
+                status: 'success', source: src, synopsis: '',
+                items: (r.result || []).map((x, i) => ({ id: x.url, url: x.url, title: x.title || 'Episode ' + (i + 1) })).reverse()
+              });
+            }
+          } catch {}
+        }
+
+        /* fallback: baca sendiri halaman detail */
+        const page = await fetchAny(url);
+        const seen = new Set();
+        const items = [];
+        let m;
+        AN_EP.lastIndex = 0;
+        while ((m = AN_EP.exec(page.text)) && items.length < 400) {
+          if (seen.has(m[1])) continue;
+          seen.add(m[1]);
+          items.push({ id: m[1], url: m[1], title: strip(m[2]) || 'Episode' });
+        }
+        if (!items.length) throw new Error('daftar episode tidak terbaca');
+        return out(res, 200, { status: 'success', source: src, items: items.reverse() });
       }
 
       if (step === 'episode' || step === 'stream') {
         const url = String(b.url || b.id || '').trim();
         if (!/^https?:\/\//i.test(url)) return out(res, 400, { status: 'error', message: 'URL episode tidak valid.' });
-        const r = await mod.scrape(url);
-        if (!r.status) throw new Error(r.message || 'gagal');
-        const servers = (r.result.downloads || []).filter(d => d.url).map(d => ({
-          url: d.url,
-          label: d.quality || d.type || 'server',
-          type: d.type === 'video' ? 'video' : 'link',
-          m3u8: /\.m3u8/i.test(d.url),
-          player: /\.m3u8/i.test(d.url) ? '/api/lab?action=proxy&url=' + encodeURIComponent(d.url) : null,
-          headers: d.headers || null
-        }));
-        if (!servers.length) throw new Error('Tidak ada server di episode ini.');
-        return out(res, 200, { status: 'success', source: src, title: r.result.title || '', servers });
+
+        let servers = [];
+        try {
+          const r = await mod.scrape(url);
+          if (r.status) {
+            servers = (r.result.downloads || []).filter(d => d.url && !AD_HOST.test(d.url)).map(d => ({
+              url: d.url,
+              label: d.quality || d.type || 'server',
+              type: /audio/i.test(String(d.type)) ? 'audio' : (/\.m3u8/i.test(d.url) ? 'video' : 'link'),
+              m3u8: /\.m3u8/i.test(d.url),
+              player: pxUrl(d.url, url)
+            }));
+          }
+        } catch {}
+
+        if (!servers.length) {
+          const page = await fetchAny(url);
+          servers = extractServers(page.text, page.url);
+        }
+
+        if (!servers.length) throw new Error('Tidak ada server yang bisa diputar.');
+        return out(res, 200, { status: 'success', source: src, servers });
       }
 
       if (step === 'home') {
@@ -842,50 +926,28 @@ async function doAnime(req, res) {
     if (step === 'detail' || step === 'episodes') {
       const url = String(b.url || b.id || '').trim();
       if (!/^https?:\/\//i.test(url)) return out(res, 400, { status: 'error', message: 'URL anime tidak valid.' });
-      const r = await getHtml(url, base);
-      if (!r.ok) throw new Error('Detail gagal (' + r.code + ').');
+      const page = await fetchAny(url);
       const seen = new Set();
       const items = [];
       let m;
       AN_EP.lastIndex = 0;
-      while ((m = AN_EP.exec(r.text)) && items.length < 400) {
+      while ((m = AN_EP.exec(page.text)) && items.length < 400) {
         if (seen.has(m[1])) continue;
         seen.add(m[1]);
         items.push({ id: m[1], url: m[1], title: strip(m[2]) || 'Episode' });
       }
       items.reverse();
-      const syn = /<div[^>]+class="[^"]*(?:sinopsis|desc|entry-content)[^"]*"[^>]*>([\s\S]{0,900}?)<\/div>/i.exec(r.text);
-      return out(res, 200, { status: 'success', items, synopsis: syn ? strip(syn[1]).slice(0, 500) : '', host: dom });
+      const syn = /<div[^>]+class="[^"]*(?:sinopsis|desc|entry-content)[^"]*"[^>]*>([\s\S]{0,900}?)<\/div>/i.exec(page.text);
+      return out(res, 200, { status: 'success', items, synopsis: syn ? strip(syn[1]).slice(0, 500) : '', host: hostOf(page.url) });
     }
 
     if (step === 'episode' || step === 'stream') {
       const url = String(b.url || b.id || '').trim();
       if (!/^https?:\/\//i.test(url)) return out(res, 400, { status: 'error', message: 'URL episode tidak valid.' });
-      const r = await getHtml(url, base);
-      if (!r.ok) throw new Error('Episode gagal (' + r.code + ').');
-
-      const found = [];
-      const seen = new Set();
-      const re = /<(?:iframe|source)[^>]+(?:data-src|src)="([^"]+)"/gi;
-      let m;
-      while ((m = re.exec(r.text))) {
-        const u = m[1];
-        if (!/^https?:\/\//i.test(u) || seen.has(u)) continue;
-        seen.add(u);
-        found.push({ url: u, label: 'Server', type: 'link', m3u8: /\.m3u8/i.test(u), player: /\.m3u8/i.test(u) ? '/api/lab?action=proxy&url=' + encodeURIComponent(u) : null });
-      }
-
-      const raw = r.text.replace(/\\\//g, '/');
-      const mp = /https?:\/\/[^"'\s]+?\.m3u8[^"'\s]*/gi;
-      while ((m = mp.exec(raw))) {
-        if (!seen.has(m[0])) {
-          seen.add(m[0]);
-          found.unshift({ url: m[0], label: 'HLS', type: 'video', m3u8: true, player: '/api/lab?action=proxy&url=' + encodeURIComponent(m[0]) });
-        }
-      }
-
-      if (!found.length) throw new Error('Tidak ada server di episode ini.');
-      return out(res, 200, { status: 'success', servers: found.slice(0, 12), host: dom });
+      const page = await fetchAny(url);
+      const servers = extractServers(page.text, page.url);
+      if (!servers.length) throw new Error('Tidak ada server yang bisa diputar.');
+      return out(res, 200, { status: 'success', servers });
     }
 
     return out(res, 400, { status: 'error', message: 'step tidak dikenal untuk sumber ini.' });
@@ -895,6 +957,28 @@ async function doAnime(req, res) {
 }
 
 /* ================= MUSIK ================= */
+const pickUrl = arr => (Array.isArray(arr) ? (arr[4] || arr[3] || arr[2] || arr[1] || arr[0] || {}).url : '');
+
+async function saavnSearch(q, limit = 20) {
+  const r = await tf(SAAVN + '/search/songs?query=' + encodeURIComponent(q) + '&limit=' + limit, {
+    headers: { 'User-Agent': UA, 'Accept': 'application/json' }
+  }, 12000);
+  const d = await r.json().catch(() => ({}));
+  const list = (d.data && d.data.results) || [];
+  return list.map(x => ({
+    id: 's' + x.id,
+    title: x.name || 'Tanpa judul',
+    artist: ((x.artists && x.artists.primary) || []).map(a => a.name).join(', ') || 'Tanpa artis',
+    album: (x.album && x.album.name) || '',
+    art: pickUrl((x.image || []).map(i => ({ url: i.url }))) || ((x.image || [])[2] || {}).url || '',
+    preview: pickUrl(x.downloadUrl),
+    url: pickUrl(x.downloadUrl),
+    dur: Number(x.duration) || 0,
+    full: true,
+    src: 'saavn'
+  })).filter(x => x.preview);
+}
+
 const trackMap = x => ({
   id: String(x.trackId || x.id || ''),
   title: x.trackName || x.name || 'Tanpa judul',
@@ -903,7 +987,9 @@ const trackMap = x => ({
   art: String(x.artworkUrl100 || x.artworkUrl60 || '').replace(/\/\d+x\d+bb/, '/400x400bb'),
   preview: x.previewUrl || '',
   url: x.trackViewUrl || x.url || '',
-  dur: Math.round((x.trackTimeMillis || 0) / 1000)
+  dur: Math.round((x.trackTimeMillis || 0) / 1000),
+  full: false,
+  src: 'itunes'
 });
 
 async function itSearch(q, limit = 24) {
@@ -923,7 +1009,6 @@ async function itChart(limit = 25) {
 
   const ids = list.map(x => x.id).filter(Boolean);
   const prev = {};
-
   if (ids.length) {
     try {
       const l = await tf(ITUNES + '/lookup?id=' + ids.join(',') + '&country=ID', {}, 9000);
@@ -933,12 +1018,8 @@ async function itChart(limit = 25) {
   }
 
   return list.map(x => trackMap({
-    trackId: x.id,
-    trackName: x.name,
-    artistName: x.artistName,
-    artworkUrl100: x.artworkUrl100,
-    previewUrl: prev[x.id] || '',
-    url: x.url
+    trackId: x.id, trackName: x.name, artistName: x.artistName,
+    artworkUrl100: x.artworkUrl100, previewUrl: prev[x.id] || '', url: x.url
   }));
 }
 
@@ -958,17 +1039,26 @@ async function doMusic(req, res) {
   const b = req.body || {};
   const step = String(b.step || req.query.step || 'home');
 
+  if (step === 'full') {
+    const q = String(b.q || req.query.q || '').trim();
+    if (q.length < 2) return out(res, 400, { status: 'error', message: 'Query kosong.' });
+    const hit = (await saavnSearch(q, 3))[0];
+    if (!hit) return out(res, 404, { status: 'error', message: 'Versi penuh tidak ketemu.' });
+    return out(res, 200, { status: 'success', url: hit.preview, dur: hit.dur, title: hit.title, artist: hit.artist });
+  }
+
   if (step === 'search') {
     const q = String(b.q || req.query.q || '').trim();
     if (q.length < 2) return out(res, 400, { status: 'error', message: 'Kata kunci terlalu pendek.' });
-    const items = await itSearch(q, 24);
-    if (!items.length) return out(res, 200, { status: 'success', items: [] });
+
+    let items = [];
+    try { items = await saavnSearch(q, 24); } catch {}
+    if (!items.length) items = await itSearch(q, 24);
+
     return out(res, 200, { status: 'success', items });
   }
 
-  if (step === 'album') {
-    return out(res, 200, { status: 'success', albums: await itAlbums(12) });
-  }
+  if (step === 'album') return out(res, 200, { status: 'success', albums: await itAlbums(12) });
 
   const [chart, albums] = await Promise.all([
     itChart(25).catch(() => []),
@@ -1010,9 +1100,7 @@ function mtAdapter(prov) {
       const m = r.d;
       return { subject: m.subject || '(tanpa subjek)', from: (m.from && m.from.address) || '?', at: m.createdAt, html: Array.isArray(m.html) ? m.html.join('\n') : '', text: m.text || '' };
     },
-    async del(ctx, id) {
-      await jj('DELETE', base + '/messages/' + encodeURIComponent(id), undefined, { Authorization: 'Bearer ' + ctx.token });
-    }
+    async del(ctx, id) { await jj('DELETE', base + '/messages/' + encodeURIComponent(id), undefined, { Authorization: 'Bearer ' + ctx.token }); }
   };
 }
 
@@ -1048,8 +1136,7 @@ const MAIL = {
       const s = await gm('get_email_address');
       if (!s.ok || !s.d.sid_token) throw new Error('Guerrilla menolak sesi baru.');
       const u = await gm('set_email_user', '&email_user=' + encodeURIComponent(name) + '&sid_token=' + s.d.sid_token);
-      const addr = (u.d && u.d.email_addr) || s.d.email_addr;
-      return { address: addr, extra: s.d.sid_token };
+      return { address: (u.d && u.d.email_addr) || s.d.email_addr, extra: s.d.sid_token };
     },
     async list(ctx) {
       const r = await gm('get_email_list', '&offset=0&sid_token=' + encodeURIComponent(String(ctx.extra || '')));
@@ -1361,9 +1448,7 @@ async function doMail(req, res) {
   const step = String(b.step || req.query.step || '');
   let prov = String(b.provider || req.query.provider || 'auto').toLowerCase();
 
-  if (step === 'sources') {
-    return out(res, 200, { status: 'success', items: MAIL_ORDER.map(id => ({ id, label: MAIL[id].label })) });
-  }
+  if (step === 'sources') return out(res, 200, { status: 'success', items: MAIL_ORDER.map(id => ({ id, label: MAIL[id].label })) });
 
   try {
     if (step === 'domains') {
@@ -1395,8 +1480,7 @@ async function doMail(req, res) {
       const parts = address.split('@');
 
       return out(res, 200, {
-        status: 'success', provider: prov,
-        address, name: parts[0], domain: parts[1],
+        status: 'success', provider: prov, address, name: parts[0], domain: parts[1],
         token: made.token || '', sid: made.extra || '',
         password: made.extra && prov.startsWith('mail') ? made.extra : ''
       });
@@ -1417,21 +1501,14 @@ async function doMail(req, res) {
           if (!domain) throw new Error('domain kosong');
           const name = randName();
           const made = await MAIL[p].create({ name, domain, address: name + '@' + domain });
-          items.push({
-            address: made.address || (name + '@' + domain),
-            provider: p,
-            token: made.token || '',
-            sid: made.extra || '',
-            name, domain
-          });
+          items.push({ address: made.address || (name + '@' + domain), provider: p, token: made.token || '', sid: made.extra || '', name, domain });
         } catch (e) {
           items.push({ address: '', provider: prov, error: e.message });
         }
         await new Promise(r => setTimeout(r, 150));
       }
 
-      const ok = items.filter(x => x.address);
-      if (!ok.length) return out(res, 502, { status: 'error', message: 'Gagal membuat alamat.', items });
+      if (!items.filter(x => x.address).length) return out(res, 502, { status: 'error', message: 'Gagal membuat alamat.', items });
       return out(res, 200, { status: 'success', items });
     }
 
@@ -1453,12 +1530,10 @@ async function doMail(req, res) {
       const messages = await adapter.list(ctx);
       return out(res, 200, { status: 'success', provider: prov, messages });
     }
-
     if (step === 'read') {
       const m = await adapter.read(ctx, String(b.id || ''));
       return out(res, 200, { status: 'success', provider: prov, ...m });
     }
-
     if (step === 'del') {
       await adapter.del(ctx, String(b.id || '')).catch(() => {});
       return out(res, 200, { status: 'success' });
@@ -1479,7 +1554,7 @@ async function doHealth(req, res) {
 
   return out(res, 200, {
     status: 'success',
-    version: '8.0.0',
+    version: '8.1.0',
     scraper: !!l,
     modules: state,
     mail: MAIL_ORDER,
