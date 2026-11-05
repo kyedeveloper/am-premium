@@ -2,11 +2,7 @@
   "functions": {
     "api/**/*.js": {
       "maxDuration": 60,
-      "includeFiles": [
-        "node_modules/@coflyn/**",
-        "node_modules/axios/**",
-        "node_modules/cheerio/**"
-      ]
+      "includeFiles": "node_modules/@coflyn/**"
     }
   }
 }
