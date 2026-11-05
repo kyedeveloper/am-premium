@@ -1,23 +1,28 @@
 /**
- * AM PREMIUM · Lab API
- * v6.0.0 — scrapr edition
+ * VESPERA · Lab API  v8.0.0
+ * Runtime: Vercel Functions (node) — maxDuration 60
  *
- * Perubahan dari v5.x:
- *  - Downloader: rantai scraper multi-sumber (coflyn/scrapr) + modul resolver file host
- *  - Anime: scrapr anime (otakudesu, gogoanime, nimegami, animetosho)
- *  - Manga: scrapr comic (9 sumber) + mangadex/comick native
- *  - Temp mail: registry adapter, 17 provider, mode auto-probe
- *  - exec / net / proxy / router tetap
+ * Perbaikan dari v6/v7:
+ *  - scraper dimuat lewat dynamic import (ke-trace bundler, nggak 500 lagi)
+ *  - seluruh router dibungkus: error selalu balik JSON, bukan halaman 500 Vercel
+ *  - modul musik (chart + search + preview) ditambah
+ *  - temp mail: step `bulk` ditambah
+ *  - proxy/HLS: header & referer lebih toleran
  */
 
-import { createRequire } from 'node:module';
+export const config = { maxDuration: 60, memory: 1024 };
 
 const PISTON = 'https://emkc.org/api/v2/piston/execute';
 const ONESEC = 'https://www.1secmail.com/api/v1/';
+const ITUNES = 'https://itunes.apple.com';
 const RL = new Map();
-const CAPS = { exec: 24, dl: 24, resolve: 60, net: 40, mail: 80, img: 240, manga: 60, anime: 60, proxy: 600, health: 120 };
 
-const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+const CAPS = {
+  exec: 24, dl: 24, resolve: 60, net: 40, mail: 120,
+  img: 240, manga: 60, anime: 60, music: 90, proxy: 600, health: 120
+};
+
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
 
 const LANG = {
   bash: 'bash', sh: 'bash', shell: 'bash',
@@ -26,43 +31,50 @@ const LANG = {
   php: 'php', go: 'go', c: 'c', cpp: 'c++', java: 'java', ruby: 'ruby', lua: 'lua'
 };
 
-/* ---------- scrapr loader ---------- */
-let _lib = null;
-function L() {
-  if (_lib) return _lib;
-  try {
-    const req = createRequire(import.meta.url);
-    _lib = req('@coflyn/scrapr');
-  } catch {
-    _lib = null;
-  }
-  return _lib;
-}
-
-function need() {
-  const l = L();
-  if (!l) throw new Error('Modul scraper belum terpasang (npm i @coflyn/scrapr).');
-  return l;
-}
-
+/* ================= util ================= */
 function out(res, code, obj) {
-  res.status(code).setHeader('Content-Type', 'application/json; charset=utf-8');
-  res.end(JSON.stringify(obj));
+  try {
+    res.status(code);
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-store');
+    res.end(JSON.stringify(obj));
+  } catch {
+    try { res.end(JSON.stringify(obj)); } catch {}
+  }
 }
 
 function hit(ip, act) {
-  const k = ip + '|' + act, now = Date.now();
+  const k = ip + '|' + act;
+  const now = Date.now();
   const r = RL.get(k) || { n: 0, t: now };
   if (now - r.t > 60000) { r.n = 0; r.t = now; }
-  r.n++; RL.set(k, r);
+  r.n++;
+  RL.set(k, r);
+  if (RL.size > 4000) RL.clear();
   return r.n <= (CAPS[act] || 40);
 }
 
 async function tf(url, opt = {}, ms = 9000) {
   const c = new AbortController();
   const t = setTimeout(() => c.abort(), ms);
-  try { return await fetch(url, { ...opt, signal: c.signal }); }
-  finally { clearTimeout(t); }
+  try {
+    return await fetch(url, { ...opt, signal: c.signal });
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+async function jj(method, url, body, headers, ms = 9000) {
+  const h = { 'Accept': 'application/json', ...(headers || {}) };
+  if (body !== undefined) h['Content-Type'] = 'application/json';
+  const r = await tf(url, { method, headers: h, body: body === undefined ? undefined : JSON.stringify(body) }, ms);
+  const d = await r.json().catch(() => ({}));
+  return { ok: r.ok, code: r.status, d };
+}
+
+async function txt(url, headers, ms = 9000) {
+  const r = await tf(url, { headers: { 'User-Agent': UA, 'Accept': 'text/html,*/*;q=0.8', ...(headers || {}) } }, ms);
+  return { ok: r.ok, code: r.status, t: await r.text() };
 }
 
 async function getHtml(url, ref) {
@@ -77,7 +89,37 @@ const abs = (base, u) => { try { return new URL(u, base).href; } catch { return 
 const hostOf = u => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return ''; } };
 const imgProxy = (u, ref) => '/api/lab?action=img&url=' + encodeURIComponent(u) + (ref ? '&ref=' + encodeURIComponent(ref) : '');
 
-/* ---------- exec ---------- */
+/* ================= scraper (lazy, aman) ================= */
+let SCR = null;
+let SCR_TRIED = false;
+
+async function scraper() {
+  if (SCR) return SCR;
+  if (SCR_TRIED) return null;
+  SCR_TRIED = true;
+  try {
+    const m = await import('@coflyn/scrapr');
+    SCR = m.default && m.default.tiktok ? m.default : m;
+  } catch {
+    SCR = null;
+  }
+  return SCR;
+}
+
+function need() {
+  if (!SCR) throw new Error('Modul scraper tidak tersedia di runtime ini.');
+  return SCR;
+}
+
+function pick(path) {
+  const l = need();
+  const [ns, fn] = path.split('.');
+  const f = l[ns] && l[ns][fn];
+  if (typeof f !== 'function') throw new Error(path + ' tidak tersedia');
+  return f;
+}
+
+/* ================= exec ================= */
 async function doExec(req, res) {
   const body = req.body || {};
   const lang = LANG[String(body.lang || '').toLowerCase()];
@@ -85,7 +127,7 @@ async function doExec(req, res) {
   if (!Array.isArray(body.files) || !body.files.length) return out(res, 400, { status: 'error', message: 'File kosong.' });
 
   const files = body.files.slice(0, 6).map(f => ({
-    name: String(f.name || 'main').replace(/[^\w.\-]/g, ''),
+    name: String(f.name || 'main').replace(/[^\w.\-]/g, '') || 'main',
     content: String(f.content || '').slice(0, 40000)
   }));
 
@@ -93,7 +135,7 @@ async function doExec(req, res) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ language: lang, version: '*', files, stdin: String(body.stdin || '') })
-  }, 10000);
+  }, 12000);
 
   const d = await r.json().catch(() => ({}));
   if (!r.ok) return out(res, 502, { status: 'error', message: d.message || 'Sandbox menolak (' + r.status + ')' });
@@ -107,22 +149,24 @@ async function doExec(req, res) {
   });
 }
 
-/* ---------- proxy gambar ---------- */
+/* ================= proxy gambar ================= */
 async function doImg(req, res) {
   const url = String(req.query.url || '').trim();
   if (!/^https?:\/\//i.test(url)) return out(res, 400, { status: 'error', message: 'URL tidak valid.' });
+
   const ref = String(req.query.ref || '') || ('https://' + hostOf(url) + '/');
   const r = await tf(url, { headers: { 'User-Agent': UA, 'Referer': ref, 'Accept': 'image/*,*/*;q=0.8' } }, 12000);
   if (!r.ok) return out(res, 502, { status: 'error', message: 'HTTP ' + r.status });
+
   const buf = Buffer.from(await r.arrayBuffer());
   res.setHeader('Content-Type', r.headers.get('content-type') || 'image/jpeg');
   res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=604800');
-  res.status(200).end(buf);
+  return res.status(200).end(buf);
 }
 
-/* ---------- PROXY / PEMBERSIH ---------- */
+/* ================= proxy halaman / HLS ================= */
 const HIDE_CSS = `
-html,body{margin:0!important;padding:0!important;background:#000!important;color:#eee!important;overflow-x:hidden!important}
+html,body{margin:0!important;padding:0!important;background:#0b0a0a!important;color:#eee!important;overflow-x:hidden!important}
 video,iframe,img{max-width:100%!important}
 ins,.adsbygoogle,[id*="ad-"],[id*="ads"],[class*="ad-"],[class*="ads"],[class*="banner"],
 div[style*="text-align:center"]>a>img,
@@ -132,9 +176,7 @@ div[style*="text-align:center"]>a>img,
 
 const AD_HOST = /(doubleclick|googlesyndication|googleadservices|adsterra|popads|propellerads|highperformanceformat|profitableratecpm|adcash|mgid|revcontent|taboola|outbrain|histats|googletagmanager|google-analytics|cloudflareinsights|onesignal|pushcrew|cleverpush)/i;
 
-function pxify(u, base, ref) {
-  return '/api/lab?action=proxy&url=' + encodeURIComponent(abs(base, u)) + '&ref=' + encodeURIComponent(ref);
-}
+const pxify = (u, base, ref) => '/api/lab?action=proxy&url=' + encodeURIComponent(abs(base, u)) + '&ref=' + encodeURIComponent(ref);
 
 function cleanHtml(html, pageUrl) {
   const base = new URL(pageUrl);
@@ -163,7 +205,7 @@ async function doProxy(req, res) {
   let ref = String(req.query.ref || '');
   if (!ref) { try { ref = new URL(url).origin + '/'; } catch { ref = ''; } }
 
-  const r = await tf(url, { headers: { 'User-Agent': UA, 'Referer': ref, 'Accept': '*/*' } }, 14000);
+  const r = await tf(url, { headers: { 'User-Agent': UA, 'Referer': ref, 'Accept': '*/*' } }, 15000);
   if (!r.ok) return out(res, 502, { status: 'error', message: 'HTTP ' + r.status });
 
   const ct = r.headers.get('content-type') || '';
@@ -197,10 +239,10 @@ async function doProxy(req, res) {
   const buf = Buffer.from(await r.arrayBuffer());
   res.setHeader('Content-Type', ct || 'application/octet-stream');
   res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400');
-  res.status(200).end(buf);
+  return res.status(200).end(buf);
 }
 
-/* ---------- DOWNLOADER ---------- */
+/* ================= downloader ================= */
 function cobaltBases() {
   const env = (process.env.COBALT_API || '').split(',').map(s => s.trim()).filter(Boolean);
   return env.length ? env : ['https://api.cobalt.tools', 'https://co.wuk.sh'];
@@ -216,7 +258,7 @@ async function cobalt(url, fmt) {
       const r = await tf(base.replace(/\/+$/, '') + '/', {
         method: 'POST', headers: h,
         body: JSON.stringify({ url, videoQuality: '1080', audioBitrate: '320', downloadMode: fmt === 'mp3' ? 'audio' : 'auto' })
-      }, 8000);
+      }, 9000);
       if (!r.ok) throw new Error('http ' + r.status);
       const d = await r.json();
       if (d.status === 'error') throw new Error((d.error && d.error.code) || 'error');
@@ -237,19 +279,11 @@ async function oceansaver(url, fmt) {
     await new Promise(x => setTimeout(x, 700));
     const p = await tf('https://p.oceansaver.in/api/progress?id=' + d.id, {}, 7000);
     const j = await p.json().catch(() => ({}));
-    if (j && j.download_url) return [{ url: j.download_url, label: fmt === 'mp3' ? 'Audio MP3' : 'Video', type: fmt === 'mp3' ? 'audio' : 'video', provider: 'oceansaver' }];
+    if (j && j.download_url)
+      return [{ url: j.download_url, label: fmt === 'mp3' ? 'Audio MP3' : 'Video', type: fmt === 'mp3' ? 'audio' : 'video', provider: 'oceansaver' }];
     if (j && j.success === 0 && j.error) break;
   }
   throw new Error('oceansaver timeout');
-}
-
-/* panggil satu scraper scrapr lalu normalisasi */
-function pick(path) {
-  const l = need();
-  const [ns, fn] = path.split('.');
-  const f = l[ns] && l[ns][fn];
-  if (typeof f !== 'function') throw new Error(path + ' tidak tersedia');
-  return f;
 }
 
 function norm(resp, provider, fmt) {
@@ -330,9 +364,9 @@ async function doDl(req, res) {
   if (!/^https?:\/\//i.test(url)) return out(res, 400, { status: 'error', message: 'URL tidak valid.' });
 
   const host = hostOf(url);
+  await scraper();
 
-  // playlist YouTube
-  if (step === 'playlist' || (/youtube\.com\/playlist/.test(url))) {
+  if (step === 'playlist' || /youtube\.com\/playlist/.test(url)) {
     try {
       const r = await pick('youtube.playlist')(url);
       if (!r.status) throw new Error(r.message || 'playlist gagal');
@@ -346,34 +380,37 @@ async function doDl(req, res) {
   const route = DL_ROUTES.find(r => r.re.test(host) || r.re.test(url));
   const errors = [];
 
-  if (route) {
+  if (route && SCR) {
     try {
       const { items, meta } = await runChain(route.chain, url, fmt);
       if (items.length) return out(res, 200, { status: 'success', host, title: meta.title || '', thumb: meta.thumb || '', items });
     } catch (e) { errors.push(e.message); }
   }
 
-  // file host / shortlink
   const rr = RESOLVE_ROUTES.find(r => r.re.test(url));
-  if (rr) {
+  if (rr && SCR) {
     try {
       const r = await pick('resolver.' + rr.fn)(url);
       if (!r.status) throw new Error(r.message || rr.fn + ' gagal');
-      const fileUrl = r.result.url;
       return out(res, 200, {
         status: 'success', host, resolved: true,
         title: r.result.filename || r.result.title || '',
-        items: [{ url: fileUrl, label: (r.result.filename || 'File') + (r.result.size ? ' · ' + r.result.size : ''), type: 'file', provider: rr.fn }]
+        items: [{
+          url: r.result.url,
+          label: (r.result.filename || 'File') + (r.result.size ? ' · ' + r.result.size : ''),
+          type: 'file', provider: rr.fn
+        }]
       });
     } catch (e) { errors.push(rr.fn + ': ' + e.message); }
   }
 
-  // generic: unshorten → cobalt → oceansaver
-  try {
-    const r = await pick('resolver.unshorten')(url);
-    if (r.status && r.result && r.result.url && r.result.url !== url && DIRECT_FILE.test(r.result.url))
-      return out(res, 200, { status: 'success', host, resolved: true, items: [{ url: r.result.url, label: 'Direct link', type: 'video', provider: 'unshorten' }] });
-  } catch (e) { errors.push('unshorten: ' + e.message); }
+  if (SCR) {
+    try {
+      const r = await pick('resolver.unshorten')(url);
+      if (r.status && r.result && r.result.url && r.result.url !== url && DIRECT_FILE.test(r.result.url))
+        return out(res, 200, { status: 'success', host, resolved: true, items: [{ url: r.result.url, label: 'Direct link', type: 'video', provider: 'unshorten' }] });
+    } catch (e) { errors.push('unshorten: ' + e.message); }
+  }
 
   for (const fn of [() => cobalt(url, fmt), () => oceansaver(url, fmt)]) {
     try {
@@ -384,16 +421,19 @@ async function doDl(req, res) {
 
   return out(res, 502, {
     status: 'error',
-    message: route ? 'Semua sumber untuk platform ini gagal. Coba lagi atau ganti link.' : 'Platform belum didukung.',
+    message: route
+      ? 'Semua sumber untuk platform ini gagal. Coba lagi atau ganti link.'
+      : 'Platform belum didukung.',
     detail: errors.join(' · ')
   });
 }
 
-/* ---------- RESOLVER MANDIRI ---------- */
 async function doResolve(req, res) {
   const b = req.body || {};
   const url = String(b.url || req.query.url || '').trim();
   if (!/^https?:\/\//i.test(url)) return out(res, 400, { status: 'error', message: 'URL tidak valid.' });
+
+  await scraper();
 
   const r = RESOLVE_ROUTES.find(x => x.re.test(url));
   const fns = r ? [r.fn] : ['unshorten'];
@@ -412,16 +452,16 @@ async function doResolve(req, res) {
   return out(res, 502, { status: 'error', message: 'Resolver gagal.', detail: errs.join(' · ') });
 }
 
-/* ---------- net ---------- */
+/* ================= net ================= */
 async function doNet(req, res) {
   const url = String(req.query.url || (req.body && req.body.url) || '').trim();
   if (!/^https?:\/\//i.test(url)) return out(res, 400, { status: 'error', message: 'URL tidak valid.' });
-  const r = await tf(url, { headers: { 'User-Agent': UA } }, 9000);
-  const txt = (await r.text()).slice(0, 60000);
-  return out(res, 200, { status: 'success', code: r.status, type: r.headers.get('content-type') || '', body: txt });
+  const r = await tf(url, { headers: { 'User-Agent': UA } }, 10000);
+  const t = (await r.text()).slice(0, 60000);
+  return out(res, 200, { status: 'success', code: r.status, type: r.headers.get('content-type') || '', body: t });
 }
 
-/* ---------- MANGA ---------- */
+/* ================= MANGA ================= */
 const MD = 'https://api.mangadex.org';
 
 const COMIC_SOURCES = {
@@ -438,22 +478,25 @@ const COMIC_SOURCES = {
 const MD_SOURCES = { mangadex: 'MangaDex', comick: 'Comick' };
 
 async function mdJson(path) {
-  const r = await tf(MD + path, { headers: { 'User-Agent': 'zukai-lab/1.0' } }, 9000);
+  const r = await tf(MD + path, { headers: { 'User-Agent': 'vespera-lab/8.0' } }, 9000);
   if (!r.ok) throw new Error('mangadex ' + r.status);
   return r.json();
 }
 
 const MD_Q = 'includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive&hasAvailableChapters=true&limit=18';
+
 const mdTitle = m => {
   const t = m.attributes && m.attributes.title;
   if (!t) return 'Tanpa judul';
   return t.en || t.id || Object.values(t)[0] || 'Tanpa judul';
 };
+
 function mdCover(m) {
   const rel = (m.relationships || []).find(r => r.type === 'cover_art');
   const f = rel && rel.attributes && rel.attributes.fileName;
   return f ? imgProxy('https://uploads.mangadex.org/covers/' + m.id + '/' + f + '.256.jpg', 'https://mangadex.org/') : '';
 }
+
 const mdMap = list => (list || []).map(m => ({ id: m.id, title: mdTitle(m), cover: mdCover(m), source: 'mangadex' }));
 
 async function doManga(req, res) {
@@ -472,8 +515,9 @@ async function doManga(req, res) {
   }
 
   if (COMIC_SOURCES[src]) {
+    await scraper();
     try {
-      const mod = need().comic[src];
+      const mod = need().comic && need().comic[src];
       if (!mod) throw new Error('sumber tidak tersedia');
 
       if (step === 'search') {
@@ -515,7 +559,6 @@ async function doManga(req, res) {
     }
   }
 
-  // mangadex / comick native
   if (step === 'home') {
     const [a, c] = await Promise.allSettled([
       mdJson('/manga?order[followedCount]=desc&' + MD_Q),
@@ -586,7 +629,8 @@ async function doManga(req, res) {
     }
 
     const d = await mdJson('/at-home/server/' + encodeURIComponent(id));
-    const base = d.baseUrl, hash = d.chapter && d.chapter.hash;
+    const base = d.baseUrl;
+    const hash = d.chapter && d.chapter.hash;
     const files = (d.chapter && d.chapter.data) || [];
     if (!base || !files.length) return out(res, 502, { status: 'error', message: 'Halaman tidak tersedia (mungkin butuh login).' });
     return out(res, 200, { status: 'success', pages: files.map(f => imgProxy(base + '/data/' + hash + '/' + f, 'https://mangadex.org/')) });
@@ -595,7 +639,7 @@ async function doManga(req, res) {
   return out(res, 400, { status: 'error', message: 'step tidak dikenal.' });
 }
 
-/* ---------- ANIME ---------- */
+/* ================= ANIME ================= */
 const ANIME_SOURCES = {
   otakudesu: 'OtakuDesu',
   gogoanime: 'GogoAnime',
@@ -603,7 +647,6 @@ const ANIME_SOURCES = {
   animetosho: 'AnimeTosho'
 };
 
-/* sumber lama, dipakai buat feed beranda / jadwal / genre */
 const ANIME_FEED = {
   otakudesu: { doms: ['otakudesu.blog', 'otakudesu.io', 'otakudesu.cloud'], lists: ['/ongoing-anime/', '/anime-terbaru/'], rated: '/complete-anime/', schedule: '/jadwal-rilis/', genres: '/genre-list/' },
   samehadaku: { doms: ['samehadaku.li', 'samehadaku.care', 'samehadaku.email'], lists: ['/anime-terbaru/', '/ongoing-anime/'], rated: '/daftar-anime/', schedule: '/jadwal-rilis/', genres: '/genre/' },
@@ -621,7 +664,7 @@ async function pickHost(src) {
 
   const hasil = await Promise.all(cfg.doms.map(async d => {
     try {
-      const r = await tf('https://' + d + '/', { headers: { 'User-Agent': UA } }, 2500);
+      const r = await tf('https://' + d + '/', { headers: { 'User-Agent': UA } }, 3000);
       return r.ok ? d : null;
     } catch { return null; }
   }));
@@ -637,7 +680,8 @@ const AN_RE = /<a[^>]+href="(https?:\/\/[^"]+?\/(?:anime|tv|movie|anime-terbaru)
 const AN_EP = /<a[^>]+href="(https?:\/\/[^"]+?(?:\/episode\/|episode-\d|ep-\d)[^"'#?]*)"[^>]*>([\s\S]{0,160}?)<\/a>/gi;
 
 function anItems(text, host, limit) {
-  const seen = new Set(), items = [];
+  const seen = new Set();
+  const items = [];
   let m;
   AN_RE.lastIndex = 0;
   while ((m = AN_RE.exec(text)) && items.length < limit) {
@@ -663,15 +707,15 @@ async function doAnime(req, res) {
       status: 'success',
       items: [
         ...Object.entries(ANIME_SOURCES).map(([id, label]) => ({ id, label, stream: true })),
-        ...Object.entries(ANIME_FEED).filter(([id]) => !ANIME_SOURCES[id]).map(([id, v]) => ({ id, label: id[0].toUpperCase() + id.slice(1), stream: false }))
+        ...Object.entries(ANIME_FEED).filter(([id]) => !ANIME_SOURCES[id]).map(([id]) => ({ id, label: id[0].toUpperCase() + id.slice(1), stream: false }))
       ]
     });
   }
 
-  /* pencarian + episode + stream lewat scrapr */
   if (ANIME_SOURCES[src]) {
+    await scraper();
     try {
-      const mod = need().anime[src];
+      const mod = need().anime && need().anime[src];
       if (!mod) throw new Error('sumber tidak tersedia');
 
       if (step === 'search') {
@@ -718,7 +762,6 @@ async function doAnime(req, res) {
       }
 
       if (step === 'home') {
-        // feed tidak tersedia di scrapr, pinjam keyword musiman
         const r = await mod.search(String(b.q || 'a'));
         const items = r.status ? (r.result || []).map(x => ({ id: x.url, url: x.url, title: x.title, cover: x.thumbnail || '' })) : [];
         return out(res, 200, { status: 'success', trending: items, latest: [], rated: [] });
@@ -730,7 +773,6 @@ async function doAnime(req, res) {
     }
   }
 
-  /* feed lama: beranda, jadwal, genre */
   const cfg = ANIME_FEED[src];
   if (!cfg) return out(res, 400, { status: 'error', message: 'sumber tidak dikenal' });
 
@@ -768,7 +810,8 @@ async function doAnime(req, res) {
     if (step === 'genres') {
       const r = await getHtml(base + cfg.genres, base);
       if (!r.ok) throw new Error('Genre gagal (' + r.code + ').');
-      const seen = new Set(), items = [];
+      const seen = new Set();
+      const items = [];
       const re = /<a[^>]+href="(https?:\/\/[^"]+?\/genre\/[^"'#]+)"[^>]*>([\s\S]{0,80}?)<\/a>/gi;
       let m;
       while ((m = re.exec(r.text)) && items.length < 40) {
@@ -795,13 +838,14 @@ async function doAnime(req, res) {
       if (!r.ok) throw new Error('Pencarian gagal (' + r.code + ').');
       return out(res, 200, { status: 'success', items: anItems(r.text, dom, 24), host: dom });
     }
-    
+
     if (step === 'detail' || step === 'episodes') {
       const url = String(b.url || b.id || '').trim();
       if (!/^https?:\/\//i.test(url)) return out(res, 400, { status: 'error', message: 'URL anime tidak valid.' });
       const r = await getHtml(url, base);
       if (!r.ok) throw new Error('Detail gagal (' + r.code + ').');
-      const seen = new Set(), items = [];
+      const seen = new Set();
+      const items = [];
       let m;
       AN_EP.lastIndex = 0;
       while ((m = AN_EP.exec(r.text)) && items.length < 400) {
@@ -819,7 +863,9 @@ async function doAnime(req, res) {
       if (!/^https?:\/\//i.test(url)) return out(res, 400, { status: 'error', message: 'URL episode tidak valid.' });
       const r = await getHtml(url, base);
       if (!r.ok) throw new Error('Episode gagal (' + r.code + ').');
-      const found = [], seen = new Set();
+
+      const found = [];
+      const seen = new Set();
       const re = /<(?:iframe|source)[^>]+(?:data-src|src)="([^"]+)"/gi;
       let m;
       while ((m = re.exec(r.text))) {
@@ -828,14 +874,19 @@ async function doAnime(req, res) {
         seen.add(u);
         found.push({ url: u, label: 'Server', type: 'link', m3u8: /\.m3u8/i.test(u), player: /\.m3u8/i.test(u) ? '/api/lab?action=proxy&url=' + encodeURIComponent(u) : null });
       }
+
       const raw = r.text.replace(/\\\//g, '/');
       const mp = /https?:\/\/[^"'\s]+?\.m3u8[^"'\s]*/gi;
       while ((m = mp.exec(raw))) {
-        if (!seen.has(m[0])) { seen.add(m[0]); found.unshift({ url: m[0], label: 'HLS', type: 'video', m3u8: true, player: '/api/lab?action=proxy&url=' + encodeURIComponent(m[0]) }); }
+        if (!seen.has(m[0])) {
+          seen.add(m[0]);
+          found.unshift({ url: m[0], label: 'HLS', type: 'video', m3u8: true, player: '/api/lab?action=proxy&url=' + encodeURIComponent(m[0]) });
+        }
       }
+
       if (!found.length) throw new Error('Tidak ada server di episode ini.');
       return out(res, 200, { status: 'success', servers: found.slice(0, 12), host: dom });
-                                 }
+    }
 
     return out(res, 400, { status: 'error', message: 'step tidak dikenal untuk sumber ini.' });
   } catch (e) {
@@ -843,22 +894,92 @@ async function doAnime(req, res) {
   }
 }
 
-/* ---------- TEMP MAIL ---------- */
-/* adapter generik: { label, domains(), create(), list(), read(), del() } */
+/* ================= MUSIK ================= */
+const trackMap = x => ({
+  id: String(x.trackId || x.id || ''),
+  title: x.trackName || x.name || 'Tanpa judul',
+  artist: x.artistName || 'Tanpa artis',
+  album: x.collectionName || '',
+  art: String(x.artworkUrl100 || x.artworkUrl60 || '').replace(/\/\d+x\d+bb/, '/400x400bb'),
+  preview: x.previewUrl || '',
+  url: x.trackViewUrl || x.url || '',
+  dur: Math.round((x.trackTimeMillis || 0) / 1000)
+});
 
-async function jj(method, url, body, headers, ms = 9000) {
-  const h = { 'Accept': 'application/json', ...(headers || {}) };
-  if (body !== undefined) h['Content-Type'] = 'application/json';
-  const r = await tf(url, { method, headers: h, body: body === undefined ? undefined : JSON.stringify(body) }, ms);
+async function itSearch(q, limit = 24) {
+  const r = await tf(
+    ITUNES + '/search?term=' + encodeURIComponent(q) + '&entity=song&limit=' + limit + '&country=ID&media=music',
+    { headers: { 'User-Agent': UA, 'Accept': 'application/json' } }, 9000
+  );
   const d = await r.json().catch(() => ({}));
-  return { ok: r.ok, code: r.status, d };
+  return (d.results || []).filter(x => x && x.previewUrl).map(trackMap);
 }
 
-async function txt(url, headers, ms = 9000) {
-  const r = await tf(url, { headers: { 'User-Agent': UA, 'Accept': 'text/html,*/*;q=0.8', ...(headers || {}) } }, ms);
-  return { ok: r.ok, code: r.status, t: await r.text() };
+async function itChart(limit = 25) {
+  const r = await tf('https://rss.applemarketingtools.com/api/v2/id/music/most-played/' + limit + '/songs.json', {}, 9000);
+  const d = await r.json().catch(() => ({}));
+  const list = (d.feed && d.feed.results) || [];
+  if (!list.length) return [];
+
+  const ids = list.map(x => x.id).filter(Boolean);
+  const prev = {};
+
+  if (ids.length) {
+    try {
+      const l = await tf(ITUNES + '/lookup?id=' + ids.join(',') + '&country=ID', {}, 9000);
+      const j = await l.json().catch(() => ({}));
+      (j.results || []).forEach(x => { if (x.previewUrl) prev[x.trackId] = x.previewUrl; });
+    } catch {}
+  }
+
+  return list.map(x => trackMap({
+    trackId: x.id,
+    trackName: x.name,
+    artistName: x.artistName,
+    artworkUrl100: x.artworkUrl100,
+    previewUrl: prev[x.id] || '',
+    url: x.url
+  }));
 }
 
+async function itAlbums(limit = 12) {
+  const r = await tf('https://rss.applemarketingtools.com/api/v2/id/music/most-played/' + limit + '/albums.json', {}, 9000);
+  const d = await r.json().catch(() => ({}));
+  return ((d.feed && d.feed.results) || []).map(a => ({
+    id: String(a.id || ''),
+    title: a.name || 'Tanpa judul',
+    artist: a.artistName || '',
+    art: String(a.artworkUrl100 || '').replace(/\/\d+x\d+bb/, '/400x400bb'),
+    url: a.url || ''
+  }));
+}
+
+async function doMusic(req, res) {
+  const b = req.body || {};
+  const step = String(b.step || req.query.step || 'home');
+
+  if (step === 'search') {
+    const q = String(b.q || req.query.q || '').trim();
+    if (q.length < 2) return out(res, 400, { status: 'error', message: 'Kata kunci terlalu pendek.' });
+    const items = await itSearch(q, 24);
+    if (!items.length) return out(res, 200, { status: 'success', items: [] });
+    return out(res, 200, { status: 'success', items });
+  }
+
+  if (step === 'album') {
+    return out(res, 200, { status: 'success', albums: await itAlbums(12) });
+  }
+
+  const [chart, albums] = await Promise.all([
+    itChart(25).catch(() => []),
+    itAlbums(8).catch(() => [])
+  ]);
+
+  if (!chart.length) return out(res, 502, { status: 'error', message: 'Chart musik tidak bisa dibaca.' });
+  return out(res, 200, { status: 'success', chart, albums });
+}
+
+/* ================= TEMP MAIL ================= */
 const MT_BASE = { mailtm: 'https://api.mail.tm', mailgw: 'https://api.mail.gw' };
 
 function mtAdapter(prov) {
@@ -896,7 +1017,7 @@ function mtAdapter(prov) {
 }
 
 async function gm(f, extra = '') {
-  const r = await tf('https://api.guerrillamail.com/ajax.php?f=' + f + '&agent=zukai-lab' + extra, {}, 9000);
+  const r = await tf('https://api.guerrillamail.com/ajax.php?f=' + f + '&agent=vespera-lab' + extra, {}, 9000);
   return { ok: r.ok, code: r.status, d: await r.json().catch(() => ({})) };
 }
 
@@ -1031,21 +1152,24 @@ const MAIL = {
     label: 'dropmail.me',
     async domains() { return ['dropmail.me', '10mail.org', 'emlhub.com', 'emlpro.com', 'emltmp.com']; },
     async create() {
-      const q = 'mutation{introduceSession{id,addresses{address}}}';
-      const r = await jj('POST', 'https://dropmail.me/api/graphql/ZUKAI-LAB', { query: q });
+      const r = await jj('POST', 'https://dropmail.me/api/graphql/VESPERA-LAB', { query: 'mutation{introduceSession{id,addresses{address}}}' });
       const s = r.d && r.d.data && r.d.data.introduceSession;
       if (!s || !s.addresses || !s.addresses[0]) throw new Error('dropmail menolak permintaan.');
       return { address: s.addresses[0].address, extra: s.id };
     },
     async list(ctx) {
-      const q = 'query($id:ID!){session(id:$id){mails{id,fromAddr,headerSubject,downloadUrl}}}';
-      const r = await jj('POST', 'https://dropmail.me/api/graphql/ZUKAI-LAB', { query: q, variables: { id: ctx.extra } });
+      const r = await jj('POST', 'https://dropmail.me/api/graphql/VESPERA-LAB', {
+        query: 'query($id:ID!){session(id:$id){mails{id,fromAddr,headerSubject,downloadUrl}}}',
+        variables: { id: ctx.extra }
+      });
       const mails = (r.d && r.d.data && r.d.data.session && r.d.data.session.mails) || [];
       return mails.map(m => ({ id: m.id, from: m.fromAddr || '?', subject: m.headerSubject || '(tanpa subjek)', seen: false, at: '' }));
     },
     async read(ctx, id) {
-      const q = 'query($id:ID!){session(id:$id){mails{id,fromAddr,headerSubject,rawSize,downloadUrl}}}';
-      const r = await jj('POST', 'https://dropmail.me/api/graphql/ZUKAI-LAB', { query: q, variables: { id: ctx.extra } });
+      const r = await jj('POST', 'https://dropmail.me/api/graphql/VESPERA-LAB', {
+        query: 'query($id:ID!){session(id:$id){mails{id,fromAddr,headerSubject,rawSize,downloadUrl}}}',
+        variables: { id: ctx.extra }
+      });
       const mails = (r.d && r.d.data && r.d.data.session && r.d.data.session.mails) || [];
       const m = mails.find(x => String(x.id) === String(id));
       if (!m) throw new Error('Pesan tidak ditemukan.');
@@ -1141,7 +1265,7 @@ const MAIL = {
     async domains() { return ['yopmail.com', 'yopmail.fr', 'cool.fr.nf', 'jetable.fr.nf']; },
     async create({ address }) { return { address }; },
     async list(ctx) {
-      const r = await jj('GET', 'https://yopmail.com/api/inbox?login=' + encodeURIComponent(ctx.name) + '&env=inbox', { }, { Referer: 'https://yopmail.com/' });
+      const r = await jj('GET', 'https://yopmail.com/api/inbox?login=' + encodeURIComponent(ctx.name) + '&env=inbox', {}, { Referer: 'https://yopmail.com/' });
       const arr = Array.isArray(r.d) ? r.d : (r.d && r.d.inbox) || [];
       if (Array.isArray(arr) && arr.length) return arr.map((m, i) => ({ id: String(m.id || i), from: m.from || '?', subject: m.subject || '(tanpa subjek)', seen: false, at: m.date || '' }));
       const h = await txt('https://yopmail.com/mail?login=' + encodeURIComponent(ctx.name), { Referer: 'https://yopmail.com/' });
@@ -1221,15 +1345,16 @@ async function resolveProvider(name) {
     if (!MAIL[name]) throw new Error('Provider tidak dikenal.');
     return name;
   }
-  const errs = [];
   for (const id of MAIL_ORDER) {
     try {
       const d = await MAIL[id].domains();
       if (d && d.length) return id;
-    } catch (e) { errs.push(id); }
+    } catch {}
   }
   throw new Error('Tidak ada provider yang hidup saat ini.');
 }
+
+const randName = () => 'v' + Math.random().toString(36).slice(2, 9);
 
 async function doMail(req, res) {
   const b = req.body || {};
@@ -1237,10 +1362,7 @@ async function doMail(req, res) {
   let prov = String(b.provider || req.query.provider || 'auto').toLowerCase();
 
   if (step === 'sources') {
-    return out(res, 200, {
-      status: 'success',
-      items: MAIL_ORDER.map(id => ({ id, label: MAIL[id].label }))
-    });
+    return out(res, 200, { status: 'success', items: MAIL_ORDER.map(id => ({ id, label: MAIL[id].label })) });
   }
 
   try {
@@ -1267,21 +1389,50 @@ async function doMail(req, res) {
       const domain = String(b.domain || '').trim();
       if (name.length < 3) return out(res, 400, { status: 'error', message: 'Nama minimal 3 karakter.' });
 
-      const picked = await resolveProvider(prov);
-      prov = picked;
-      const ctxIn = { name, domain, address: name + '@' + domain };
-
-      let made;
-      if (domain || MAIL[prov].label !== 'smailpro') made = await MAIL[prov].create(ctxIn);
-      else made = await MAIL[prov].create(ctxIn);
-
-      const address = made.address || ctxIn.address;
+      prov = await resolveProvider(prov);
+      const made = await MAIL[prov].create({ name, domain, address: name + '@' + domain });
+      const address = made.address || (name + '@' + domain);
       const parts = address.split('@');
+
       return out(res, 200, {
         status: 'success', provider: prov,
         address, name: parts[0], domain: parts[1],
-        token: made.token || '', sid: made.extra || '', password: made.extra && prov.startsWith('mail') ? made.extra : ''
+        token: made.token || '', sid: made.extra || '',
+        password: made.extra && prov.startsWith('mail') ? made.extra : ''
       });
+    }
+
+    if (step === 'bulk') {
+      const count = Math.min(Math.max(Number(b.count) || 10, 1), 20);
+      const items = [];
+      let domain = String(b.domain || '').trim();
+
+      for (let i = 0; i < count; i++) {
+        try {
+          const p = await resolveProvider(prov === 'auto' ? 'auto' : prov);
+          if (!domain) {
+            const ds = await MAIL[p].domains();
+            domain = (ds && ds[0]) || '';
+          }
+          if (!domain) throw new Error('domain kosong');
+          const name = randName();
+          const made = await MAIL[p].create({ name, domain, address: name + '@' + domain });
+          items.push({
+            address: made.address || (name + '@' + domain),
+            provider: p,
+            token: made.token || '',
+            sid: made.extra || '',
+            name, domain
+          });
+        } catch (e) {
+          items.push({ address: '', provider: prov, error: e.message });
+        }
+        await new Promise(r => setTimeout(r, 150));
+      }
+
+      const ok = items.filter(x => x.address);
+      if (!ok.length) return out(res, 502, { status: 'error', message: 'Gagal membuat alamat.', items });
+      return out(res, 200, { status: 'success', items });
     }
 
     if (!prov || prov === 'auto') prov = await resolveProvider('auto');
@@ -1290,7 +1441,13 @@ async function doMail(req, res) {
 
     const address = String(b.address || '');
     const parts = address.split('@');
-    const ctx = { address, name: String(b.name || parts[0] || ''), domain: String(b.domain || parts[1] || ''), token: String(b.token || ''), extra: String(b.sid || b.password || b.extra || '') };
+    const ctx = {
+      address,
+      name: String(b.name || parts[0] || ''),
+      domain: String(b.domain || parts[1] || ''),
+      token: String(b.token || ''),
+      extra: String(b.sid || b.password || b.extra || '')
+    };
 
     if (step === 'list') {
       const messages = await adapter.list(ctx);
@@ -1313,15 +1470,16 @@ async function doMail(req, res) {
   }
 }
 
-/* ---------- health ---------- */
+/* ================= health ================= */
 async function doHealth(req, res) {
-  const l = L();
+  const l = await scraper().catch(() => null);
   const mods = ['tiktok', 'instagram', 'twitter', 'facebook', 'youtube', 'spotify', 'soundcloud', 'pinterest', 'threads', 'reddit', 'bilibili', 'terabox', 'pixiv', 'rednote', 'applemusic', 'bandcamp', 'resolver', 'anime', 'comic'];
   const state = {};
   if (l) for (const m of mods) state[m] = !!l[m];
+
   return out(res, 200, {
     status: 'success',
-    version: '6.0.0',
+    version: '8.0.0',
     scraper: !!l,
     modules: state,
     mail: MAIL_ORDER,
@@ -1330,21 +1488,27 @@ async function doHealth(req, res) {
   });
 }
 
-/* ---------- router ---------- */
+/* ================= router ================= */
 export default async function handler(req, res) {
-  const origin = req.headers.origin || '*';
-  res.setHeader('Access-Control-Allow-Origin', origin);
-  res.setHeader('Vary', 'Origin');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-api-key');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  if (req.method === 'OPTIONS') return res.status(204).end();
-
-  const act = String(req.query.action || '').toLowerCase();
-  const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'anon';
-  if (!hit(ip, act)) return out(res, 429, { status: 'error', message: 'Kebanyakan request, tunggu 1 menit.' });
-
   try {
+    const origin = req.headers.origin || '*';
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-api-key');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+
+    if (req.method === 'OPTIONS') return res.status(204).end();
+
+    if (typeof req.body === 'string') {
+      try { req.body = JSON.parse(req.body); } catch { req.body = {}; }
+    }
+
+    const act = String((req.query && req.query.action) || '').toLowerCase();
+    const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'anon';
+
+    if (!hit(ip, act)) return out(res, 429, { status: 'error', message: 'Kebanyakan request, tunggu 1 menit.' });
+
     if (act === 'exec') return await doExec(req, res);
     if (act === 'dl') return await doDl(req, res);
     if (act === 'resolve') return await doResolve(req, res);
@@ -1353,10 +1517,12 @@ export default async function handler(req, res) {
     if (act === 'proxy' || act === 'hls') return await doProxy(req, res);
     if (act === 'manga') return await doManga(req, res);
     if (act === 'anime') return await doAnime(req, res);
+    if (act === 'music' || act === 'song') return await doMusic(req, res);
     if (act === 'mail') return await doMail(req, res);
     if (act === 'health') return await doHealth(req, res);
+
     return out(res, 404, { status: 'error', message: 'action tidak dikenal.' });
   } catch (e) {
-    return out(res, 500, { status: 'error', message: e.message || 'internal error' });
+    return out(res, 500, { status: 'error', message: (e && e.message) || 'internal error' });
   }
-}
+    }
