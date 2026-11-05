@@ -2492,6 +2492,12 @@ const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&am
 
 const ART = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23171213%22/%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2216%22 fill=%22none%22 stroke=%22%23e8c36b%22 stroke-width=%222%22/%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%224%22 fill=%22%23e8c36b%22/%3E%3C/svg%3E';
 
+const dlHref = (u, name) => {
+  if (typeof u !== 'string') return u;
+  if (!u.startsWith('/api/lab?action=proxy')) return u;
+  return u.includes('dl=1') ? u : u + '&dl=1&name=' + encodeURIComponent(String(name || 'media').replace(/[^\w.\-]+/g, '_'));
+};
+
 function loadHls() {
   return new Promise((res, rej) => {
     if (window.Hls) return res();
@@ -2676,7 +2682,7 @@ async function runDl() {
     box.innerHTML =
       (d.title ? `<div style="font-size:.66rem;color:var(--dim);margin-bottom:.35rem">${esc(d.title)}</div>` : '') +
       (d.items || []).map(i =>
-        `<div class="dl-item">${d.thumb ? `<img class="thumb" src="${esc(d.thumb)}">` : '<span class="thumb"></span>'}<div class="meta"><b>${esc(i.label)}</b><small>${esc(i.provider)} · ${esc(i.type)}</small></div><a class="dl" href="${esc(i.url)}" target="_blank" rel="noopener"><i class="fa-solid fa-download"></i></a></div>`
+        `<div class="dl-item">${d.thumb ? `<img class="thumb" src="${esc(d.thumb)}">` : '<span class="thumb"></span>'}<div class="meta"><b>${esc(i.label)}</b><small>${esc(i.provider)} · ${esc(i.type)}</small></div><a class="dl" href="${esc(dlHref(i.url, i.label))}" target="_blank" rel="noopener"><i class="fa-solid fa-download"></i></a></div>`
       ).join('');
     const h = readDlHist();
     h.unshift({ url, title: d.title || '', fmt: dlFmt, ts: Date.now() });
@@ -2694,7 +2700,7 @@ async function runResolve() {
   box.innerHTML = '<div class="q-empty">membuka…</div>';
   try {
     const d = await apiLab('resolve', { url });
-    box.innerHTML = `<div class="dl-item"><div class="meta"><b>${esc(d.filename || 'File')}</b><small>${esc(d.provider)}</small></div><a class="dl" href="${esc(d.url)}" target="_blank" rel="noopener"><i class="fa-solid fa-download"></i></a></div>`;
+    box.innerHTML = `<div class="dl-item"><div class="meta"><b>${esc(d.filename || 'File')}</b><small>${esc(d.provider)}</small></div><a class="dl" href="${esc(dlHref(d.url, d.filename))}" target="_blank" rel="noopener"><i class="fa-solid fa-download"></i></a></div>`;
   } catch (e) {
     box.innerHTML = `<div class="q-empty" style="color:var(--bad)">${esc(e.message)}</div>`;
   }
@@ -2791,20 +2797,31 @@ async function mailBulk() {
 
 async function mailRefresh() {
   if (!mailSess) return;
+  const list = $('#mList');
+  const payload = { token: mailSess.token, sid: mailSess.sid, name: mailSess.name, domain: mailSess.domain, address: mailSess.address };
+
   try {
-    const r = await mailApi('list', {
-      token: mailSess.token, sid: mailSess.sid, name: mailSess.name,
-      domain: mailSess.domain, address: mailSess.address
-    });
+    const r = await mailApi('list', payload);
+
+    if (r.switched) {
+      mailSess = Object.assign({}, mailSess, {
+        provider: r.provider, address: r.address, name: r.name,
+        domain: r.domain, token: r.token, sid: r.sid
+      });
+      localStorage.setItem(MAIL_KEY, JSON.stringify(mailSess));
+      $('#mAddr').textContent = mailSess.address;
+      toast('Provider lama mati, alamat baru dibuat.', 'sy');
+    }
+
     const msgs = r.messages || [];
-    const list = $('#mList');
     if (!msgs.length) { list.innerHTML = '<div class="q-empty">Belum ada pesan.</div>'; return; }
+
     list.innerHTML = msgs.map((m, i) =>
       `<div class="m-row" data-i="${i}"><span class="av"><i class="fa-solid fa-envelope"></i></span><span class="tx"><b>${esc(m.subject)}</b><small>${esc(m.from)}</small></span></div>`
     ).join('');
     $$('#mList .m-row').forEach(el => el.onclick = () => mailRead(msgs[+el.dataset.i].id));
   } catch (e) {
-    $('#mList').innerHTML = '<div class="q-empty" style="color:var(--bad)">gagal memuat</div>';
+    list.innerHTML = `<div class="q-empty" style="color:var(--bad)">${esc(e.message)}</div>`;
   }
 }
 
@@ -3417,14 +3434,14 @@ function fmtT(s) {
 
 async function muDownloadItem(t) {
   if (!t) return toast('Pilih lagu dulu.', 'er');
-  if (t.full && t.preview) { window.open(t.preview, '_blank'); return; }
+  if (t.preview) { window.open(dlHref(t.preview, t.title + ' - ' + t.artist), '_blank'); return; }
   if (!t.url) return toast('Link tidak ada.', 'er');
   toast('Mencari unduhan…', 'sy');
   try {
     const d = await apiLab('dl', { url: t.url, format: 'mp3' });
     const first = (d.items || [])[0];
     if (!first) throw new Error('tidak ada hasil');
-    window.open(first.url, '_blank');
+    window.open(dlHref(first.url, t.title), '_blank');
   } catch (e) { toast(e.message, 'er'); }
 }
 
@@ -3542,4 +3559,4 @@ $('#authPass').addEventListener('keydown', e => { if (e.key === 'Enter') authSub
 $('#mProv').value = mailProv;
 </script>
 </body>
-  </html>
+</html>
