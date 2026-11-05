@@ -1,5 +1,12 @@
 {
   "functions": {
-    "api/**/*.js": { "includeFiles": "node_modules/@coflyn/**" }
+    "api/**/*.js": {
+      "maxDuration": 60,
+      "includeFiles": [
+        "node_modules/@coflyn/**",
+        "node_modules/axios/**",
+        "node_modules/cheerio/**"
+      ]
+    }
   }
 }
