@@ -20,7 +20,7 @@ import { isOwner, isPremium } from '../../lib/premium.js';
 const PRICE = Number(process.env.PREMIUM_PRICE || 3500);
 const DAYS = Number(process.env.PREMIUM_DAYS || 30);
 const TTL = 3 * 86400;
-const BASE = (process.env.PIXPAYZ_API || 'https://api.pixpayz.com').replace(/\/+$/, '');
+const BASE = (process.env.PIXPAYZ_API || 'https://pixpayz.com').replace(/\/+$/, '');
 
 let WORKING = null;
 
