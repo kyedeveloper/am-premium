@@ -1,9 +1,9 @@
 /**
- * VESPERA · Lab API  v9.0.0
+ * VESPERA · Lab API  v9.0.1
+ * CommonJS — jangan pakai import/export di file ini.
  * TikTok → tikwm · YouTube + musik full → Piped (proxy Range)
  * Temp mail → provider stateless + probe + failover + domain→provider lock
  */
-export const config = { maxDuration: 60 };
 
 const PISTON = 'https://emkc.org/api/v2/piston/execute';
 const ONESEC = 'https://www.1secmail.com/api/v1/';
@@ -747,7 +747,7 @@ async function gm(f, extra = '') {
 /* provider bisa balikin bentuk key yang beda-beda — ratakan di satu tempat */
 function mailBody(d) {
   const m = (d && (d.data || d.mail || d.result || d)) || {};
-  const pick = (...keys) => {
+  const take = (...keys) => {
     for (const k of keys) {
       const v = m[k];
       if (typeof v === 'string' && v.trim()) return v;
@@ -755,10 +755,10 @@ function mailBody(d) {
     return '';
   };
   return {
-    subject: pick('subject', 'mail_subject', 'header_subject', 'subj'),
-    from: pick('from', 'from_mail', 'mail_from', 'header_from', 'sender'),
-    html: pick('html', 'mail_html', 'body_html', 'html_body', 'content', 'body'),
-    text: pick('text', 'mail_text', 'body_text', 'text_body', 'plain', 'preview')
+    subject: take('subject', 'mail_subject', 'header_subject', 'subj'),
+    from: take('from', 'from_mail', 'mail_from', 'header_from', 'sender'),
+    html: take('html', 'mail_html', 'body_html', 'html_body', 'content', 'body'),
+    text: take('text', 'mail_text', 'body_text', 'text_body', 'plain', 'preview')
   };
 }
 
@@ -779,9 +779,6 @@ const MAIL = {
       const m = mailBody(r.d);
       if (!m.html && !m.text) throw new Error('Isi pesan tidak terbaca.');
       return { subject: m.subject || '(tanpa subjek)', from: m.from || '?', at: '', html: m.html, text: m.text };
-    },
-      const m = r.d || {};
-      return { subject: m.subject || '(tanpa subjek)', from: m.from_mail || '?', at: m.time || '', html: m.html || '', text: m.text || '' };
     },
     async del() {}
   },
@@ -1245,11 +1242,11 @@ async function doMail(req, res) {
 /* ===== health ===== */
 async function doHealth(req, res) {
   const l = await scraper().catch(() => null);
-  return out(res, 200, { status: 'success', version: '9.0.0', scraper: !!l, piped: PIPED.length, mail: MAIL_ORDER });
+  return out(res, 200, { status: 'success', version: '9.0.1', scraper: !!l, piped: PIPED.length, mail: MAIL_ORDER });
 }
 
 /* ===== router ===== */
-export default async function handler(req, res) {
+async function handler(req, res) {
   try {
     const origin = req.headers.origin || '*';
     res.setHeader('Access-Control-Allow-Origin', origin);
@@ -1281,3 +1278,6 @@ export default async function handler(req, res) {
     return out(res, 500, { status: 'error', message: (e && e.message) || 'internal error' });
   }
 }
+
+module.exports = handler;
+module.exports.config = { maxDuration: 60 };
