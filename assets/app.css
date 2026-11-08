@@ -320,7 +320,10 @@ body.player-on .fab{bottom:calc(124px + env(safe-area-inset-bottom))}
 
 #labView{position:relative;z-index:2;display:none;padding:1rem 0 3rem}
 body:not([data-view="home"]) #top{display:none}
-body[data-view="lab"] #labView,body[data-view="manga"] #labView,body[data-view="music"] #labView,body[data-view="akun"] #labView{display:block}
+body[data-view="lab"] #labView{display:block}
+body[data-view="manga"] #mediaView,body[data-view="music"] #mediaView,body[data-view="akun"] #mediaView{display:block}
+#mediaView{position:relative;z-index:2;display:none;padding:1rem 0 3rem}
+.mv-card .cv{background:var(--surf2)}
 .pane{display:none;animation:paneIn .3s var(--ease) both}
 .pane.on{display:block}
 .lab-head{display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem;flex-wrap:wrap}
