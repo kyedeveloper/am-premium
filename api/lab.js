@@ -101,15 +101,60 @@ async function doExec(req, res) {
 }
 
 /* ===== proxy gambar ===== */
+const PH_SVG = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400"><rect width="300" height="400" fill="#241c3d"/><g fill="none" stroke="#5b4d84" stroke-width="7"><circle cx="150" cy="180" r="34"/><path d="M114 246h72"/></g></svg>'
+);
+
+function sendPh(res) {
+  res.setHeader('Content-Type', 'image/svg+xml; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+  return res.status(200).end(PH_SVG);
+}
+
+async function fetchImg(url, ref) {
+  const r = await tf(url, {
+    headers: {
+      'User-Agent': UA,
+      'Referer': ref || 'https://mangadex.org/',
+      'Accept': 'image/avif,image/webp,image/*,*/*;q=0.8'
+    }
+  }, 12000);
+  const ct = r.headers.get('content-type') || '';
+  if (!r.ok || !/^image\//i.test(ct)) return null;
+  return { ct, buf: Buffer.from(await r.arrayBuffer()) };
+}
+
+/* MangaDex uploads kadang balikin halaman challenge, bukan gambar → cari cover Comick */
+async function comickCover(title) {
+  const q = String(title || '').trim();
+  if (q.length < 2) return '';
+  try {
+    const r = await tf('https://api.comick.fun/v1.0/search?q=' + encodeURIComponent(q) + '&limit=1', { headers: { 'User-Agent': UA, 'Accept': 'application/json' } }, 8000);
+    const d = await r.json().catch(() => []);
+    const first = Array.isArray(d) ? d[0] : null;
+    const key = first && first.md_covers && first.md_covers[0] && first.md_covers[0].b2key;
+    return key ? 'https://meo.comick.pictures/' + key : '';
+  } catch { return ''; }
+}
+
 async function doImg(req, res) {
   const url = String(req.query.url || '').trim();
-  if (!/^https?:\/\//i.test(url)) return out(res, 400, { status: 'error', message: 'URL tidak valid.' });
+  if (!/^https?:\/\//i.test(url)) return sendPh(res);
   const ref = String(req.query.ref || '') || ('https://' + hostOf(url) + '/');
-  const r = await tf(url, { headers: { 'User-Agent': UA, 'Referer': ref, 'Accept': 'image/*,*/*;q=0.8' } }, 12000);
-  if (!r.ok) return out(res, 502, { status: 'error', message: 'HTTP ' + r.status });
-  res.setHeader('Content-Type', r.headers.get('content-type') || 'image/jpeg');
+
+  let got = null;
+  try { got = await fetchImg(url, ref); } catch {}
+
+  if (!got) {
+    const alt = await comickCover(req.query.q);
+    if (alt) { try { got = await fetchImg(alt, 'https://comick.io/'); } catch {} }
+  }
+
+  if (!got) return sendPh(res);
+
+  res.setHeader('Content-Type', got.ct);
   res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=604800');
-  return res.status(200).end(Buffer.from(await r.arrayBuffer()));
+  return res.status(200).end(got.buf);
 }
 
 /* ===== proxy halaman / media / HLS ===== */
@@ -463,7 +508,8 @@ const mdTitle = m => { const t = m.attributes && m.attributes.title; return t ? 
 function mdCover(m) {
   const rel = (m.relationships || []).find(r => r.type === 'cover_art');
   const f = rel && rel.attributes && rel.attributes.fileName;
-  return f ? imgProxy('https://uploads.mangadex.org/covers/' + m.id + '/' + f + '.256.jpg', 'https://mangadex.org/') : '';
+  if (!f) return '';
+  return imgProxy('https://uploads.mangadex.org/covers/' + m.id + '/' + f + '.256.jpg', 'https://mangadex.org/') + '&q=' + encodeURIComponent(mdTitle(m));
 }
 const mdMap = list => (list || []).map(m => ({ id: m.id, title: mdTitle(m), cover: mdCover(m), source: 'mangadex' }));
 
@@ -698,6 +744,24 @@ async function gm(f, extra = '') {
   return { ok: r.ok, code: r.status, d: await r.json().catch(() => ({})) };
 }
 
+/* provider bisa balikin bentuk key yang beda-beda — ratakan di satu tempat */
+function mailBody(d) {
+  const m = (d && (d.data || d.mail || d.result || d)) || {};
+  const pick = (...keys) => {
+    for (const k of keys) {
+      const v = m[k];
+      if (typeof v === 'string' && v.trim()) return v;
+    }
+    return '';
+  };
+  return {
+    subject: pick('subject', 'mail_subject', 'header_subject', 'subj'),
+    from: pick('from', 'from_mail', 'mail_from', 'header_from', 'sender'),
+    html: pick('html', 'mail_html', 'body_html', 'html_body', 'content', 'body'),
+    text: pick('text', 'mail_text', 'body_text', 'text_body', 'plain', 'preview')
+  };
+}
+
 const MAIL = {
   plus: {
     label: 'tempmail.plus',
@@ -709,7 +773,13 @@ const MAIL = {
       return ((r.d && r.d.mail_list) || []).map(m => ({ id: String(m.id), from: m.from_mail || '?', subject: m.subject || '(tanpa subjek)', seen: !!m.seen, at: m.time || '' }));
     },
     async read(ctx, id) {
-      const r = await jj('GET', 'https://tempmail.plus/api/mails/' + encodeURIComponent(id) + '?email=' + encodeURIComponent(ctx.address) + '&epin=');
+      const base = 'https://tempmail.plus/api/mails/' + encodeURIComponent(id) + '?email=' + encodeURIComponent(ctx.address) + '&epin=';
+      let r = await jj('GET', base);
+      if (!r.ok) r = await jj('GET', 'https://tempmail.plus/api/mails/' + encodeURIComponent(id) + '?email=' + encodeURIComponent(ctx.address));
+      const m = mailBody(r.d);
+      if (!m.html && !m.text) throw new Error('Isi pesan tidak terbaca.');
+      return { subject: m.subject || '(tanpa subjek)', from: m.from || '?', at: '', html: m.html, text: m.text };
+    },
       const m = r.d || {};
       return { subject: m.subject || '(tanpa subjek)', from: m.from_mail || '?', at: m.time || '', html: m.html || '', text: m.text || '' };
     },
