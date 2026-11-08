@@ -152,9 +152,10 @@ function gotoView(v) {
   if (!VIEWS.includes(v)) v = 'home';
   document.body.dataset.view = v;
   $$('[data-pane]').forEach(p => p.classList.toggle('on', p.dataset.pane === v));
+  if (v === 'lab') labGo(labTab);
+  else $$('[data-lab]').forEach(p => { if (p.classList.contains('pane')) p.classList.remove('on'); });
   $$('#dock button, #floatNav button').forEach(b => b.classList.toggle('on', b.dataset.view === v));
   window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
-  if (v === 'lab') labGo(labTab);
   if (v === 'akun') { ME ? openAccount() : paintAkunGuest(); }
   if (v === 'manga') mgBoot();
   if (v === 'music') muBoot();
@@ -1182,33 +1183,38 @@ async function mailRefresh() {
     list.innerHTML = msgs.map((m, i) =>
       `<div class="m-row" data-i="${i}">${m.seen ? '' : '<span class="new-dot"></span>'}<span class="av"><i class="fa-solid fa-envelope"></i></span><span class="tx"><b>${esc(m.subject)}</b><small>${esc(m.from)}</small></span></div>`
     ).join('');
-    $$('#mList .m-row').forEach(el => el.onclick = () => mailRead(msgs[+el.dataset.i].id));
+    $$('#mList .m-row').forEach(el => el.onclick = () => mailRead(msgs[+el.dataset.i]));
   } catch (e) {
     list.innerHTML = `<div class="q-empty" style="color:var(--bad)">${esc(e.message)}</div>`;
   }
 }
 
-async function mailRead(id) {
+async function mailRead(msg) {
   const box = $('#mRead');
   box.classList.add('open');
   box.innerHTML = '<div class="q-empty">memuat…</div>';
   try {
     const d = await mailApi('read', {
-      id, token: mailSess.token, sid: mailSess.sid, name: mailSess.name,
+      id: msg.id, token: mailSess.token, sid: mailSess.sid, name: mailSess.name,
       domain: mailSess.domain, address: mailSess.address
     });
-    const blob = [d.subject, d.text, d.html].join(' ');
+
+    const subject = (d.subject && d.subject !== '(tanpa subjek)') ? d.subject : (msg.subject || '(tanpa subjek)');
+    const from = (d.from && d.from !== '?') ? d.from : (msg.from || '?');
+    const blob = [subject, d.text, d.html].join(' ');
     const codes = [...new Set((blob.match(/\b\d{6}\b/g) || []))].slice(0, 4);
     const link = (blob.match(/https?:\/\/[^\s"'<>]+oobCode=[^\s"'<>]+/i) || [])[0] || '';
+
     box.innerHTML =
-      `<div class="note">${esc(d.from)} · ${esc(d.subject)}</div>` +
+      `<div class="note">${esc(from)} · ${esc(subject)}</div>` +
       (codes.length || link ? '<div class="otp-box">' +
         codes.map(c => `<span class="otp-code" data-code="${esc(c)}">${esc(c)}</span>`).join('') +
         (link ? '<button class="tool-btn" id="mUseLink"><i class="fa-solid fa-bolt"></i> Pakai di terminal</button>' : '') +
       '</div>' : '') +
       (d.html
         ? `<iframe srcdoc="${esc(String(d.html))}" sandbox></iframe>`
-        : `<pre style="white-space:pre-wrap;font-size:.64rem">${esc(d.text || '(kosong)')}</pre>`);
+        : `<pre style="white-space:pre-wrap;font-size:.64rem">${esc(d.text || '(isi pesan kosong)')}</pre>`);
+
     $$('#mRead .otp-code').forEach(el => el.onclick = () => copyText(el.dataset.code));
     const ub = $('#mUseLink');
     if (ub) ub.onclick = () => {
@@ -1221,8 +1227,8 @@ async function mailRead(id) {
         toast('Link ditempel. Isi email target lalu kirim.', 'ok');
       }, 80);
     };
-  } catch {
-    box.innerHTML = '<div class="q-empty" style="color:var(--bad)">gagal</div>';
+  } catch (e) {
+    box.innerHTML = `<div class="q-empty" style="color:var(--bad)">${esc(e.message || 'gagal')}</div>`;
   }
 }
 
@@ -1282,14 +1288,32 @@ $('#mgRefresh').onclick = () => mgLoad();
 $('#mgSearchBtn').onclick = () => mgSearch();
 $('#mgQ').addEventListener('keydown', e => { if (e.key === 'Enter') mgSearch(); });
 
+const PH_COVER = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400"><rect width="300" height="400" fill="#241c3d"/><g fill="none" stroke="#5b4d84" stroke-width="7"><circle cx="150" cy="180" r="34"/><path d="M114 246h72"/></g></svg>'
+);
+
+function coverGuard(img) {
+  img.onerror = () => {
+    const q = img.dataset.q || '';
+    if (!img.dataset.tried && q) {
+      img.dataset.tried = '1';
+      img.src = img.src.split('&q=')[0] + '&q=' + encodeURIComponent(q) + '&cb=' + Date.now();
+      return;
+    }
+    img.onerror = null;
+    img.src = PH_COVER;
+  };
+}
+
 function mgCard(m) {
   const on = favHas('manga', m.id);
   return `<div class="mv-card">
     <button class="fav ${on ? 'on' : ''}" title="Favorit"><i class="fa-solid fa-heart"></i></button>
-    ${m.cover ? `<img class="cv" src="${esc(m.cover)}" loading="lazy" alt="">` : '<div class="ph"></div>'}
+    ${m.cover ? `<img class="cv" src="${esc(m.cover)}" loading="lazy" alt="" data-q="${esc(m.title)}">` : '<div class="ph"></div>'}
     <div class="cap"><b>${esc(m.title)}</b>${m.meta ? `<small>${esc(m.meta)}</small>` : ''}</div>
   </div>`;
 }
+
 function mgBind(items) {
   $$('#mgBody .mv-card').forEach((c, i) => {
     c.onclick = e => { if (e.target.closest('.fav')) return; mgOpen(items[i]); };
@@ -1299,6 +1323,8 @@ function mgBind(items) {
       f.classList.toggle('on', on);
       toast(on ? 'Favorit ditambah.' : 'Dihapus.', 'sy');
     };
+    const cv = c.querySelector('.cv');
+    if (cv) coverGuard(cv);
   });
 }
 const skel = n => '<div class="mv-grid">' + Array.from({ length: n }, () => '<div class="mv-card"><div class="ph"></div></div>').join('') + '</div>';
@@ -1396,9 +1422,9 @@ async function mgOpen(m) {
     const on = favHas('manga', m.id);
     $('#mgBody').innerHTML = `
       <div class="mv-hero">
-        ${m.cover ? `<img class="bg" src="${esc(m.cover)}">` : ''}
+        ${m.cover ? `<img class="bg" src="${esc(m.cover)}" data-q="${esc(m.title)}">` : ''}
         <div class="in">
-          ${m.cover ? `<img class="cv" src="${esc(m.cover)}">` : '<div class="cv"></div>'}
+          ${m.cover ? `<img class="cv" src="${esc(m.cover)}" data-q="${esc(m.title)}">` : '<div class="cv"></div>'}
           <div style="min-width:0">
             <h3>${esc(m.title)}</h3>
             <div class="meta"><span class="good">${esc(MG.src)}</span><span>${MG.ch.length} chapter</span></div>
@@ -1438,6 +1464,7 @@ async function mgOpen(m) {
       $$('#mgChap button').forEach(b => b.onclick = () => mgRead(+b.dataset.i));
     };
     paintCh();
+   $$('#mgBody img[data-q]').forEach(coverGuard);
     $('#mgChQ').oninput = paintCh;
     $('#mgSort').onclick = e => { asc = !asc; e.currentTarget.textContent = asc ? 'ASC' : 'DESC'; paintCh(); };
     $('#mgDlAll').onclick = () => mgDownloadRange(0, MG.ch.length - 1);
